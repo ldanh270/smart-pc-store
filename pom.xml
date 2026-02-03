@@ -5,18 +5,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>servlet</groupId>
-  <artifactId>demo</artifactId>
+  <artifactId>smart-pc-store</artifactId>
   <version>1.0.0</version>
   <packaging>war</packaging>
 
-  <name>demo Maven Webapp</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <name>Smart PC Store</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
   </properties>
 
   <dependencies>
@@ -35,7 +32,7 @@
   </dependencies>
 
   <build>
-    <finalName>demo</finalName>
+    <finalName>smart-pc-store</finalName>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>
