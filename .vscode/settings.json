@@ -84,5 +84,7 @@
 	"editor.definitionLinkOpensInPeek": false,
 	"typescript.tsserver.watchOptions": "vscode",
 	"editor.autoIndent": "advanced",
-	"editor.wordWrapColumn": 120
+	"editor.wordWrapColumn": 120,
+	"maven.view": "flat",
+	"cSpell.words": ["jdbc", "ldanh"]
 }
