@@ -1,2 +1,13 @@
-controllers\test.class
+entities\Customer.class
+entities\Category.class
+entities\InventoryTransaction.class
+entities\Cart.class
+dao\JPAUtil.class
+entities\PurchaseOrderItem.class
+entities\CartItem.class
 controllers\HelloServlet.class
+entities\Supplier.class
+entities\Orders.class
+entities\Product.class
+entities\PurchaseOrder.class
+entities\OrderItem.class
