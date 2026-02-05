@@ -12,14 +12,9 @@
         <class>entities.OrderItem</class>
         <class>entities.Cart</class>
         <class>entities.Orders</class>
-        <class>entities.Payments</class>
         <class>entities.InventoryTransaction</class>
-        <class>entities.PurchaseOrderItems</class>
         <class>entities.Category</class>
         <class>entities.CartItem</class>
-        <class>entities.PurchaseOrders</class>
-        <class>entities.Products</class>
-        <class>entities.Suppliers</class>
         <class>entities.PurchaseOrderItem</class>
         <class>entities.Customer</class>
         <class>entities.Product</class>
