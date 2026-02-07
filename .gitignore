@@ -28,6 +28,11 @@ replay_pid*
 
 # IDEA files
 .idea/
+*.iml
 
-# Target files
+# Eclipse files
+.settings/
+
+# Build file
 target/
+out/
