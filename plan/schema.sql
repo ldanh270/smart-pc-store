@@ -32,13 +32,13 @@ IF OBJECT_ID('SupplierPriceHistories','U') IS NOT NULL DROP TABLE SupplierPriceH
 IF OBJECT_ID('Products','U') IS NOT NULL DROP TABLE Products
 IF OBJECT_ID('Categories','U') IS NOT NULL DROP TABLE Categories
 IF OBJECT_ID('Suppliers','U') IS NOT NULL DROP TABLE Suppliers
-IF OBJECT_ID('Customers','U') IS NOT NULL DROP TABLE Customers
+IF OBJECT_ID('Users','U') IS NOT NULL DROP TABLE Users
 GO
 
 /* =========================
-   CUSTOMERS (pure ERD)
+   Users (pure ERD)
 ========================= */
-CREATE TABLE Customers (
+CREATE TABLE Users (
     Id            INT PRIMARY KEY,
     Username      NVARCHAR(255),
     PasswordHash  NVARCHAR(255),
@@ -177,14 +177,14 @@ GO
 ========================= */
 CREATE TABLE Carts (
     Id         INT PRIMARY KEY,
-    CustomerId INT,
+    UserId INT,
     CreatedAt  DATETIME
 );
 GO
 
 ALTER TABLE Carts
-ADD CONSTRAINT FK_Carts_Customers
-FOREIGN KEY (CustomerId) REFERENCES Customers(Id);
+ADD CONSTRAINT FK_Carts_Users
+FOREIGN KEY (UserId) REFERENCES Users(Id);
 GO
 
 CREATE TABLE CartItems (
@@ -210,7 +210,7 @@ GO
 ========================= */
 CREATE TABLE Orders (
     Id          INT PRIMARY KEY,
-    CustomerId  INT,
+    UserId      INT,
     OrderDate   DATETIME,
     Status      NVARCHAR(255),
     TotalAmount DECIMAL(18,2)
@@ -218,8 +218,8 @@ CREATE TABLE Orders (
 GO
 
 ALTER TABLE Orders
-ADD CONSTRAINT FK_Orders_Customers
-FOREIGN KEY (CustomerId) REFERENCES Customers(Id);
+ADD CONSTRAINT FK_Orders_Users
+FOREIGN KEY (UserId) REFERENCES Users(Id);
 GO
 
 CREATE TABLE OrderItems (
