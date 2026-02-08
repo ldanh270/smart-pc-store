@@ -17,6 +17,9 @@
         <class>entities.Supplier</class>
         <class>entities.PurchaseOrder</class>
         <class>entities.Payments</class>
+        <class>entities.Order</class>
+        <class>entities.Payment</class>
+        <class>entities.User</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <!-- Properties -->
         <properties>

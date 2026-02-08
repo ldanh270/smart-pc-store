@@ -4,11 +4,16 @@
  */
 package servlets;
 
+import controllers.AuthController;
+import dao.JPAUtil;
+import dao.UserDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import services.AuthService;
+import utils.HttpUtil;
 
 import java.io.IOException;
 
@@ -16,31 +21,45 @@ import java.io.IOException;
  *
  * @author ducan
  */
-@WebServlet(name = "AuthServlet", urlPatterns = {"/auth"})
+@WebServlet(name = "AuthServlet", urlPatterns = {"/auth/*"})
 public class AuthServlet extends HttpServlet {
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
+
+    // Dependency Injection
+    private AuthController authController;
+
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public void init() {
+        UserDao userDAO = new UserDao(JPAUtil.getEntityManager());
+        AuthService authService = new AuthService(userDAO);
+        this.authController = new AuthController(authService);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
-     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String pathInfo = req.getPathInfo();
+
+        // Routing
+        if (pathInfo == null || pathInfo.equals("/")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        try {
+            switch (pathInfo) {
+                case "/login":
+//                    authController.handleLogin(req, resp);
+                    break;
+                case "/signup":
+                    authController.handleSignup(req, resp);
+                    break;
+                case "/refresh":
+//                    authController.handleRefreshToken(req, resp);
+                    break;
+                default:
+                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+            }
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        }
     }
 }
