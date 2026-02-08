@@ -3,25 +3,29 @@ package entities;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.Instant;
 
 @Entity
-@Table(name = "PurchaseOrders")
-public class PurchaseOrder {
+@Table(name = "Orders")
+public class Order {
     @Id
     @Column(name = "Id", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SupplierId")
-    private Supplier supplier;
+    @JoinColumn(name = "UserId")
+    private User user;
 
     @Column(name = "OrderDate")
-    private LocalDate orderDate;
+    private Instant orderDate;
 
     @Nationalized
     @Column(name = "Status")
     private String status;
+
+    @Column(name = "TotalAmount", precision = 18, scale = 2)
+    private BigDecimal totalAmount;
 
     public Integer getId() {
         return id;
@@ -31,19 +35,19 @@ public class PurchaseOrder {
         this.id = id;
     }
 
-    public Supplier getSupplier() {
-        return supplier;
+    public User getUser() {
+        return user;
     }
 
-    public void setSupplier(Supplier supplier) {
-        this.supplier = supplier;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public LocalDate getOrderDate() {
+    public Instant getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(LocalDate orderDate) {
+    public void setOrderDate(Instant orderDate) {
         this.orderDate = orderDate;
     }
 
@@ -53,6 +57,14 @@ public class PurchaseOrder {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
 }
