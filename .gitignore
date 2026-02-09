@@ -36,3 +36,6 @@ replay_pid*
 # Build file
 target/
 out/
+
+# Personal
+TODO.md

@@ -1,6 +1,7 @@
 package entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.time.Instant;
 @Table(name = "Orders")
 public class Order {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false)
     private Integer id;
 
@@ -17,6 +19,7 @@ public class Order {
     @JoinColumn(name = "UserId")
     private User user;
 
+    @ColumnDefault("getdate()")
     @Column(name = "OrderDate")
     private Instant orderDate;
 

@@ -1,6 +1,7 @@
 package entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.Instant;
@@ -9,6 +10,7 @@ import java.time.Instant;
 @Table(name = "InventoryTransactions")
 public class InventoryTransaction {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false)
     private Integer id;
 
@@ -23,6 +25,7 @@ public class InventoryTransaction {
     @Column(name = "TransactionType")
     private String transactionType;
 
+    @ColumnDefault("getdate()")
     @Column(name = "TransactionDate")
     private Instant transactionDate;
 

@@ -1,9 +1,7 @@
 package entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.Instant;
@@ -12,6 +10,7 @@ import java.time.Instant;
 @Table(name = "Users")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false)
     private Integer id;
 
@@ -43,15 +42,18 @@ public class User {
     @Column(name = "Status")
     private String status;
 
+    @ColumnDefault("getdate()")
     @Column(name = "CreatedAt")
     private Instant createdAt;
+
+    public User() {
+    }
 
     public User(String username, String passwordHash, String fullName, String email) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.fullName = fullName;
         this.email = email;
-        this.createdAt = Instant.now();
     }
 
     public Integer getId() {

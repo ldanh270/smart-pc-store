@@ -1,9 +1,7 @@
 package entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.Instant;
@@ -12,11 +10,13 @@ import java.time.Instant;
 @Table(name = "Payments")
 public class Payment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false)
     private Integer id;
 
-    @Column(name = "OrderId")
-    private Integer orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "OrderId")
+    private Order order;
 
     @Nationalized
     @Column(name = "PaymentMethod")
@@ -26,6 +26,7 @@ public class Payment {
     @Column(name = "PaymentStatus")
     private String paymentStatus;
 
+    @ColumnDefault("getdate()")
     @Column(name = "PaymentDate")
     private Instant paymentDate;
 
@@ -37,12 +38,12 @@ public class Payment {
         this.id = id;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public String getPaymentMethod() {

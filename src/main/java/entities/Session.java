@@ -1,13 +1,12 @@
 package entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 
 @Entity
-@Table(name = "Carts")
-public class Cart {
+@Table(name = "Sessions")
+public class Session {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false)
@@ -17,9 +16,11 @@ public class Cart {
     @JoinColumn(name = "UserId")
     private User user;
 
-    @ColumnDefault("getdate()")
-    @Column(name = "CreatedAt")
-    private Instant createdAt;
+    @Column(name = "RefreshToken", length = 64)
+    private String refreshToken;
+
+    @Column(name = "ExpiredAt")
+    private Instant expiredAt;
 
     public Integer getId() {
         return id;
@@ -37,12 +38,20 @@ public class Cart {
         this.user = user;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public Instant getExpiredAt() {
+        return expiredAt;
+    }
+
+    public void setExpiredAt(Instant expiredAt) {
+        this.expiredAt = expiredAt;
     }
 
 }
