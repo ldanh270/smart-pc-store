@@ -6,6 +6,7 @@ package servlets;
 
 import controllers.AuthController;
 import dao.JPAUtil;
+import dao.SessionDao;
 import dao.UserDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -30,7 +31,8 @@ public class AuthServlet extends HttpServlet {
     @Override
     public void init() {
         UserDao userDAO = new UserDao(JPAUtil.getEntityManager());
-        AuthService authService = new AuthService(userDAO);
+        SessionDao sessionDAO = new SessionDao(JPAUtil.getEntityManager());
+        AuthService authService = new AuthService(userDAO, sessionDAO);
         this.authController = new AuthController(authService);
     }
 
@@ -47,19 +49,23 @@ public class AuthServlet extends HttpServlet {
         try {
             switch (pathInfo) {
                 case "/login":
-//                    authController.handleLogin(req, resp);
+                    authController.handleLogin(req, resp);
                     break;
                 case "/signup":
                     authController.handleSignup(req, resp);
                     break;
                 case "/refresh":
-//                    authController.handleRefreshToken(req, resp);
+                    //                    authController.handleRefreshToken(req, resp);
                     break;
                 default:
                     HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         }
     }
 }

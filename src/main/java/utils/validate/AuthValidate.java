@@ -1,4 +1,4 @@
-package utils.validators;
+package utils.validate;
 
 import configs.Regex;
 import dto.auth.RegisterDto;
@@ -6,7 +6,7 @@ import dto.auth.RegisterDto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AuthValidator {
+public class AuthValidate {
 
     /**
      * Validates the registration data.
@@ -20,7 +20,7 @@ public class AuthValidator {
 
         // Check for null dto
         if (dto == null) {
-            errors.add("Request body is empty");
+            errors.add("Request body must not empty");
             return errors;
         }
 
@@ -40,7 +40,7 @@ public class AuthValidator {
         }
 
         // Validate email
-        if (dto.getEmail() == null) {
+        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
             errors.add("Email is required");
         }
 

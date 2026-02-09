@@ -1,12 +1,14 @@
 package controllers;
 
 import com.google.gson.JsonSyntaxException;
+import dto.auth.AuthResponse;
+import dto.auth.LoginDto;
 import dto.auth.RegisterDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.AuthService;
 import utils.HttpUtil;
-import utils.validators.AuthValidator;
+import utils.validate.AuthValidate;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,7 +36,7 @@ public class AuthController {
             RegisterDto registerDto = HttpUtil.jsonToClass(req.getReader(), RegisterDto.class);
 
             // Validate input data
-            List<String> validationError = AuthValidator.validateRegister(registerDto);
+            List<String> validationError = AuthValidate.validateRegister(registerDto);
 
             // Return 400 Bad Request if validation fails
             if (!validationError.isEmpty()) {
@@ -57,5 +59,30 @@ public class AuthController {
         }
     }
 
+    /**
+     * Handles user login requests.
+     *
+     * @param req  the HttpServletRequest object
+     * @param resp the HttpServletResponse object
+     * @throws IOException if an input or output error is detected
+     */
+    public void handleLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            // Parse request body to Java object
+            LoginDto loginDto = HttpUtil.jsonToClass(req.getReader(), LoginDto.class);
 
+            // Call service to authenticate user
+            AuthResponse response = authService.login(loginDto);
+
+            // Send appropriate response based on authentication outcome
+            if (response.isSuccess()) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, response);
+            } else {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, response.getMessage());
+            }
+        } catch (JsonSyntaxException e) {
+            // Handle syntax errors in JSON (missing commas, brackets, etc.)
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        }
+    }
 }
