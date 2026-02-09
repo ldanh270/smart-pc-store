@@ -1,57 +1,30 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package entities;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import java.io.Serializable;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 
-/**
- *
- * @author ducan
- */
 @Entity
 @Table(name = "PurchaseOrderItems")
-@NamedQueries({
-    @NamedQuery(name = "PurchaseOrderItem.findAll", query = "SELECT p FROM PurchaseOrderItem p"),
-    @NamedQuery(name = "PurchaseOrderItem.findById", query = "SELECT p FROM PurchaseOrderItem p WHERE p.id = :id"),
-    @NamedQuery(name = "PurchaseOrderItem.findByQuantity", query = "SELECT p FROM PurchaseOrderItem p WHERE p.quantity = :quantity"),
-    @NamedQuery(name = "PurchaseOrderItem.findByUnitPrice", query = "SELECT p FROM PurchaseOrderItem p WHERE p.unitPrice = :unitPrice")})
-public class PurchaseOrderItem implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PurchaseOrderItem {
     @Id
-    @Basic(optional = false)
-    @Column(name = "Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id", nullable = false)
     private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PoId")
+    private PurchaseOrder po;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ProductId")
+    private Product product;
+
     @Column(name = "Quantity")
     private Integer quantity;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "UnitPrice")
+
+    @Column(name = "UnitPrice", precision = 18, scale = 2)
     private BigDecimal unitPrice;
-    @JoinColumn(name = "ProductId", referencedColumnName = "Id")
-    @ManyToOne
-    private Product productId;
-    @JoinColumn(name = "PoId", referencedColumnName = "Id")
-    @ManyToOne
-    private PurchaseOrder poId;
-
-    public PurchaseOrderItem() {
-    }
-
-    public PurchaseOrderItem(Integer id) {
-        this.id = id;
-    }
 
     public Integer getId() {
         return id;
@@ -59,6 +32,22 @@ public class PurchaseOrderItem implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public PurchaseOrder getPo() {
+        return po;
+    }
+
+    public void setPo(PurchaseOrder po) {
+        this.po = po;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public Integer getQuantity() {
@@ -77,45 +66,4 @@ public class PurchaseOrderItem implements Serializable {
         this.unitPrice = unitPrice;
     }
 
-    public Product getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Product productId) {
-        this.productId = productId;
-    }
-
-    public PurchaseOrder getPoId() {
-        return poId;
-    }
-
-    public void setPoId(PurchaseOrder poId) {
-        this.poId = poId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PurchaseOrderItem)) {
-            return false;
-        }
-        PurchaseOrderItem other = (PurchaseOrderItem) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "entities.PurchaseOrderItem[ id=" + id + " ]";
-    }
-    
 }

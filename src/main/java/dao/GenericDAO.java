@@ -1,118 +1,89 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
-
 /**
- * Include DAO functions for access to database
+ * Generic DAO interface for CRUD operations
  *
- * @author ducan
+ * @param <T> the entity type
  */
-public class GenericDAO {
+public class GenericDao<T> {
+    private final Class<T> entityClass;
+    protected EntityManager em;
 
     /**
-     * Find records by IDs
+     * Constructor
      *
-     * @param entityClass Proper type
-     * @param id          Object id to find
-     * @return Result object
+     * @param entityClass the entity class
+     * @param em          the entity manager
      */
-    public <T, ID> T findById(Class<T> entityClass, ID id) {
-        try (EntityManager em = JPAUtil.getEntityManager()) {
-            return em.find(entityClass, id);
-        }
+    public GenericDao(Class<T> entityClass, EntityManager em) {
+        this.entityClass = entityClass;
+        this.em = em;
     }
 
     /**
-     * Find all records
+     * Get the EntityManager
      *
-     * @param entityClass Proper type
-     * @return List of records
+     * @return the entity manager
      */
-    public <T> List<T> findAll(Class<T> entityClass) {
-        try (EntityManager em = JPAUtil.getEntityManager()) {
-            String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e";
-            return em.createQuery(jpql, entityClass).getResultList();
-        }
+    public EntityManager getEntityManager() {
+        return em;
     }
 
     /**
-     * Save entity
+     * Find object/entity by id
      *
-     * @param entity Entity to save
-     * @return Saved entity
+     * @param id the primary key
+     * @return the entity found
      */
-    public <T> T save(T entity) {
-        EntityManager em = JPAUtil.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            em.persist(entity);
-            tx.commit();
-            return entity;
-        } catch (Exception e) {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
+    public T findById(Object id) {
+        return em.find(entityClass, id);
+    }
+
+
+    /**
+     * Find all entities
+     *
+     * @return list of entities
+     */
+    public List<T> findAll() {
+        String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e";
+        TypedQuery<T> query = em.createQuery(jpql, entityClass);
+        return query.getResultList();
     }
 
     /**
-     * Update entity
+     * Create a new entity
      *
-     * @param entity Entity to update
-     * @return Updated entity
+     * @param entity the entity to create
      */
-    public <T> T update(T entity) {
-        EntityManager em = JPAUtil.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            T merged = em.merge(entity);
-            tx.commit();
-            return merged;
-        } catch (Exception e) {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
+    public void create(T entity) {
+        em.persist(entity);
     }
 
     /**
-     * Delete entity by ID
+     * Update an existing entity
      *
-     * @param entityClass Proper type
-     * @param id          Object id to delete
+     * @param entity the entity to update
+     * @return the updated entity
      */
-    public <T, ID> void deleteById(Class<T> entityClass, ID id) {
-        EntityManager em = JPAUtil.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
-        try {
-            tx.begin();
-            T entity = em.find(entityClass, id);
-            if (entity != null) {
-                em.remove(entity);
-            }
-            tx.commit();
-        } catch (Exception e) {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
+    public T update(T entity) {
+        return em.merge(entity);
+    }
+
+    /**
+     * Delete an entity by id
+     *
+     * @param id the primary key of the entity to delete
+     */
+    public void delete(Object id) {
+        T entity = em.find(entityClass, id);
+        if (entity != null) {
+            em.remove(entity);
         }
     }
 }

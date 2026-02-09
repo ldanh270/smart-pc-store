@@ -1,59 +1,33 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package entities;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import java.io.Serializable;
-import java.util.Date;
+import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Nationalized;
 
-/**
- *
- * @author ducan
- */
+import java.time.Instant;
+
 @Entity
 @Table(name = "InventoryTransactions")
-@NamedQueries({
-    @NamedQuery(name = "InventoryTransaction.findAll", query = "SELECT i FROM InventoryTransaction i"),
-    @NamedQuery(name = "InventoryTransaction.findById", query = "SELECT i FROM InventoryTransaction i WHERE i.id = :id"),
-    @NamedQuery(name = "InventoryTransaction.findByQuantityChange", query = "SELECT i FROM InventoryTransaction i WHERE i.quantityChange = :quantityChange"),
-    @NamedQuery(name = "InventoryTransaction.findByTransactionType", query = "SELECT i FROM InventoryTransaction i WHERE i.transactionType = :transactionType"),
-    @NamedQuery(name = "InventoryTransaction.findByTransactionDate", query = "SELECT i FROM InventoryTransaction i WHERE i.transactionDate = :transactionDate")})
-public class InventoryTransaction implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class InventoryTransaction {
     @Id
-    @Basic(optional = false)
-    @Column(name = "Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id", nullable = false)
     private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ProductId")
+    private Product product;
+
     @Column(name = "QuantityChange")
     private Integer quantityChange;
+
+    @Nationalized
     @Column(name = "TransactionType")
     private String transactionType;
+
+    @ColumnDefault("getdate()")
     @Column(name = "TransactionDate")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date transactionDate;
-    @JoinColumn(name = "ProductId", referencedColumnName = "Id")
-    @ManyToOne
-    private Product productId;
-
-    public InventoryTransaction() {
-    }
-
-    public InventoryTransaction(Integer id) {
-        this.id = id;
-    }
+    private Instant transactionDate;
 
     public Integer getId() {
         return id;
@@ -61,6 +35,14 @@ public class InventoryTransaction implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public Integer getQuantityChange() {
@@ -79,45 +61,12 @@ public class InventoryTransaction implements Serializable {
         this.transactionType = transactionType;
     }
 
-    public Date getTransactionDate() {
+    public Instant getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(Date transactionDate) {
+    public void setTransactionDate(Instant transactionDate) {
         this.transactionDate = transactionDate;
     }
 
-    public Product getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Product productId) {
-        this.productId = productId;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof InventoryTransaction)) {
-            return false;
-        }
-        InventoryTransaction other = (InventoryTransaction) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "entities.InventoryTransaction[ id=" + id + " ]";
-    }
-    
 }
