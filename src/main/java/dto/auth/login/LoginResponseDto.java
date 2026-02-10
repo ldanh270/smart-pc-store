@@ -1,18 +1,18 @@
-package dto.auth;
+package dto.auth.login;
 
 import dto.user.UserDto;
 
 /**
  * Data Transfer Object (DTO) for authentication responses.
  */
-public class AuthResponse {
+public class LoginResponseDto {
     private boolean success;
     private String accessToken;
     private String refreshToken;
     private UserDto user;
     private String message;
 
-    public AuthResponse() {
+    public LoginResponseDto() {
     }
 
     /**
@@ -21,7 +21,7 @@ public class AuthResponse {
      * @param accessToken  the access token
      * @param refreshToken the refresh token
      */
-    public AuthResponse(String accessToken, String refreshToken, UserDto user) {
+    public LoginResponseDto(String accessToken, String refreshToken, UserDto user) {
         this.success = true;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -33,7 +33,7 @@ public class AuthResponse {
      *
      * @param message the failure message
      */
-    public AuthResponse(String message) {
+    public LoginResponseDto(String message) {
         this.success = false;
         this.message = message;
     }

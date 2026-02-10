@@ -4,6 +4,9 @@ import entities.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+/**
+ * Data Access Object for User entity
+ */
 public class UserDao extends GenericDao<User> {
     /**
      * Constructor
@@ -38,5 +41,18 @@ public class UserDao extends GenericDao<User> {
         TypedQuery<User> query = em.createQuery(jpql, User.class);
         query.setParameter("username", username);
         return query.getSingleResult();
+    }
+
+    /**
+     * Check if a user exists by email
+     *
+     * @param email the email to check
+     * @return true if user exists, false otherwise
+     */
+    public boolean existsByEmail(String email) {
+        String jpql = "SELECT COUNT(u) FROM User u WHERE u.email = :email";
+        TypedQuery<Long> query = em.createQuery(jpql, Long.class);
+        query.setParameter("email", email);
+        return query.getSingleResult() > 0;
     }
 }

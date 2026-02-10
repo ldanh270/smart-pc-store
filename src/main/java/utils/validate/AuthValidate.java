@@ -1,7 +1,7 @@
 package utils.validate;
 
 import configs.Regex;
-import dto.auth.RegisterDto;
+import dto.auth.signup.SignupRequestDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class AuthValidate {
      * @param dto The registration data transfer object.
      * @return A list of validation error messages. Empty if no errors.
      */
-    public static List<String> validateRegister(RegisterDto dto) {
+    public static List<String> validateSignup(SignupRequestDto dto) {
         // List to hold validation error messages
         List<String> errors = new ArrayList<>();
 
@@ -30,7 +30,7 @@ public class AuthValidate {
         }
 
         // Validate password
-        if (dto.getPassword() == null || dto.getPassword().length() < 6) {
+        if (dto.getPassword() == null || dto.getPassword().length() <= 6) {
             errors.add("Password must be at least 6 characters");
         }
 

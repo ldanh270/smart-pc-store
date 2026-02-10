@@ -1,19 +1,26 @@
-package dto.auth;
+package dto.auth.login;
 
-public class LoginDto {
+/**
+ * Data Transfer Object for user login credentials.
+ */
+public class LoginRequestDto {
     private String username;
     private String password;
 
-    // BẮT BUỘC: Constructor rỗng để Gson/Jackson khởi tạo
-    public LoginDto() {
+    public LoginRequestDto() {
     }
 
-    public LoginDto(String username, String password) {
+    /**
+     * Constructs a LoginRequestDto with the specified username and password.
+     *
+     * @param username the username of the user
+     * @param password the password of the user
+     */
+    public LoginRequestDto(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    // Getter & Setter (Bắt buộc để thư viện đọc/ghi giá trị)
     public String getUsername() {
         return username;
     }
