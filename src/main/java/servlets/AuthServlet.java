@@ -54,7 +54,7 @@ public class AuthServlet extends HttpServlet {
                     authController.handleSignup(req, resp);
                     break;
                 case "/refresh":
-                    //                    authController.handleRefreshToken(req, resp);
+                    authController.handleRefreshToken(req, resp);
                     break;
                 default:
                     HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");

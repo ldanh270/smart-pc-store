@@ -6,7 +6,6 @@ import jakarta.persistence.TypedQuery;
 
 /**
  * Data Access Object for User entity
- *
  */
 public class UserDao extends GenericDao<User> {
     /**

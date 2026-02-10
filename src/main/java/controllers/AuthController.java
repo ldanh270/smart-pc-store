@@ -3,6 +3,7 @@ package controllers;
 import com.google.gson.JsonSyntaxException;
 import dto.auth.login.LoginResponseDto;
 import dto.auth.login.LoginRequestDto;
+import dto.auth.refresh.AccessTokenResponseDto;
 import dto.auth.signup.SignupRequestDto;
 import dto.auth.signup.SignupResponseDto;
 import jakarta.servlet.http.Cookie;
@@ -14,7 +15,7 @@ import utils.validate.AuthValidate;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static utils.CookieUtil.getCookie;
 
@@ -93,6 +94,48 @@ public class AuthController {
                 // Send success response with access token and user info
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, response);
             } else {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, response.getMessage());
+            }
+        } catch (JsonSyntaxException e) {
+            // Handle syntax errors in JSON (missing commas, brackets, etc.)
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        }
+    }
+
+    /**
+     * Handles requests to refresh access tokens.
+     *
+     * @param req  the HttpServletRequest object
+     * @param resp the HttpServletResponse object
+     * @throws IOException if an input or output error is detected
+     */
+    public void handleRefreshToken(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            // Get refresh token from cookies
+            Cookie[] cookies = req.getCookies();
+            if (cookies == null) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "No cookies found");
+                return;
+            }
+
+            // Find the refreshToken cookie
+            Cookie refreshToken = Stream.of(cookies).filter(c -> "refreshToken".equals(c.getName())).findFirst().orElse(
+                    null);
+
+            // Return 400 Bad Request if refresh token cookie is missing
+            if (refreshToken == null) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Refresh token cookie not found");
+                return;
+            }
+
+            // Call service to refresh access token
+            AccessTokenResponseDto response = authService.refreshAccessToken(refreshToken.getValue());
+
+            // Send appropriate response based on token refresh outcome
+            if (response.isSuccess()) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, response);
+            }
+            else {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, response.getMessage());
             }
         } catch (JsonSyntaxException e) {

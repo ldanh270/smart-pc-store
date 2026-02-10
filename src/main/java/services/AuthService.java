@@ -5,6 +5,7 @@ import dao.SessionDao;
 import dao.UserDao;
 import dto.auth.login.LoginResponseDto;
 import dto.auth.login.LoginRequestDto;
+import dto.auth.refresh.AccessTokenResponseDto;
 import dto.auth.signup.SignupRequestDto;
 import dto.auth.signup.SignupResponseDto;
 import dto.user.UserDto;
@@ -30,10 +31,10 @@ public class AuthService {
     }
 
     /**
-     * Register a new user.
+     * Signup a new user.
      *
-     * @param dto The registration data transfer object containing username and password.
-     * @return true if registration is successful, false if username already exists.
+     * @param dto The signup data transfer object containing user details.
+     * @return A SignupResponseDto indicating the success or failure of the registration.
      */
     public SignupResponseDto signup(SignupRequestDto dto) {
         // Check if username already exists
@@ -106,13 +107,13 @@ public class AuthService {
 
             session.setRefreshToken(refreshToken);
 
-            // Set expiration date (30 days from now)
+            // Set expiration date for refresh token (e.g., 7 days)
             session.setExpiredAt(Instant.now().plusMillis(JwtConfig.REFRESH_TOKEN_TTL));
 
             sessionDao.create(session);
             sessionDao.getEntityManager().getTransaction().commit();
 
-            // 6. Trả về kết quả thành công
+            // Respond with access token, refresh token and user info
             return new LoginResponseDto(
                     accessToken, refreshToken, new UserDto(
                     user.getId(),
@@ -131,6 +132,36 @@ public class AuthService {
             }
             System.err.println("AuthService - login ERROR: " + e.getMessage());
             return new LoginResponseDto("Internal server error");
+        }
+    }
+
+    /**
+     * Refresh access token using the provided refresh token.
+     *
+     * @param refreshToken The refresh token.
+     * @return An AccessTokenResponseDto containing the new access token.
+     */
+    public AccessTokenResponseDto refreshAccessToken(String refreshToken) {
+        // Check if session exists with the provided refresh token
+        Session session = sessionDao.findByRefreshToken(refreshToken);
+
+        // Validate session and expiration
+        if (session == null || session.getExpiredAt().isBefore(Instant.now())) {
+            return new AccessTokenResponseDto(false, null, "Invalid or expired refresh token");
+        }
+
+        try {
+            // Generate new access token
+            String newAccessToken = JwtUtil.generateAccessToken(session.getUser().getId());
+
+            // Return new access token
+            return new AccessTokenResponseDto(true, newAccessToken, "Access token refreshed successfully");
+        } catch (Exception e) {
+            if (sessionDao.getEntityManager().getTransaction().isActive()) {
+                sessionDao.getEntityManager().getTransaction().rollback();
+            }
+            System.err.println("AuthService - refreshToken ERROR: " + e.getMessage());
+            return new AccessTokenResponseDto(false, null, "Internal server error");
         }
     }
 }

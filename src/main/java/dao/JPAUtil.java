@@ -10,7 +10,6 @@ import jakarta.persistence.Persistence;
 
 /**
  * Config for JPA
- *
  */
 public class JPAUtil {
 
