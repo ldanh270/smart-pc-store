@@ -1,9 +1,10 @@
 package controllers;
 
 import com.google.gson.JsonSyntaxException;
-import dto.auth.AuthResponse;
-import dto.auth.LoginDto;
-import dto.auth.RegisterDto;
+import dto.auth.login.LoginResponseDto;
+import dto.auth.login.LoginRequestDto;
+import dto.auth.signup.SignupRequestDto;
+import dto.auth.signup.SignupResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.AuthService;
@@ -12,6 +13,7 @@ import utils.validate.AuthValidate;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller class for handling authentication-related HTTP requests.
@@ -33,25 +35,25 @@ public class AuthController {
     public void handleSignup(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             // Parse request body to Java object
-            RegisterDto registerDto = HttpUtil.jsonToClass(req.getReader(), RegisterDto.class);
+            SignupRequestDto signupRequestDto = HttpUtil.jsonToClass(req.getReader(), SignupRequestDto.class);
 
             // Validate input data
-            List<String> validationError = AuthValidate.validateRegister(registerDto);
+            List<String> validationError = AuthValidate.validateSignup(signupRequestDto);
 
             // Return 400 Bad Request if validation fails
             if (!validationError.isEmpty()) {
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, validationError.toString());
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, validationError);
                 return;
             }
 
-            // Call service to register user (after validation)
-            boolean success = authService.register(registerDto);
+            // Call service to signup user (after validation)
+            SignupResponseDto response = authService.signup(signupRequestDto);
 
             // Send appropriate response based on registration outcome
-            if (success) {
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_CREATED, "Register successfully");
+            if (response.isSuccess()) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_CREATED, response.getMessage());
             } else {
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_CONFLICT, "User already exists");
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_CONFLICT, response.getMessage());
             }
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
@@ -69,10 +71,10 @@ public class AuthController {
     public void handleLogin(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             // Parse request body to Java object
-            LoginDto loginDto = HttpUtil.jsonToClass(req.getReader(), LoginDto.class);
+            LoginRequestDto loginDto = HttpUtil.jsonToClass(req.getReader(), LoginRequestDto.class);
 
             // Call service to authenticate user
-            AuthResponse response = authService.login(loginDto);
+            LoginResponseDto response = authService.login(loginDto);
 
             // Send appropriate response based on authentication outcome
             if (response.isSuccess()) {

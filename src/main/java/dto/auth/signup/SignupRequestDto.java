@@ -1,15 +1,17 @@
-package dto.auth;
+package dto.auth.signup;
 
-public class RegisterDto {
+/**
+ * Data Transfer Object for user registration.
+ */
+public class SignupRequestDto {
     private String username;
     private String password;
     private String fullName;
     private String email;
 
-    public RegisterDto() {
+    public SignupRequestDto() {
     }
 
-    // Getter & Setter
     public String getUsername() {
         return username;
     }

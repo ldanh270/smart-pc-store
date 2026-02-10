@@ -1,119 +1,131 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.5 Chrome/138.0.7204.251 Electron/37.6.1 Safari/537.36" version="28.2.5">
   <diagram name="Page-1" id="kJsfTInjdb7AUi-Wxg-K">
-    <mxGraphModel dx="1678" dy="989" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4681" pageHeight="3300" math="0" shadow="0">
+    <mxGraphModel dx="1426" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4681" pageHeight="3300" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="ljQI_bitwDBg71WngIU3-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-1" target="ljQI_bitwDBg71WngIU3-4">
+        <mxCell id="ljQI_bitwDBg71WngIU3-5" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ljQI_bitwDBg71WngIU3-1" target="ljQI_bitwDBg71WngIU3-4" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-1" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;App&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-1" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;App&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="670" y="270" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;startArrow=classic;startFill=1;endArrow=none;endFill=0;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-3" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;startArrow=classic;startFill=1;endArrow=none;endFill=0;" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-10" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-6">
+        <mxCell id="ljQI_bitwDBg71WngIU3-10" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-6" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-11" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-9">
+        <mxCell id="ljQI_bitwDBg71WngIU3-11" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-9" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-12" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-7">
+        <mxCell id="ljQI_bitwDBg71WngIU3-12" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-7" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-13" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-8">
+        <mxCell id="ljQI_bitwDBg71WngIU3-13" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-2" target="ljQI_bitwDBg71WngIU3-8" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-2" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Client&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-2" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Client&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="530" y="390" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-32" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-4" target="ljQI_bitwDBg71WngIU3-30">
+        <mxCell id="ljQI_bitwDBg71WngIU3-32" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-4" target="ljQI_bitwDBg71WngIU3-30" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-33" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-4" target="ljQI_bitwDBg71WngIU3-31">
+        <mxCell id="ljQI_bitwDBg71WngIU3-33" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ljQI_bitwDBg71WngIU3-4" target="ljQI_bitwDBg71WngIU3-31" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-4" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Admin&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-4" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Admin&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="920" y="180" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-15" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-6" target="ljQI_bitwDBg71WngIU3-14">
+        <mxCell id="ljQI_bitwDBg71WngIU3-15" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-6" target="ljQI_bitwDBg71WngIU3-14" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-17" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-6" target="ljQI_bitwDBg71WngIU3-16">
+        <mxCell id="ljQI_bitwDBg71WngIU3-17" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-6" target="ljQI_bitwDBg71WngIU3-16" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-19" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-6" target="ljQI_bitwDBg71WngIU3-18">
+        <mxCell id="ljQI_bitwDBg71WngIU3-19" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-6" target="ljQI_bitwDBg71WngIU3-18" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-6" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Auth&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-6" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Auth&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="310" y="490" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-21" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-7" target="ljQI_bitwDBg71WngIU3-20">
+        <mxCell id="ljQI_bitwDBg71WngIU3-21" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-7" target="ljQI_bitwDBg71WngIU3-20" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-23" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-7" target="ljQI_bitwDBg71WngIU3-22">
+        <mxCell id="ljQI_bitwDBg71WngIU3-23" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ljQI_bitwDBg71WngIU3-7" target="ljQI_bitwDBg71WngIU3-22" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-7" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Product&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-7" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Product&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="490" y="540" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-27" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-8" target="ljQI_bitwDBg71WngIU3-26">
+        <mxCell id="ljQI_bitwDBg71WngIU3-27" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-8" target="ljQI_bitwDBg71WngIU3-26" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-29" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-8" target="ljQI_bitwDBg71WngIU3-28">
+        <mxCell id="ljQI_bitwDBg71WngIU3-29" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-8" target="ljQI_bitwDBg71WngIU3-28" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-8" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Cart&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="670" y="530" width="120" height="80" as="geometry" />
+        <mxCell id="ljQI_bitwDBg71WngIU3-8" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Cart&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="790" y="480" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-37" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-9" target="ljQI_bitwDBg71WngIU3-36">
+        <mxCell id="ljQI_bitwDBg71WngIU3-37" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ljQI_bitwDBg71WngIU3-9" target="ljQI_bitwDBg71WngIU3-36" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-38" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-9" target="ljQI_bitwDBg71WngIU3-35">
+        <mxCell id="ljQI_bitwDBg71WngIU3-38" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-9" target="ljQI_bitwDBg71WngIU3-35" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-9" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Payment&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-9" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Payment&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="350" y="330" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-14" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Login&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-14" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Login&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="120" y="630" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-16" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Signup&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-16" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Signup&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="330" y="640" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-18" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Protect routes&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-18" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Protect routes&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="190" y="730" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-25" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ljQI_bitwDBg71WngIU3-20" target="ljQI_bitwDBg71WngIU3-24">
+        <mxCell id="ljQI_bitwDBg71WngIU3-25" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ljQI_bitwDBg71WngIU3-20" target="ljQI_bitwDBg71WngIU3-24" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-20" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;List&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="480" y="710" width="120" height="80" as="geometry" />
+        <mxCell id="ljQI_bitwDBg71WngIU3-20" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;List&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="630" y="850" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-22" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Detail&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="680" y="670" width="120" height="80" as="geometry" />
+        <mxCell id="ljQI_bitwDBg71WngIU3-22" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Detail&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="770" y="770" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-24" value="&lt;span style=&quot;font-size: 20px;&quot;&gt;Filter (category, ...)&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="400" y="860" width="120" height="80" as="geometry" />
+        <mxCell id="ljQI_bitwDBg71WngIU3-24" value="&lt;span style=&quot;font-size: 20px;&quot;&gt;Filter (category, ...)&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="580" y="970" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-26" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;CRUD&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="870" y="460" width="120" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-28" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Create order&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="870" y="580" width="120" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-30" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Users&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-30" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Users&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1110" y="120" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-31" value="&lt;span style=&quot;font-size: 20px;&quot;&gt;Suppliers&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-31" value="&lt;span style=&quot;font-size: 20px;&quot;&gt;Suppliers&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1110" y="240" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-35" value="&lt;span style=&quot;font-size: 20px;&quot;&gt;Transaction&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-35" value="&lt;span style=&quot;font-size: 20px;&quot;&gt;Transaction&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="150" y="360" width="120" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="ljQI_bitwDBg71WngIU3-36" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Methods&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="ljQI_bitwDBg71WngIU3-36" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Methods&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="200" y="200" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="YA-K06hifR4yPPC4R_ma-1" value="Đ Anh" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;" vertex="1" parent="1">
+          <mxGeometry x="100" y="470" width="370" height="350" as="geometry" />
+        </mxCell>
+        <mxCell id="YA-K06hifR4yPPC4R_ma-2" value="Vinh" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;" vertex="1" parent="1">
+          <mxGeometry x="130" y="100" width="370" height="350" as="geometry" />
+        </mxCell>
+        <mxCell id="YA-K06hifR4yPPC4R_ma-3" value="Tuyết" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;" vertex="1" parent="1">
+          <mxGeometry x="770" y="380" width="340" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="ljQI_bitwDBg71WngIU3-26" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;CRUD&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="950" y="400" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ljQI_bitwDBg71WngIU3-28" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Create order&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="950" y="560" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="YA-K06hifR4yPPC4R_ma-4" value="Loan" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;recursiveResize=0;container=1;collapsible=0;width=160;" vertex="1" parent="1">
+          <mxGeometry x="560" y="760" width="340" height="310" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

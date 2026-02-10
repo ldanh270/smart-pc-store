@@ -19,8 +19,7 @@ import utils.HttpUtil;
 import java.io.IOException;
 
 /**
- *
- * @author ducan
+ * AuthServlet handles authentication-related HTTP requests.
  */
 @WebServlet(name = "AuthServlet", urlPatterns = {"/auth/*"})
 public class AuthServlet extends HttpServlet {

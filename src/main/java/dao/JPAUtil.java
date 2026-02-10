@@ -11,7 +11,6 @@ import jakarta.persistence.Persistence;
 /**
  * Config for JPA
  *
- * @author ducan
  */
 public class JPAUtil {
 
