@@ -10,10 +10,10 @@ public class JwtConfig {
     public static final String ACCESS_TOKEN_SECRET;
 
     // Token time-to-live settings in milliseconds
-    public static final long ACCESS_TOKEN_TTL = 15 * 60 * 1000; // 15 minutes
+    public static final int ACCESS_TOKEN_TTL = 15 * 60 * 1000; // 15 minutes
 
     // Refresh token time-to-live settings in milliseconds
-    public static final long REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+    public static final int REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
     // Static block to initialize the ACCESS_TOKEN_SECRET from environment variables
     static {

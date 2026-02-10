@@ -5,6 +5,7 @@ import dto.auth.login.LoginResponseDto;
 import dto.auth.login.LoginRequestDto;
 import dto.auth.signup.SignupRequestDto;
 import dto.auth.signup.SignupResponseDto;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.AuthService;
@@ -14,6 +15,8 @@ import utils.validate.AuthValidate;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static utils.CookieUtil.getCookie;
 
 /**
  * Controller class for handling authentication-related HTTP requests.
@@ -78,6 +81,16 @@ public class AuthController {
 
             // Send appropriate response based on authentication outcome
             if (response.isSuccess()) {
+                // Create refresh token cookie
+                Cookie refreshTokenCookie = getCookie(response);
+
+                // Add cookie to response
+                resp.addCookie(refreshTokenCookie);
+
+                // Remove refresh token from response body for security
+                response.setRefreshToken(null);
+
+                // Send success response with access token and user info
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, response);
             } else {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, response.getMessage());
