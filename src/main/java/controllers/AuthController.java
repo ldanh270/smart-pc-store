@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.AuthService;
+import utils.CookieUtil;
 import utils.HttpUtil;
 import utils.validate.AuthValidate;
 
@@ -17,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static utils.CookieUtil.getCookie;
+import static utils.CookieUtil.createNewCookie;
 
 /**
  * Controller class for handling authentication-related HTTP requests.
@@ -78,27 +79,26 @@ public class AuthController {
             LoginRequestDto loginDto = HttpUtil.jsonToClass(req.getReader(), LoginRequestDto.class);
 
             // Call service to authenticate user
-            LoginResponseDto response = authService.login(loginDto);
+            LoginResponseDto loginResponse = authService.login(loginDto);
 
             // Send appropriate response based on authentication outcome
-            if (response.isSuccess()) {
+            if (loginResponse.isSuccess()) {
                 // Create refresh token cookie
-                Cookie refreshTokenCookie = getCookie(response);
+                createNewCookie(resp, "refreshToken", loginResponse.getRefreshToken());
 
-                // Add cookie to response
-                resp.addCookie(refreshTokenCookie);
+                // Remove refresh token from loginResponse body for security
+                loginResponse.setRefreshToken(null);
 
-                // Remove refresh token from response body for security
-                response.setRefreshToken(null);
-
-                // Send success response with access token and user info
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, response);
+                // Send success loginResponse with access token and user info
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, loginResponse);
             } else {
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, response.getMessage());
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, loginResponse.getMessage());
             }
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 
@@ -134,13 +134,40 @@ public class AuthController {
             // Send appropriate response based on token refresh outcome
             if (response.isSuccess()) {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, response);
-            }
-            else {
+            } else {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, response.getMessage());
             }
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+        }
+    }
+
+    /**
+     * Handles user logout requests.
+     *
+     * @param req  the HttpServletRequest object
+     * @param resp the HttpServletResponse object
+     * @throws IOException if an input or output error is detected
+     */
+    public void handleLogout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            // Get refresh token from cookies
+            String refreshToken = CookieUtil.getCookieFromRequest(req, "refreshToken");
+
+            // Delete session in database
+            authService.logout(refreshToken);
+
+            // Delete refresh token in cookie
+            CookieUtil.deleteCookie(resp, "refreshToken");
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_NO_CONTENT);
+        } catch (JsonSyntaxException e) {
+            // Handle syntax errors in JSON (missing commas, brackets, etc.)
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 }

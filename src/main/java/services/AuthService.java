@@ -164,4 +164,24 @@ public class AuthService {
             return new AccessTokenResponseDto(false, null, "Internal server error");
         }
     }
+
+    public void logout(String refreshToken) {
+        // Delete session associated with the refresh token
+        Session session = sessionDao.findByRefreshToken(refreshToken);
+        if (session != null) {
+            try {
+                // Begin transaction
+                sessionDao.getEntityManager().getTransaction().begin();
+                // Delete session
+                sessionDao.delete(session);
+                // Commit transaction
+                sessionDao.getEntityManager().getTransaction().commit();
+            } catch (Exception e) {
+                if (sessionDao.getEntityManager().getTransaction().isActive()) {
+                    sessionDao.getEntityManager().getTransaction().rollback();
+                }
+                System.err.println("AuthService - logout ERROR: " + e.getMessage());
+            }
+        }
+    }
 }
