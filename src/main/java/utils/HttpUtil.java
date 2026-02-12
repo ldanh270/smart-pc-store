@@ -42,4 +42,9 @@ public class HttpUtil {
         resp.getWriter().write(gson.toJson(data));
         resp.getWriter().flush();
     }
+
+    public static void sendJson(HttpServletResponse resp, int status) throws IOException {
+        resp.setStatus(status);
+        resp.getWriter().flush();
+    }
 }
