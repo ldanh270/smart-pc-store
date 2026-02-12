@@ -56,6 +56,9 @@ public class AuthServlet extends HttpServlet {
                 case "/refresh":
                     authController.handleRefreshToken(req, resp);
                     break;
+                case "/logout":
+                    authController.handleLogout(req, resp);
+                    break;
                 default:
                     HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
