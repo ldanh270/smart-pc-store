@@ -1,11 +1,14 @@
 package configs;
 
 import utils.EnvHelper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 
 /**
  * JwtConfig class to manage JWT token settings.
  */
 public class JwtConfig {
+
     // Secret key for signing access tokens
     public static final String ACCESS_TOKEN_SECRET;
 
@@ -22,5 +25,26 @@ public class JwtConfig {
             throw new RuntimeException("CRITICAL ERROR: ACCESS_TOKEN_SECRET is missing in .env file!");
         }
         ACCESS_TOKEN_SECRET = secret;
+    }
+
+    public static Integer getUserIdFromToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+             .setSigningKey(getSignInKey())
+             .build()
+             .parseClaimsJws(token)
+             .getBody();
+            return claims.get("userId", Integer.class);
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid or expired token");
+        }
+    }
+
+    public static Integer getUserIdFromAuthorizationHeader(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Missing or invalid Authorization header");
+        }
+        String token = authHeader.substring(7);
+        return getUserIdFromToken(token);
     }
 }
