@@ -14,6 +14,10 @@ import dto.ApiResponse;
 import dto.product.ProductRequestDto;
 import dto.product.ProductResponseDto;
 
+/**
+ * Controller class for handling HTTP requests related to product management.
+ * Handles product CRUD operations, search/filter, and stock adjustments.
+ */
 public class ProductController {
 
     private final ProductService productService;
@@ -22,6 +26,14 @@ public class ProductController {
         this.productService = productService;
     }
 
+    /**
+     * Handle GET request to retrieve all products with optional filtering.
+     * Query parameters: q (keyword), categoryId, status, minPrice, maxPrice, page, size
+     *
+     * @param req The HTTP request containing filter parameters.
+     * @param resp The HTTP response to send product data.
+     * @throws IOException if I/O error occurs.
+     */
     public void handleGetAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         // read filter params
         String q = req.getParameter("q");
@@ -43,6 +55,14 @@ public class ProductController {
         HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, products);
     }
 
+    /**
+     * Handle GET request to retrieve a product by ID.
+     *
+     * @param req The HTTP request.
+     * @param resp The HTTP response to send product details.
+     * @param idStr The product ID as a string.
+     * @throws IOException if I/O error occurs.
+     */
     public void handleGetById(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
             Integer id = Integer.parseInt(idStr);
@@ -59,6 +79,14 @@ public class ProductController {
         }
     }
 
+    /**
+     * Handle POST request to create a new product.
+     * Request body must contain ProductRequestDto as JSON.
+     *
+     * @param req The HTTP request containing product data JSON.
+     * @param resp The HTTP response to send creation result.
+     * @throws IOException if I/O error occurs.
+     */
     public void handleCreate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             ProductRequestDto dto = HttpUtil.jsonToClass(req.getReader(), ProductRequestDto.class);
@@ -78,6 +106,15 @@ public class ProductController {
         }
     }
 
+    /**
+     * Handle PUT request to update an existing product.
+     * Request body must contain Product JSON. Supplier and category cannot be modified via this endpoint.
+     *
+     * @param req The HTTP request containing updated product data JSON.
+     * @param resp The HTTP response to send update result.
+     * @param idStr The product ID as a string.
+     * @throws IOException if I/O error occurs.
+     */
     public void handleUpdate(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
             Integer id = Integer.parseInt(idStr);
@@ -94,6 +131,14 @@ public class ProductController {
         }
     }
 
+    /**
+     * Handle DELETE request to delete a product.
+     *
+     * @param req The HTTP request.
+     * @param resp The HTTP response to send deletion result.
+     * @param idStr The product ID as a string.
+     * @throws IOException if I/O error occurs.
+     */
     public void handleDelete(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
             Integer id = Integer.parseInt(idStr);
@@ -106,6 +151,15 @@ public class ProductController {
         }
     }
 
+    /**
+     * Handle PUT request to adjust product stock by a delta quantity.
+     * Request body must contain AdjustStockRequest JSON with delta field.
+     *
+     * @param req The HTTP request containing delta in JSON format.
+     * @param resp The HTTP response to send adjustment result.
+     * @param idStr The product ID as a string.
+     * @throws IOException if I/O error occurs.
+     */
     public void handleAdjustStock(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
             Integer id = Integer.parseInt(idStr);

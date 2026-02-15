@@ -13,6 +13,10 @@ import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Service class for handling product management operations.
+ * Manages CRUD operations, search/filter, stock adjustments, and DTO conversions.
+ */
 public class ProductService {
 
     private final ProductDao productDao;
@@ -30,14 +34,33 @@ public class ProductService {
         this.em = em;
     }
 
+    /**
+     * Retrieve all products from the database.
+     *
+     * @return A list of all products.
+     */
     public List<Product> getAll() {
         return productDao.findAll();
     }
 
+    /**
+     * Retrieve a product by its ID.
+     *
+     * @param id The product ID.
+     * @return The product if found, otherwise null.
+     */
     public Product getById(Integer id) {
         return productDao.findById(id);
     }
 
+    /**
+     * Create a new product with validation.
+     * Validates product name, price, quantity, and references (supplier, category).
+     *
+     * @param dto The product request DTO containing product details.
+     * @return The created product entity.
+     * @throws IllegalArgumentException if validation fails or references are invalid.
+     */
     public Product create(ProductRequestDto dto) {
 
         if (dto.productName == null || dto.productName.isBlank())
@@ -95,7 +118,7 @@ public class ProductService {
         dto.imageUrl = p.getImageUrl();
 
         dto.status = p.getStatus();
-        // stock status logic
+        // Determine stock status based on quantity
         int qty = p.getQuantity() == null ? 0 : p.getQuantity();
         if (qty <= 0) dto.stockStatus = "Out of stock";
         else if (qty <= 5) dto.stockStatus = "Low stock";
@@ -110,10 +133,28 @@ public class ProductService {
         return dto;
     }
 
+    /**
+     * Convert a list of products to a list of response DTOs.
+     *
+     * @param list The list of product entities.
+     * @return A list of ProductResponseDto objects.
+     */
     public List<ProductResponseDto> toDtoList(List<Product> list) {
         return list.stream().map(this::toDto).collect(java.util.stream.Collectors.toList());
     }
 
+    /**
+     * Search and filter products with multiple criteria.
+     *
+     * @param categoryId The category ID filter (optional).
+     * @param status The product status filter (optional).
+     * @param minPrice The minimum price filter (optional).
+     * @param maxPrice The maximum price filter (optional).
+     * @param keyword The product name keyword search (optional).
+     * @param page The page number for pagination (optional).
+     * @param size The page size for pagination (optional).
+     * @return A list of filtered ProductResponseDto objects.
+     */
     public List<ProductResponseDto> searchWithFilters(Integer categoryId, Boolean status,
                                                       java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice,
                                                       String keyword, Integer page, Integer size) {
@@ -121,15 +162,35 @@ public class ProductService {
         return toDtoList(list);
     }
 
+    /**
+     * Retrieve all products as response DTOs.
+     *
+     * @return A list of all ProductResponseDto objects.
+     */
     public List<ProductResponseDto> getAllDtos() {
         return toDtoList(getAll());
     }
 
+    /**
+     * Retrieve a product by ID as a response DTO.
+     *
+     * @param id The product ID.
+     * @return The ProductResponseDto if found, otherwise null.
+     */
     public ProductResponseDto getByIdDto(Integer id) {
         Product p = getById(id);
         return p == null ? null : toDto(p);
     }
 
+    /**
+     * Update an existing product with field-level validation.
+     * Only updates allowed fields (name, description, image, price, quantity, status).
+     * Does not modify supplier or category references.
+     *
+     * @param product The product entity with updates.
+     * @return The updated product entity.
+     * @throws IllegalArgumentException if product not found or validation fails.
+     */
     public Product update(Product product) {
         if (product == null || product.getId() == null) {
             throw new IllegalArgumentException("Product id is required for update");
@@ -172,6 +233,12 @@ public class ProductService {
         }
     }
 
+    /**
+     * Delete a product by its ID.
+     *
+     * @param id The product ID.
+     * @throws IllegalArgumentException if product ID is null.
+     */
     public void delete(Integer id) {
         if (id == null) throw new IllegalArgumentException("Product id is required");
         try {
@@ -185,8 +252,13 @@ public class ProductService {
     }
 
     /**
-     * Adjust product stock by delta (positive to increase, negative to decrease).
-     * Throws IllegalArgumentException if resulting quantity would be negative or product not found.
+     * Adjust product stock by a delta quantity (positive to increase, negative to decrease).
+     * Validates that resulting quantity is not negative.
+     *
+     * @param id The product ID.
+     * @param delta The quantity change (can be positive or negative).
+     * @return The updated ProductResponseDto with new stock status.
+     * @throws IllegalArgumentException if product not found, resulting quantity is negative, or ID is null.
      */
     public ProductResponseDto adjustStock(Integer id, int delta) {
         if (id == null) throw new IllegalArgumentException("Product id is required");
