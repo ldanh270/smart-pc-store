@@ -25,36 +25,41 @@ public class CartService {
 
     public List<CartItemResponseDto> getMyCart(Integer userId) {
         User user = userDao.findById(userId);
-        if (user == null) throw new RuntimeException("User not found");
+        if (user == null)
+            throw new RuntimeException("User not found");
 
         Cart cart = cartDao.findByUser(user);
-        if (cart == null) return List.of();
+        if (cart == null)
+            return List.of();
 
-        // JOIN FETCH để lấy productName/currentPrice ngay trong khi còn EntityManager
-        List<CartItem> items = cartDao.getEntityManager().createQuery(
-                "SELECT ci FROM CartItem ci JOIN FETCH ci.product WHERE ci.cart = :cart",
-                CartItem.class
-        ).setParameter("cart", cart).getResultList();
+        List<CartItem> items = cartItemDao.findByCartWithProduct(cart);
 
         return items.stream()
                 .map(ci -> new CartItemResponseDto(
                         ci.getId(),
                         ci.getProduct().getId(),
                         ci.getProduct().getProductName(),
-                        ci.getProduct().getCurrentPrice(),
-                        ci.getQuantity()
+                        ci.getProduct().getCurrentPrice(), // dùng currentPrice (không cần thay đổi DB)
+                        ci.getQuantity(),
+                        ci.getProduct().getQuantity() // stockQuantity để frontend hiển thị giới hạn
                 ))
                 .toList();
     }
 
     public void addToCart(Integer userId, Integer productId, Integer quantity) {
-        if (quantity == null || quantity <= 0) throw new RuntimeException("Quantity must be > 0");
+        // Fix: validate productId và quantity trước khi query DB
+        if (productId == null)
+            throw new RuntimeException("Product ID is required");
+        if (quantity == null || quantity <= 0)
+            throw new RuntimeException("Quantity must be > 0");
 
         User user = userDao.findById(userId);
         Product product = productDao.findById(productId);
 
-        if (user == null) throw new RuntimeException("User not found");
-        if (product == null) throw new RuntimeException("Product not found");
+        if (user == null)
+            throw new RuntimeException("User not found");
+        if (product == null)
+            throw new RuntimeException("Product not found");
 
         // check tồn kho
         if (product.getQuantity() != null && product.getQuantity() < quantity) {
@@ -99,13 +104,16 @@ public class CartService {
     }
 
     public void updateQuantity(Integer userId, Integer cartItemId, Integer quantity) {
-        if (quantity == null) throw new RuntimeException("Quantity is required");
+        if (quantity == null)
+            throw new RuntimeException("Quantity is required");
 
         User user = userDao.findById(userId);
-        if (user == null) throw new RuntimeException("User not found");
+        if (user == null)
+            throw new RuntimeException("User not found");
 
         Cart cart = cartDao.findByUser(user);
-        if (cart == null) throw new RuntimeException("Cart not found");
+        if (cart == null)
+            throw new RuntimeException("Cart not found");
 
         CartItem item = cartItemDao.findById(cartItemId);
         if (item == null || item.getCart() == null || !item.getCart().getId().equals(cart.getId())) {
@@ -138,5 +146,33 @@ public class CartService {
 
     public void removeItem(Integer userId, Integer cartItemId) {
         updateQuantity(userId, cartItemId, 0);
+    }
+
+    /** Xóa toàn bộ giỏ hàng — dùng sau khi Checkout hoàn tất */
+    public void clearCart(Integer userId) {
+        User user = userDao.findById(userId);
+        if (user == null)
+            throw new RuntimeException("User not found");
+
+        Cart cart = cartDao.findByUser(user);
+        if (cart == null)
+            return; // Không có giỏ → không cần làm gì
+
+        List<CartItem> items = cartItemDao.findByCartWithProduct(cart);
+        if (items.isEmpty())
+            return;
+
+        try {
+            cartDao.getEntityManager().getTransaction().begin();
+            for (CartItem item : items) {
+                cartItemDao.delete(item.getId());
+            }
+            cartDao.getEntityManager().getTransaction().commit();
+        } catch (Exception e) {
+            if (cartDao.getEntityManager().getTransaction().isActive()) {
+                cartDao.getEntityManager().getTransaction().rollback();
+            }
+            throw e;
+        }
     }
 }

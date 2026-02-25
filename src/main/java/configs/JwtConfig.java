@@ -3,6 +3,7 @@ package configs;
 import utils.EnvHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 
 /**
  * JwtConfig class to manage JWT token settings.
@@ -46,5 +47,9 @@ public class JwtConfig {
         }
         String token = authHeader.substring(7);
         return getUserIdFromToken(token);
+    }
+
+    private static byte[] getSignInKey() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

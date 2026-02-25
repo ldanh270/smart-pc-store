@@ -3,6 +3,7 @@ package servlets;
 import controllers.CartController;
 import dao.*;
 import entities.Product;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,31 +14,28 @@ import utils.HttpUtil;
 
 import java.io.IOException;
 
-@WebServlet(name = "CartServlet", urlPatterns = {"/cart/*"})
+@WebServlet(name = "CartServlet", urlPatterns = { "/cart/*" })
 public class CartServlet extends HttpServlet {
 
-    private CartController cartController;
-
-    @Override
-    public void init() {
-        // Dùng CHUNG 1 EntityManager cho các DAO trong Cart
-        var em = JPAUtil.getEntityManager();
-
+    /**
+     * Tạo CartController mới mỗi request với EntityManager riêng.
+     * Fix thread-safety: không dùng chung 1 EntityManager cho tất cả request.
+     */
+    private CartController buildController(EntityManager em) {
         UserDao userDao = new UserDao(em);
         CartDao cartDao = new CartDao(em);
         CartItemDao cartItemDao = new CartItemDao(em);
         GenericDao<Product> productDao = new GenericDao<>(Product.class, em);
-
         CartService cartService = new CartService(userDao, cartDao, cartItemDao, productDao);
-        this.cartController = new CartController(cartService);
+        return new CartController(cartService);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        try {
+        try (EntityManager em = JPAUtil.getEntityManager()) {
             if (pathInfo == null || "/".equals(pathInfo)) {
-                cartController.handleGetCart(req, resp);
+                buildController(em).handleGetCart(req, resp);
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
@@ -49,15 +47,16 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        // Fix: dùng HttpUtil.sendJson thay vì sendError để response nhất quán
         if (pathInfo == null || "/".equals(pathInfo)) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing endpoint path");
             return;
         }
 
-        try {
+        try (EntityManager em = JPAUtil.getEntityManager()) {
             switch (pathInfo) {
                 case "/add":
-                    cartController.handleAddToCart(req, resp);
+                    buildController(em).handleAddToCart(req, resp);
                     break;
                 default:
                     HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
@@ -70,10 +69,10 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo(); // /items/123
-        try {
+        try (EntityManager em = JPAUtil.getEntityManager()) {
             if (pathInfo != null && pathInfo.startsWith("/items/")) {
                 Integer cartItemId = Integer.parseInt(pathInfo.substring("/items/".length()));
-                cartController.handleUpdateQuantity(req, resp, cartItemId);
+                buildController(em).handleUpdateQuantity(req, resp, cartItemId);
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
@@ -84,11 +83,17 @@ public class CartServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo(); // /items/123
-        try {
-            if (pathInfo != null && pathInfo.startsWith("/items/")) {
+        String pathInfo = req.getPathInfo();
+        try (EntityManager em = JPAUtil.getEntityManager()) {
+            // DELETE /cart/ → xóa toàn bộ giỏ hàng (dùng khi Checkout hoàn tất)
+            if (pathInfo == null || "/".equals(pathInfo)) {
+                buildController(em).handleClearCart(req, resp);
+                return;
+            }
+            // DELETE /cart/items/123 → xóa 1 item
+            if (pathInfo.startsWith("/items/")) {
                 Integer cartItemId = Integer.parseInt(pathInfo.substring("/items/".length()));
-                cartController.handleRemoveItem(req, resp, cartItemId);
+                buildController(em).handleRemoveItem(req, resp, cartItemId);
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");

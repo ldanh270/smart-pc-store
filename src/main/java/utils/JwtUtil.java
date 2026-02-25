@@ -1,6 +1,8 @@
 package utils;
 
 import configs.JwtConfig;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -48,5 +50,26 @@ public class JwtUtil {
     private static Key getSignInKey() {
         byte[] keyBytes = JwtConfig.ACCESS_TOKEN_SECRET.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    /**
+     * Parse JWT từ Authorization header và trả về userId.
+     * Header format: "Bearer <token>"
+     */
+    public static Integer getUserIdFromAuthorizationHeader(String header) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            throw new RuntimeException("Missing or invalid Authorization header");
+        }
+        String token = header.substring(7); // Bỏ "Bearer " (7 ký tự)
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return ((Number) claims.get("userId")).intValue();
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid or expired token: " + e.getMessage());
+        }
     }
 }

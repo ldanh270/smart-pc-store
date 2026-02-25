@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * AuthServlet handles authentication-related HTTP requests.
  */
-@WebServlet(name = "AuthServlet", urlPatterns = {"/auth/*"})
+@WebServlet(name = "AuthServlet", urlPatterns = { "/auth/*" })
 public class AuthServlet extends HttpServlet {
 
     // Dependency Injection
@@ -66,8 +66,7 @@ public class AuthServlet extends HttpServlet {
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage()
-            );
+                    "Internal Server Error: " + e.getMessage());
         }
     }
 }
