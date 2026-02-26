@@ -1,11 +1,9 @@
 package entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Nationalized;
-
 import java.math.BigDecimal;
 import java.time.Instant;
+// import java.util.List; // If there are OrderItems
 
 @Entity
 @Table(name = "Orders")
@@ -15,59 +13,30 @@ public class Order {
     @Column(name = "Id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserId")
-    private User user;
+    // Other order fields...
+    // private User user;
+    // private String status; // E.g., PENDING, PAID, SHIPPED, DELIVERED, CANCELLED
 
-    @ColumnDefault("getdate()")
-    @Column(name = "OrderDate")
-    private Instant orderDate;
+    @Column(name = "TotalAmount", nullable = false, precision = 19, scale = 4)
+    private BigDecimal totalAmount; // Total amount of the order
 
-    @Nationalized
-    @Column(name = "Status")
-    private String status;
+    @Column(name = "CreatedAt", nullable = false)
+    private Instant createdAt;
 
-    @Column(name = "TotalAmount", precision = 18, scale = 2)
-    private BigDecimal totalAmount;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Instant getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(Instant orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    // Getters and Setters
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
     public BigDecimal getTotalAmount() {
+        // In a real application, this method might calculate the sum from OrderItems
+        // For simplicity, assume it's stored directly or calculated here.
         return totalAmount;
     }
+    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
+    // TODO: Add other necessary fields and methods for Order entity
+    // E.g.: getStatus(), setStatus(), getUser(), setUser(), getOrderItems(), setOrderItems()
 }

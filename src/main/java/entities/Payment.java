@@ -1,9 +1,11 @@
 package entities;
 
+import enums.PaymentMethod;
+import enums.PaymentStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Nationalized;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
@@ -16,58 +18,57 @@ public class Payment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OrderId")
-    private Order order;
+    private Order order; // Liên kết với Order entity
 
-    @Nationalized
-    @Column(name = "PaymentMethod")
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING) // Lưu enum dưới dạng String trong DB
+    @Column(name = "PaymentMethod", nullable = false)
+    private PaymentMethod paymentMethod;
 
-    @Nationalized
-    @Column(name = "PaymentStatus")
-    private String paymentStatus;
+    @Enumerated(EnumType.STRING) // Lưu enum dưới dạng String trong DB
+    @Column(name = "PaymentStatus", nullable = false)
+    private PaymentStatus paymentStatus;
+
+    @Column(name = "Amount", nullable = false, precision = 19, scale = 4) // Số tiền thanh toán
+    private BigDecimal amount;
+
+    @Column(name = "TransactionId", length = 255) // ID giao dịch từ cổng thanh toán
+    private String transactionId;
 
     @ColumnDefault("getdate()")
-    @Column(name = "PaymentDate")
-    private Instant paymentDate;
+    @Column(name = "CreatedAt", nullable = false)
+    private Instant createdAt;
 
-    public Integer getId() {
-        return id;
+    @Column(name = "UpdatedAt")
+    private Instant updatedAt;
+
+    // Constructors
+    public Payment() {
+        this.createdAt = Instant.now();
+        this.paymentStatus = PaymentStatus.PENDING; // Trạng thái mặc định khi tạo
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    // Getters and Setters
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public Order getOrder() {
-        return order;
-    }
+    public Order getOrder() { return order; }
+    public void setOrder(Order order) { this.order = order; }
 
-    public void setOrder(Order order) {
-        this.order = order;
-    }
+    public PaymentMethod getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(PaymentMethod paymentMethod) { this.paymentMethod = paymentMethod; }
 
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
+    public PaymentStatus getPaymentStatus() { return paymentStatus; }
+    public void setPaymentStatus(PaymentStatus paymentStatus) { this.paymentStatus = paymentStatus; }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public String getPaymentStatus() {
-        return paymentStatus;
-    }
+    public String getTransactionId() { return transactionId; }
+    public void setTransactionId(String transactionId) { this.transactionId = transactionId; }
 
-    public void setPaymentStatus(String paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
-    public Instant getPaymentDate() {
-        return paymentDate;
-    }
-
-    public void setPaymentDate(Instant paymentDate) {
-        this.paymentDate = paymentDate;
-    }
-
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }
