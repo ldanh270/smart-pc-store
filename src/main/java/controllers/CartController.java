@@ -27,7 +27,7 @@ public class CartController {
             List<CartItemResponseDto> items = cartService.getMyCart(userId);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, items);
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_CONFLICT, e.getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ public class CartController {
     }
 
     public void handleUpdateQuantity(HttpServletRequest req, HttpServletResponse resp, Integer cartItemId)
-            throws IOException {
+     throws IOException {
         try {
             Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
             UpdateCartItemRequestDto dto = HttpUtil.jsonToClass(req.getReader(), UpdateCartItemRequestDto.class);
@@ -57,7 +57,7 @@ public class CartController {
     }
 
     public void handleRemoveItem(HttpServletRequest req, HttpServletResponse resp, Integer cartItemId)
-            throws IOException {
+     throws IOException {
         try {
             Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
             cartService.removeItem(userId, cartItemId);

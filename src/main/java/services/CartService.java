@@ -6,6 +6,7 @@ import dao.GenericDao;
 import dao.UserDao;
 import dto.cart.CartItemResponseDto;
 import entities.*;
+import java.util.ArrayList;
 
 import java.util.List;
 
@@ -24,28 +25,55 @@ public class CartService {
     }
 
     public List<CartItemResponseDto> getMyCart(Integer userId) {
-        User user = userDao.findById(userId);
-        if (user == null)
-            throw new RuntimeException("User not found");
+    User user = userDao.findById(userId);
+    if (user == null)
+        throw new RuntimeException("User not found");
 
-        Cart cart = cartDao.findByUser(user);
-        if (cart == null)
-            return List.of();
+    Cart cart = cartDao.findByUser(user);
+    if (cart == null)
+        return List.of();
 
-        List<CartItem> items = cartItemDao.findByCartWithProduct(cart);
+    List<CartItem> items = cartItemDao.findByCartWithProduct(cart);
 
-        return items.stream()
-                .map(ci -> new CartItemResponseDto(
-                        ci.getId(),
-                        ci.getProduct().getId(),
-                        ci.getProduct().getProductName(),
-                        ci.getProduct().getCurrentPrice(), // dùng currentPrice (không cần thay đổi DB)
-                        ci.getQuantity(),
-                        ci.getProduct().getQuantity() // stockQuantity để frontend hiển thị giới hạn
-                ))
-                .toList();
+    // ✅ Validate tồn kho ngay lúc load giỏ
+    ArrayList<String> errors = new ArrayList<>();
+    for (CartItem ci : items) {
+        Product p = ci.getProduct();
+        if (p == null) {
+            errors.add("Một sản phẩm trong giỏ không còn tồn tại");
+            continue;
+        }
+
+        Integer stock = p.getQuantity();   // số lượng trong kho
+        Integer qtyInCart = ci.getQuantity();
+
+        // Nếu DB cho phép null nghĩa là không giới hạn thì bỏ qua validate
+        if (stock != null) {
+            if (stock <= 0 && qtyInCart != null && qtyInCart > 0) {
+                errors.add("Sản phẩm '" + p.getProductName() + "' đã hết hàng");
+            } else if (qtyInCart != null && qtyInCart > stock) {
+                errors.add("Sản phẩm '" + p.getProductName() + "' chỉ còn " + stock + " trong kho");
+            }
+        }
     }
 
+    // Nếu có bất kỳ item nào hết hàng / vượt kho -> báo lỗi
+    if (!errors.isEmpty()) {
+        throw new RuntimeException(String.join("; ", errors));
+    }
+
+    // Trả cart bình thường
+    return items.stream()
+            .map(ci -> new CartItemResponseDto(
+                    ci.getId(),
+                    ci.getProduct().getId(),
+                    ci.getProduct().getProductName(),
+                    ci.getProduct().getCurrentPrice(),
+                    ci.getQuantity(),
+                    ci.getProduct().getQuantity()
+            ))
+            .toList();
+}
     public void addToCart(Integer userId, Integer productId, Integer quantity) {
         // Fix: validate productId và quantity trước khi query DB
         if (productId == null)
