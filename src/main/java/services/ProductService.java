@@ -241,12 +241,19 @@ public class ProductService {
      */
     public void delete(Integer id) {
         if (id == null) throw new IllegalArgumentException("Product id is required");
+
+        Product existing = productDao.findById(id);
+        if (existing == null) throw new IllegalArgumentException("Product not found");
+
         try {
             em.getTransaction().begin();
-            productDao.delete(id);
+            existing.setStatus(false); // SOFT DELETE
+            productDao.update(existing);
             em.getTransaction().commit();
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw e;
         }
     }
