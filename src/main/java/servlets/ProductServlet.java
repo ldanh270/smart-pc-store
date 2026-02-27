@@ -13,9 +13,13 @@ import utils.HttpUtil;
 
 import java.io.IOException;
 
-@WebServlet(name = "ProductServlet", urlPatterns = {"/product/*"})
+/**
+ * ProductServlet handles product-related HTTP requests.
+ */
+@WebServlet(name = "ProductServlet", urlPatterns = {"/products/*"})
 public class ProductServlet extends HttpServlet {
 
+    // Dependency Injection
     private ProductController productController;
 
     @Override
@@ -28,61 +32,118 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String pathInfo = req.getPathInfo();
 
-        if (pathInfo == null || pathInfo.equals("/")) {
-            productController.handleGetAll(req, resp);
-            return;
-        }
+        try {
+            // Routing:
+            // GET /products or /products/ -> list/filter products
+            if (pathInfo == null || pathInfo.equals("/")) {
+                productController.handleGetAll(req, resp);
+                return;
+            }
 
-        String[] parts = pathInfo.split("/");
+            // GET /products/{id} -> product details
+            String[] parts = pathInfo.split("/");
+            if (parts.length == 2 && !parts[1].isBlank()) {
+                productController.handleGetById(req, resp, parts[1]);
+                return;
+            }
 
-        if (parts.length == 2) {
-            productController.handleGetById(req, resp, parts[1]);
-        } else {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+        } catch (Exception e) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String pathInfo = req.getPathInfo();
 
-        if ("/create".equals(pathInfo)) {
-            productController.handleCreate(req, resp);
-        } else {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+        // Keep create route explicit to avoid conflicts with future POST actions.
+        if (pathInfo == null || pathInfo.equals("/")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        try {
+            // Routing
+            switch (pathInfo) {
+                case "/create":
+                    productController.handleCreate(req, resp);
+                    break;
+                default:
+                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+            }
+        } catch (Exception e) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         }
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String pathInfo = req.getPathInfo();
-        String[] parts = pathInfo.split("/");
 
-        if (parts.length == 2) {
-            productController.handleUpdate(req, resp, parts[1]);
-        } else if (parts.length == 3 && "adjust".equals(parts[2])) {
-            // PUT /product/{id}/adjust
-            productController.handleAdjustStock(req, resp, parts[1]);
-        } else {
+        if (pathInfo == null || pathInfo.equals("/")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        try {
+            // Routing:
+            // PUT /products/{id} -> update product
+            // PUT /products/{id}/adjust -> adjust stock
+            String[] parts = pathInfo.split("/");
+            if (parts.length == 2 && !parts[1].isBlank()) {
+                productController.handleUpdate(req, resp, parts[1]);
+                return;
+            }
+            if (parts.length == 3 && !parts[1].isBlank() && "adjust".equals(parts[2])) {
+                productController.handleAdjustStock(req, resp, parts[1]);
+                return;
+            }
+
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+        } catch (Exception e) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String pathInfo = req.getPathInfo();
-        String[] parts = pathInfo.split("/");
 
-        if (parts.length == 2) {
-            productController.handleDelete(req, resp, parts[1]);
-        } else {
+        if (pathInfo == null || pathInfo.equals("/")) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        try {
+            // Routing: DELETE /products/{id}
+            String[] parts = pathInfo.split("/");
+            if (parts.length == 2 && !parts[1].isBlank()) {
+                productController.handleDelete(req, resp, parts[1]);
+                return;
+            }
+
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+        } catch (Exception e) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         }
     }
 }
