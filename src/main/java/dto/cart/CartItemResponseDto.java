@@ -2,24 +2,46 @@ package dto.cart;
 
 import java.math.BigDecimal;
 
+/**
+ * Response DTO for cart items (GET /cart).
+ *
+ * Fields:
+ * - cartItemId: id of CartItem row
+ * - productId/productName/price: product info for UI
+ * - quantity: quantity in cart
+ * - subtotal: price * quantity (computed)
+ * - stockQuantity: current stock (used by FE to limit and show warnings)
+ */
 public class CartItemResponseDto {
+
     private Integer cartItemId;
     private Integer productId;
     private String productName;
     private BigDecimal price;
     private Integer quantity;
+
+    /**
+     * Derived field: price * quantity
+     * Computed in constructor for convenience.
+     */
     private BigDecimal subtotal;
+
+    /**
+     * Stock quantity at the time of response.
+     * FE can use this value to show max quantity / out-of-stock warning.
+     */
     private Integer stockQuantity;
 
     public CartItemResponseDto(Integer cartItemId, Integer productId, String productName,
-            BigDecimal price, Integer quantity, Integer stockQuantity) {
+                               BigDecimal price, Integer quantity, Integer stockQuantity) {
         this.cartItemId = cartItemId;
         this.productId = productId;
         this.productName = productName;
         this.price = price;
         this.quantity = quantity;
         this.stockQuantity = stockQuantity;
-        // Null-check để tránh NullPointerException khi price chưa được set
+
+        // Defensive null-check to avoid NullPointerException if price is missing
         this.subtotal = (price != null)
                 ? price.multiply(BigDecimal.valueOf(quantity))
                 : BigDecimal.ZERO;

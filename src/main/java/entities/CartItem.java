@@ -2,22 +2,39 @@ package entities;
 
 import jakarta.persistence.*;
 
+/**
+ * CartItem entity
+ *
+ * Table: CartItems
+ * - Represents one product line in a cart
+ * - Quantity is the number of units of the product in cart
+ */
 @Entity
 @Table(name = "CartItems")
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false)
     private Integer id;
 
+    /**
+     * Owning cart of this item.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CartId")
     private Cart cart;
 
+    /**
+     * Product being added into cart.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ProductId")
     private Product product;
 
+    /**
+     * Quantity of this product in the cart.
+     */
     @Column(name = "Quantity")
     private Integer quantity;
 
