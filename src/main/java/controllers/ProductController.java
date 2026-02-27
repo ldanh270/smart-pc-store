@@ -146,6 +146,11 @@ public class ProductController {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Product deleted successfully");
         } catch (NumberFormatException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid product id");
+        } catch (IllegalArgumentException e) {
+            int status = "Product not found".equals(e.getMessage())
+                    ? HttpServletResponse.SC_NOT_FOUND
+                    : HttpServletResponse.SC_BAD_REQUEST;
+            HttpUtil.sendJson(resp, status, e.getMessage());
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
