@@ -23,10 +23,10 @@ public class CartServlet extends HttpServlet {
 
     @Override
     public void init() {
-        UserDao userDao = new UserDao(JPAUtil.getEntityManager());
-        CartDao cartDao = new CartDao(JPAUtil.getEntityManager());
-        CartItemDao cartItemDao = new CartItemDao(JPAUtil.getEntityManager());
-        GenericDao<Product> productDao = new GenericDao<>(Product.class, JPAUtil.getEntityManager());
+        UserDao userDao = new UserDao();
+        CartDao cartDao = new CartDao();
+        CartItemDao cartItemDao = new CartItemDao();
+        GenericDao<Product> productDao = new GenericDao<>(Product.class);
         CartService cartService = new CartService(userDao, cartDao, cartItemDao, productDao);
         this.cartController = new CartController(cartService);
     }

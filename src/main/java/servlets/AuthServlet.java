@@ -21,7 +21,7 @@ import java.io.IOException;
 /**
  * AuthServlet handles authentication-related HTTP requests.
  */
-@WebServlet(name = "AuthServlet", urlPatterns = { "/auth/*" })
+@WebServlet(name = "AuthServlet", urlPatterns = {"/auth/*"})
 public class AuthServlet extends HttpServlet {
 
     // Dependency Injection
@@ -29,8 +29,8 @@ public class AuthServlet extends HttpServlet {
 
     @Override
     public void init() {
-        UserDao userDAO = new UserDao(JPAUtil.getEntityManager());
-        SessionDao sessionDAO = new SessionDao(JPAUtil.getEntityManager());
+        UserDao userDAO = new UserDao();
+        SessionDao sessionDAO = new SessionDao();
         AuthService authService = new AuthService(userDAO, sessionDAO);
         this.authController = new AuthController(authService);
     }
@@ -66,7 +66,8 @@ public class AuthServlet extends HttpServlet {
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage());
+                    "Internal Server Error: " + e.getMessage()
+            );
         }
     }
 }
