@@ -8,32 +8,44 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "Products")
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
+    @Column(name = "Id")
     private Integer id;
 
     @Nationalized
-    @Column(name = "ProductName")
+    @Column(name = "ProductName", nullable = false)
     private String productName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SupplierId")
+    @JoinColumn(name = "SupplierId", nullable = false)
     private Supplier supplier;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CategoryId")
+    @JoinColumn(name = "CategoryId", nullable = false)
     private Category category;
 
     @Nationalized
     @Column(name = "Description")
     private String description;
 
-    @Column(name = "CurrentPrice", precision = 18, scale = 2)
+    @Column(name = "ImageUrl")
+    private String imageUrl;
+
+    @Column(name = "CurrentPrice", nullable = false, precision = 18, scale = 2)
     private BigDecimal currentPrice;
 
-    @Column(name = "Quantity")
+    @Column(name = "Quantity", nullable = false)
     private Integer quantity;
+
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
+
+    @PrePersist
+    public void prePersist() {
+        if (status == null) status = true;
+    }
 
     public Integer getId() {
         return id;
@@ -75,6 +87,14 @@ public class Product {
         this.description = description;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public BigDecimal getCurrentPrice() {
         return currentPrice;
     }
@@ -91,4 +111,11 @@ public class Product {
         this.quantity = quantity;
     }
 
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
 }

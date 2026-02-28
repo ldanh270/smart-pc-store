@@ -10,8 +10,6 @@ import jakarta.persistence.TypedQuery;
 public class UserDao extends GenericDao<User> {
     /**
      * Constructor
-     *
-     * @param em the entity manager
      */
     public UserDao() {
         super(User.class);
