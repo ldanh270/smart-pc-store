@@ -100,6 +100,7 @@ CREATE TABLE Products (
     CategoryId   INT,
     Description  NVARCHAR(255),
     CurrentPrice DECIMAL(18,2),
+    Status BIT NOT NULL DEFAULT 1,
     Quantity     INT
 );
 GO

@@ -24,9 +24,8 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     public void init() {
-        var em = JPAUtil.getEntityManager();
-        ProductDao productDao = new ProductDao(em);
-        ProductService productService = new ProductService(productDao, em);
+        ProductDao productDao = new ProductDao();
+        ProductService productService = new ProductService(productDao);
         this.productController = new ProductController(productService);
     }
 

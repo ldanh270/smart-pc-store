@@ -1,5 +1,6 @@
 package services;
 
+import dao.JPAUtil;
 import dao.ProductDao;
 import dto.product.ProductRequestDto;
 import dto.product.ProductResponseDto;
@@ -20,18 +21,9 @@ import java.util.List;
 public class ProductService {
 
     private final ProductDao productDao;
-    // private final SupplierDao supplierDao;
-    // private final CategoryDao categoryDao;
-    private final EntityManager em;
 
-    public ProductService(ProductDao productDao,
-                        //   SupplierDao supplierDao,
-                        //   CategoryDao categoryDao,
-                          EntityManager em) {
+    public ProductService(ProductDao productDao) {
         this.productDao = productDao;
-        // this.supplierDao = supplierDao;
-        // this.categoryDao = categoryDao;
-        this.em = em;
     }
 
     /**
@@ -63,28 +55,23 @@ public class ProductService {
      */
     public Product create(ProductRequestDto dto) {
 
-        if (dto.productName == null || dto.productName.isBlank())
-            throw new IllegalArgumentException("Product name is required");
+        if (dto.productName == null || dto.productName.isBlank()) throw new IllegalArgumentException(
+                "Product name is required");
 
         if (dto.currentPrice == null || dto.currentPrice.compareTo(BigDecimal.ZERO) <= 0)
             throw new IllegalArgumentException("Price must be greater than 0");
 
-        if (dto.quantity == null || dto.quantity < 0)
-            throw new IllegalArgumentException("Quantity must be >= 0");
+        if (dto.quantity == null || dto.quantity < 0) throw new IllegalArgumentException("Quantity must be >= 0");
 
-        if (dto.supplierId == null)
-            throw new IllegalArgumentException("Supplier is required");
+        if (dto.supplierId == null) throw new IllegalArgumentException("Supplier is required");
 
-        if (dto.categoryId == null)
-            throw new IllegalArgumentException("Category is required");
+        if (dto.categoryId == null) throw new IllegalArgumentException("Category is required");
 
-        var supplier = em.find(entities.Supplier.class, dto.supplierId);
-        if (supplier == null)
-            throw new IllegalArgumentException("Supplier not found");
+        var supplier = JPAUtil.getEntityManager().find(entities.Supplier.class, dto.supplierId);
+        if (supplier == null) throw new IllegalArgumentException("Supplier not found");
 
-        var category = em.find(entities.Category.class, dto.categoryId);
-        if (category == null)
-            throw new IllegalArgumentException("Category not found");
+        var category = JPAUtil.getEntityManager().find(entities.Category.class, dto.categoryId);
+        if (category == null) throw new IllegalArgumentException("Category not found");
 
         Product product = new Product();
         product.setProductName(dto.productName);
@@ -97,12 +84,12 @@ public class ProductService {
         product.setCategory(category);
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             productDao.create(product);
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
             return product;
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }
@@ -147,17 +134,23 @@ public class ProductService {
      * Search and filter products with multiple criteria.
      *
      * @param categoryId The category ID filter (optional).
-     * @param status The product status filter (optional).
-     * @param minPrice The minimum price filter (optional).
-     * @param maxPrice The maximum price filter (optional).
-     * @param keyword The product name keyword search (optional).
-     * @param page The page number for pagination (optional).
-     * @param size The page size for pagination (optional).
+     * @param status     The product status filter (optional).
+     * @param minPrice   The minimum price filter (optional).
+     * @param maxPrice   The maximum price filter (optional).
+     * @param keyword    The product name keyword search (optional).
+     * @param page       The page number for pagination (optional).
+     * @param size       The page size for pagination (optional).
      * @return A list of filtered ProductResponseDto objects.
      */
-    public List<ProductResponseDto> searchWithFilters(Integer categoryId, Boolean status,
-                                                      java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice,
-                                                      String keyword, Integer page, Integer size) {
+    public List<ProductResponseDto> searchWithFilters(
+            Integer categoryId,
+            Boolean status,
+            java.math.BigDecimal minPrice,
+            java.math.BigDecimal maxPrice,
+            String keyword,
+            Integer page,
+            Integer size
+    ) {
         List<Product> list = productDao.filterSearch(categoryId, status, minPrice, maxPrice, keyword, page, size);
         return toDtoList(list);
     }
@@ -210,8 +203,8 @@ public class ProductService {
         if (product.getImageUrl() != null) existing.setImageUrl(product.getImageUrl());
 
         if (product.getCurrentPrice() != null) {
-            if (product.getCurrentPrice().compareTo(java.math.BigDecimal.ZERO) <= 0)
-                throw new IllegalArgumentException("Price must be greater than 0");
+            if (product.getCurrentPrice().compareTo(java.math.BigDecimal.ZERO) <= 0) throw new IllegalArgumentException(
+                    "Price must be greater than 0");
             existing.setCurrentPrice(product.getCurrentPrice());
         }
 
@@ -223,12 +216,12 @@ public class ProductService {
         if (product.getStatus() != null) existing.setStatus(product.getStatus());
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             Product merged = productDao.update(existing);
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
             return merged;
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }
@@ -246,13 +239,13 @@ public class ProductService {
         if (existing == null) throw new IllegalArgumentException("Product not found");
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             existing.setStatus(false); // SOFT DELETE
             productDao.update(existing);
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
             }
             throw e;
         }
@@ -262,7 +255,7 @@ public class ProductService {
      * Adjust product stock by a delta quantity (positive to increase, negative to decrease).
      * Validates that resulting quantity is not negative.
      *
-     * @param id The product ID.
+     * @param id    The product ID.
      * @param delta The quantity change (can be positive or negative).
      * @return The updated ProductResponseDto with new stock status.
      * @throws IllegalArgumentException if product not found, resulting quantity is negative, or ID is null.
@@ -279,12 +272,12 @@ public class ProductService {
         existing.setQuantity(updated);
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             Product merged = productDao.update(existing);
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
             return toDto(merged);
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }

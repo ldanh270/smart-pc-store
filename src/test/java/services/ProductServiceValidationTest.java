@@ -1,6 +1,7 @@
 package services;
 
 import dto.product.ProductRequestDto;
+import dto.product.ProductResponseDto;
 import entities.Category;
 import entities.Product;
 import entities.Supplier;
@@ -16,7 +17,7 @@ public class ProductServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithNullProductName() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
         ProductRequestDto dto = new ProductRequestDto();
         dto.productName = null;
         dto.currentPrice = new BigDecimal("10.00");
@@ -34,7 +35,7 @@ public class ProductServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithBlankProductName() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
         ProductRequestDto dto = new ProductRequestDto();
         dto.productName = "   ";
         dto.currentPrice = new BigDecimal("10.00");
@@ -52,7 +53,7 @@ public class ProductServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithInvalidPrice() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
         ProductRequestDto dto = new ProductRequestDto();
         dto.productName = "Test Product";
         dto.currentPrice = BigDecimal.ZERO;
@@ -70,7 +71,7 @@ public class ProductServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithNegativeQuantity() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
         ProductRequestDto dto = new ProductRequestDto();
         dto.productName = "Test Product";
         dto.currentPrice = new BigDecimal("10.00");
@@ -88,7 +89,7 @@ public class ProductServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithNullSupplierId() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
         ProductRequestDto dto = new ProductRequestDto();
         dto.productName = "Test Product";
         dto.currentPrice = new BigDecimal("10.00");
@@ -106,7 +107,7 @@ public class ProductServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithNullCategoryId() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
         ProductRequestDto dto = new ProductRequestDto();
         dto.productName = "Test Product";
         dto.currentPrice = new BigDecimal("10.00");
@@ -127,7 +128,7 @@ public class ProductServiceValidationTest {
      */
     @Test
     public void testStockStatusEdgeCases() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
 
         Supplier s = new Supplier();
         s.setId(1);
@@ -193,7 +194,24 @@ public class ProductServiceValidationTest {
      */
     @Test
     public void testDtoFieldMapping() {
-        ProductService svc = new ProductService(null, null);
+        var dto = getProductResponseDto();
+
+        Assert.assertEquals(Integer.valueOf(10), dto.id);
+        Assert.assertEquals("Product Test", dto.productName);
+        Assert.assertEquals("Test Description", dto.description);
+        Assert.assertEquals("http://example.com/image.jpg", dto.imageUrl);
+        Assert.assertEquals(new BigDecimal("99.99"), dto.currentPrice);
+        Assert.assertEquals(Integer.valueOf(8), dto.quantity);
+        Assert.assertEquals(true, dto.status);
+        Assert.assertEquals(Integer.valueOf(100), dto.supplierId);
+        Assert.assertEquals("Supplier ABC", dto.supplierName);
+        Assert.assertEquals(Integer.valueOf(200), dto.categoryId);
+        Assert.assertEquals("Category XYZ", dto.categoryName);
+        Assert.assertEquals("In stock", dto.stockStatus);
+    }
+
+    private static ProductResponseDto getProductResponseDto() {
+        ProductService svc = new ProductService(null);
 
         Supplier s = new Supplier();
         s.setId(100);
@@ -215,18 +233,6 @@ public class ProductServiceValidationTest {
         p.setCategory(c);
 
         var dto = svc.toDto(p);
-
-        Assert.assertEquals(Integer.valueOf(10), dto.id);
-        Assert.assertEquals("Product Test", dto.productName);
-        Assert.assertEquals("Test Description", dto.description);
-        Assert.assertEquals("http://example.com/image.jpg", dto.imageUrl);
-        Assert.assertEquals(new BigDecimal("99.99"), dto.currentPrice);
-        Assert.assertEquals(Integer.valueOf(8), dto.quantity);
-        Assert.assertEquals(true, dto.status);
-        Assert.assertEquals(Integer.valueOf(100), dto.supplierId);
-        Assert.assertEquals("Supplier ABC", dto.supplierName);
-        Assert.assertEquals(Integer.valueOf(200), dto.categoryId);
-        Assert.assertEquals("Category XYZ", dto.categoryName);
-        Assert.assertEquals("In stock", dto.stockStatus);
+        return dto;
     }
 }
