@@ -6,8 +6,23 @@ import io.github.cdimascio.dotenv.Dotenv;
  * Helper class for loading environment variables using Dotenv.
  */
 public class EnvHelper {
-    // ignoreIfMissing: To allow running without a .env file (for production environments)
-    private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+    // Tìm .env theo thứ tự ưu tiên:
+    // 1. Working directory (thường là thư mục Tomcat bin/)
+    // 2. Classpath root (src/main/resources/.env → đóng gói vào WAR)
+    private static final Dotenv dotenv = buildDotenv();
+
+    private static Dotenv buildDotenv() {
+        // Thử load từ working directory trước
+        try {
+            return Dotenv.configure().ignoreIfMissing().load();
+        } catch (Exception e) {
+            // Fallback: load từ classpath
+            return Dotenv.configure()
+                    .directory(EnvHelper.class.getClassLoader().getResource("").getPath())
+                    .ignoreIfMissing()
+                    .load();
+        }
+    }
 
     // Get environment variable by key (with fail-fast for missing important vars)
     public static String get(String key) {
