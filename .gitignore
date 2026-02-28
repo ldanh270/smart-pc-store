@@ -26,9 +26,10 @@
 hs_err_pid*
 replay_pid*
 
-# IDEA files
+# IDEs files
 .idea/
 *.iml
+nb-configuration.xml
 
 # Eclipse files
 .settings/

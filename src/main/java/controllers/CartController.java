@@ -43,8 +43,11 @@ public class CartController {
         }
     }
 
-    public void handleUpdateQuantity(HttpServletRequest req, HttpServletResponse resp, Integer cartItemId)
-            throws IOException {
+    public void handleUpdateQuantity(
+            HttpServletRequest req,
+            HttpServletResponse resp,
+            Integer cartItemId
+    ) throws IOException {
         try {
             Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
             UpdateCartItemRequestDto dto = HttpUtil.jsonToClass(req.getReader(), UpdateCartItemRequestDto.class);
@@ -56,8 +59,11 @@ public class CartController {
         }
     }
 
-    public void handleRemoveItem(HttpServletRequest req, HttpServletResponse resp, Integer cartItemId)
-            throws IOException {
+    public void handleRemoveItem(
+            HttpServletRequest req,
+            HttpServletResponse resp,
+            Integer cartItemId
+    ) throws IOException {
         try {
             Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
             cartService.removeItem(userId, cartItemId);
