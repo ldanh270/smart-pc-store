@@ -10,7 +10,7 @@ import utils.JwtUtil;
 import java.io.IOException;
 
 @WebFilter(urlPatterns = {"/users/*", "/cart/*", "/orders/*", "/payments/checkout"})
-public class JwtAuthenicationFilter implements Filter {
+public class JwtAuthenticationFilter implements Filter {
 
     @Override
     public void doFilter(
