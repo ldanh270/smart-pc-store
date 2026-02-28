@@ -12,6 +12,18 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
+/**
+ * CartController
+ *
+ * Responsibilities:
+ * - Parse request (JWT auth header + JSON body)
+ * - Delegate business logic to CartService
+ * - Return JSON responses with appropriate HTTP status codes
+ *
+ * Notes:
+ * - Currently all business errors are returned as 400 BAD_REQUEST.
+ *   (If you later want more RESTful behavior, stock conflict can be mapped to 409 CONFLICT.)
+ */
 
 public class CartController {
 
@@ -20,6 +32,11 @@ public class CartController {
     public CartController(CartService cartService) {
         this.cartService = cartService;
     }
+    /**
+     * GET /cart
+     * - Extract userId from Authorization header (JWT)
+     * - Return all cart items of current user
+     */
 
     public void handleGetCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
@@ -30,6 +47,11 @@ public class CartController {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
+    /**
+     * POST /cart/add
+     * Body: { "productId": number, "quantity": number }
+     * - Add a product to user's cart (create cart if not exists)
+     */
 
     public void handleAddToCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
@@ -42,12 +64,14 @@ public class CartController {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
-
-    public void handleUpdateQuantity(
-            HttpServletRequest req,
-            HttpServletResponse resp,
-            Integer cartItemId
-    ) throws IOException {
+/**
+     * PUT /cart/items/{cartItemId}
+     * Body: { "quantity": number }
+     * - Update quantity of a specific cart item (owned by current user)
+     * - If quantity <= 0, the item will be removed
+     */
+    public void handleUpdateQuantity(HttpServletRequest req, HttpServletResponse resp, Integer cartItemId)
+     throws IOException {
         try {
             Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
             UpdateCartItemRequestDto dto = HttpUtil.jsonToClass(req.getReader(), UpdateCartItemRequestDto.class);
@@ -58,12 +82,13 @@ public class CartController {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
+    /**
+     * DELETE /cart/items/{cartItemId}
+     * - Remove one cart item (owned by current user)
+     */
 
-    public void handleRemoveItem(
-            HttpServletRequest req,
-            HttpServletResponse resp,
-            Integer cartItemId
-    ) throws IOException {
+    public void handleRemoveItem(HttpServletRequest req, HttpServletResponse resp, Integer cartItemId)
+     throws IOException {
         try {
             Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
             cartService.removeItem(userId, cartItemId);
@@ -72,6 +97,10 @@ public class CartController {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
+    /**
+     * DELETE /cart
+     * - Clear entire cart of current user (typically after checkout succeeds)
+     */
 
     public void handleClearCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {

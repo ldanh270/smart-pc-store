@@ -1,218 +1,136 @@
-# 🛒 Cart Module — Smart PC Store
+🛒 Cart Module — Smart PC Store
 
-## Kiến trúc
+============================================================
+ARCHITECTURE
+============================================================
 
-```
-CartServlet  →  CartController  →  CartService  →  DAO (CartDao, CartItemDao, GenericDao<Product>)
-```
+CartServlet → CartController → CartService → DAO (CartDao, CartItemDao, GenericDao<Product>)
 
-| Lớp        | File                         | Vai trò                                 |
-| ---------- | ---------------------------- | --------------------------------------- |
-| Servlet    | `CartServlet.java`           | Nhận HTTP request, route đến Controller |
-| Controller | `CartController.java`        | Parse request, parse JWT, gọi Service   |
-| Service    | `CartService.java`           | Business logic, transaction             |
-| Entity     | `CartItem.java`, `Cart.java` | JPA entity mapping DB                   |
-| DTO        | `CartItemResponseDto.java`   | Response trả về client                  |
+| Layer      | File                     | Responsibility                             |
+| ---------- | ------------------------ | ------------------------------------------ |
+| Servlet    | CartServlet.java         | Receive HTTP requests, route to Controller |
+| Controller | CartController.java      | Parse request, extract JWT, call Service   |
+| Service    | CartService.java         | Business logic, transaction management     |
+| Entity     | CartItem.java, Cart.java | JPA entity mapping to database             |
+| DTO        | CartItemResponseDto.java | Response object returned to client         |
+
+============================================================
+FIXES IMPLEMENTED
+============================================================
+
+1. Shared EntityManager → thread-unsafe
+   Fix: Create EM per request using try-with-resources
+
+2. CartItemResponseDto could throw NPE when price = null
+   Fix: Added null-check, return subtotal = 0
+
+3. addToCart did not validate productId = null
+   Fix: Throw "Product ID is required" if null
+
+4. Response missing stockQuantity
+   Fix: Added stockQuantity field to DTO
+
+5. doPost returned 400 without message
+   Fix: Use HttpUtil.sendJson instead of sendError
+
+6. No functionality to clear entire cart
+   Fix: Added clearCart() + DELETE /cart/
+
+7. JwtUtil.getUserIdFromAuthorizationHeader not implemented
+   Fix: Implemented JWT parsing from Bearer header
+
+8. AuthServlet used singleton EntityManager
+   Fix: Changed to per-request EntityManager
+
+9. .env file not found when running Tomcat
+   Fix: Copied .env into src/main/resources/
+
+============================================================
+API REFERENCE
+============================================================
+
+Base URL:
+http://localhost:8080/smart-pc-store
+
+All Cart APIs require header:
+Authorization: Bearer <accessToken>
 
 ---
 
-## Những fix đã thực hiện
+## AUTH
 
-| #   | Vấn đề                                                    | Fix                                       |
-| --- | --------------------------------------------------------- | ----------------------------------------- |
-| 1   | `EntityManager` dùng chung → thread-unsafe                | EM per-request trong `try-with-resources` |
-| 2   | `CartItemResponseDto` có thể NPE khi `price = null`       | Thêm null-check, trả `subtotal = 0`       |
-| 3   | `addToCart` không validate `productId = null`             | Throw `"Product ID is required"` nếu null |
-| 4   | Response không có `stockQuantity`                         | Thêm field `stockQuantity` vào DTO        |
-| 5   | `doPost` trả 400 không có message                         | Dùng `HttpUtil.sendJson` thay `sendError` |
-| 6   | Không có chức năng xóa toàn bộ giỏ                        | Thêm `clearCart()` + `DELETE /cart/`      |
-| 7   | `JwtUtil.getUserIdFromAuthorizationHeader` chưa implement | Implement parse JWT từ Bearer header      |
-| 8   | `AuthServlet` dùng EM singleton                           | Fix EM per-request giống CartServlet      |
-| 9   | `.env` không được tìm thấy khi chạy Tomcat                | Copy `.env` vào `src/main/resources/`     |
+POST /auth/signup
+Body: {username, password, fullName, email}
+Response: 201 Created
+
+POST /auth/login
+Body: {username, password}
+Response: 200 OK + {accessToken, refreshToken}
+
+POST /auth/logout
+Body: {refreshToken}
+Response: 204 No Content
 
 ---
 
-## API Reference
+## CART
 
-Base URL: `http://localhost:8080/smart-pc-store`
+GET /cart/
+Description: Get current user's cart
 
-> **Tất cả Cart API đều yêu cầu Header:**
-> `Authorization: Bearer <accessToken>`
+POST /cart/add
+Body: {productId, quantity}
+Description: Add product to cart
 
-### Auth (lấy token trước)
+PUT /cart/items/{id}
+Body: {quantity}
+Description: Update item quantity
 
-| Method | Endpoint       | Body                                    | Response                            |
-| ------ | -------------- | --------------------------------------- | ----------------------------------- |
-| POST   | `/auth/signup` | `{username, password, fullName, email}` | 201 Created                         |
-| POST   | `/auth/login`  | `{username, password}`                  | 200 + `{accessToken, refreshToken}` |
-| POST   | `/auth/logout` | `{refreshToken}`                        | 204 No Content                      |
+DELETE /cart/items/{id}
+Description: Remove a cart item
 
-### Cart
+DELETE /cart/
+Description: Clear entire cart
 
-| Method | Endpoint           | Body                    | Mô tả                 |
-| ------ | ------------------ | ----------------------- | --------------------- |
-| GET    | `/cart/`           | —                       | Lấy giỏ hàng của user |
-| POST   | `/cart/add`        | `{productId, quantity}` | Thêm sản phẩm vào giỏ |
-| PUT    | `/cart/items/{id}` | `{quantity}`            | Cập nhật số lượng     |
-| DELETE | `/cart/items/{id}` | —                       | Xóa 1 sản phẩm        |
-| DELETE | `/cart/`           | —                       | Xóa toàn bộ giỏ       |
+Sample GET /cart/ Response:
 
-#### GET /cart/ — Response mẫu
-
-```json
 [
-  {
-    "cartItemId": 1,
-    "productId": 5,
-    "productName": "AMD Ryzen 5 5600X",
-    "price": 4990000,
-    "quantity": 2,
-    "subtotal": 9980000,
-    "stockQuantity": 15
-  }
+{
+"cartItemId": 1,
+"productId": 5,
+"productName": "AMD Ryzen 5 5600X",
+"price": 4990000,
+"quantity": 2,
+"subtotal": 9980000,
+"stockQuantity": 15
+}
 ]
-```
 
-#### Status Codes
+============================================================
+STATUS CODES
+============================================================
 
-| Code             | Ý nghĩa                                                             |
-| ---------------- | ------------------------------------------------------------------- |
-| 200 OK           | Thành công                                                          |
-| 201 Created      | Thêm sản phẩm thành công                                            |
-| 400 Bad Request  | Lỗi business (không đủ hàng, productId null, item không tồn tại...) |
-| 401 Unauthorized | Token thiếu hoặc sai format                                         |
+200 OK - Success
+201 Created - Item added successfully
+400 Bad Request - Business error (insufficient stock, invalid input, etc.)
+401 Unauthorized - Missing or invalid token
 
----
+============================================================
+ENVIRONMENT SETUP
+============================================================
 
-## Hướng dẫn test với Postman
+Requirements:
 
-### Bước 1 — Signup (nếu chưa có tài khoản)
-
-```
-POST {{BASE_URL}}/auth/signup
-Headers:  Content-Type: application/json
-Body:
-{
-  "username": "testuser",
-  "password": "Test@12345",
-  "fullName": "Test User",
-  "email": "test@example.com"
-}
-→ Expect: 201 Created
-```
-
-### Bước 2 — Login lấy token
-
-```
-POST {{BASE_URL}}/auth/login
-Headers:  Content-Type: application/json
-Body:
-{
-  "username": "testuser",
-  "password": "Test@12345"
-}
-→ Expect: 200 OK + accessToken trong response
-   Copy accessToken để dùng ở các bước sau
-```
-
-### Bước 3 — Xem giỏ hàng (giỏ rỗng)
-
-```
-GET {{BASE_URL}}/cart/
-Headers:  Authorization: Bearer <accessToken>
-→ Expect: 200 OK + []
-```
-
-### Bước 4 — Thêm sản phẩm
-
-`
-POST {{BASE_URL}}/cart/add
-Headers: Authorization: Bearer <accessToken>
-Content-Type: application/json
-Body:
-{
-"productId": 1,
-"quantity": 2
-}
-→ Expect: 201 Created + "Product added to cart successfully"
-Lưu ý: productId phải tồn tại trong DB
-
-```
-
-### Bước 5 — Xem giỏ, lấy cartItemId
-```
-
-GET {{BASE_URL}}/cart/
-Headers: Authorization: Bearer <accessToken>
-→ Expect: 200 OK + danh sách items có cartItemId
-Copy cartItemId để dùng ở bước 6, 7
-
-```
-
-### Bước 6 — Cập nhật số lượng
-```
-
-PUT {{BASE_URL}}/cart/items/{cartItemId}
-ex: {{BASE_URL}}/cart/items/1
-Headers: Authorization: Bearer <accessToken>
-Content-Type: application/json
-Body:
-{
-"quantity": 5
-}
-→ Expect: 200 OK + "Cart item updated successfully"
-
-```
-
-### Bước 7 — Xóa 1 sản phẩm
-```
-
-DELETE {{BASE_URL}}/cart/items/{cartItemId}
-Headers: Authorization: Bearer <accessToken>
-→ Expect: 200 OK + "Cart item removed successfully"
-
-```
-
-### Bước 8 — Xóa toàn bộ giỏ
-```
-
-DELETE {{BASE_URL}}/cart/
-Headers: Authorization: Bearer <accessToken>
-→ Expect: 200 OK + "Cart cleared successfully"
-
-```
-
-### Test edge cases
-
-| Test case | Request | Expect |
-|---|---|---|
-| Thêm khi hết hàng | POST /cart/add với qty > stock | 400 "Not enough stock" |
-| productId không tồn tại | POST /cart/add với productId = 9999 | 400 "Product not found" |
-| productId null | POST /cart/add thiếu productId | 400 "Product ID is required" |
-| quantity = 0 | PUT /cart/items/{id} với qty = 0 | 200, item bị tự xóa |
-| Không có token | GET /cart/ thiếu Authorization | 400 "Missing or invalid Authorization header" |
-
----
-
-## Setup môi trường
-
-### Yêu cầu
 - Java 17+
 - Apache Tomcat 10.1+
 - SQL Server
-- File `.env` ở `src/main/resources/` (có `ACCESS_TOKEN_SECRET`)
+- .env file in src/main/resources/
 
-### Chạy project
+.env must contain at least:
+ACCESS_TOKEN_SECRET=<string with at least 64 characters>
+
+Run project:
+
 1. Clean & Build project (Maven)
-2. Deploy WAR lên Tomcat
-3. Truy cập `http://localhost:8080/smart-pc-store`
-
-### File .env
-File `.env` phải có ít nhất:
-```
-
-ACCESS_TOKEN_SECRET=<chuỗi ít nhất 64 ký tự>
-
-```
-
-```
+2. Deploy WAR to Tomcat
+3. Access http://localhost:8080/smart-pc-store
