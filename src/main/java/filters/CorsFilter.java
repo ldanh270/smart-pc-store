@@ -4,6 +4,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import utils.HttpUtil;
 
 import java.io.IOException;
 
@@ -24,15 +25,18 @@ public class CorsFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = getHttpServletResponse((HttpServletResponse) response);
 
-        // Handle preflight CORS requests (OPTIONS method)
-        if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
-            // For preflight requests, we only need to set the CORS headers and return a 200 OK status
-            res.setStatus(HttpServletResponse.SC_OK);
-            return;
+        try {
+            // If the request method is OPTIONS, we can return immediately with the appropriate headers
+            if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
+                res.setStatus(HttpServletResponse.SC_OK);
+                return;
+            }
+            // Continue with the filter chain for other HTTP methods
+            chain.doFilter(request, res);
+        } catch (Exception e) {
+            System.out.println("ERROR CorsFilter - doFilter: " + e.getMessage());
+            HttpUtil.sendJson(res, HttpServletResponse.SC_UNAUTHORIZED, "Internal Server Error");
         }
-
-        // For other requests, set CORS headers and continue with the filter chain
-        chain.doFilter(request, response);
     }
 
     /**

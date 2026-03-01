@@ -9,6 +9,12 @@ import utils.JwtUtil;
 
 import java.io.IOException;
 
+/**
+ * Filter to authenticate requests using JWT access tokens.
+ * This filter checks for the presence of a valid JWT token in the Authorization header
+ * for protected endpoints and allows the request to proceed if the token is valid.
+ * If the token is missing or invalid, it responds with a 401 Unauthorized status and an error message.
+ */
 @WebFilter(urlPatterns = {"/users/*", "/cart/*", "/orders/*", "/payments/checkout"})
 public class JwtAuthenticationFilter implements Filter {
 
@@ -18,32 +24,23 @@ public class JwtAuthenticationFilter implements Filter {
             ServletResponse response,
             FilterChain chain
     ) throws IOException, ServletException {
-
+        // Cast to HttpServletRequest and HttpServletResponse to access HTTP-specific methods
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        // Get access token from Authorization header
-        String authHeader = req.getHeader("Authorization");
-        String token = null;
+        try {
+            // Extract userId from JWT token in Authorization header
+            Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7); // Get token string after "Bearer"
+            // If token is valid, set userId as a request attribute for downstream use
+            req.setAttribute("userId", userId);
+
+            // Continue with the filter chain (proceed to the requested resource)
+            chain.doFilter(request, response);
+        } catch (Exception e) {
+            System.out.println("ERROR JWTAuthenticationFilter - doFilter: " + e.getMessage());
+            HttpUtil.sendJson(res, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
         }
 
-        // Check the validity of the token
-        if (token != null && JwtUtil.validateAccessToken(token)) {
-            // Token is valid, proceed with the request
-            try {
-                Integer userId = JwtUtil.getUserIdFromToken(token);
-                req.setAttribute("userId", userId);
-
-                chain.doFilter(request, response);
-            } catch (Exception e) {
-                HttpUtil.sendJson(res, HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token Payload!");
-            }
-        } else {
-            // Invalid or missing token, return 401 Unauthorized with error message
-            HttpUtil.sendJson(res, HttpServletResponse.SC_UNAUTHORIZED, "Access Token Expired or Invalid!");
-        }
     }
 }

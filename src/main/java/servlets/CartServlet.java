@@ -16,17 +16,12 @@ import java.io.IOException;
 
 /**
  * CartServlet
- * <p>
- * Routes:
+ * Endpoints:
  * - GET    /cart/               => get cart items
  * - POST   /cart/add            => add product to cart
  * - PUT    /cart/items/{id}     => update quantity of an item
  * - DELETE /cart/               => clear cart (after checkout)
  * - DELETE /cart/items/{id}     => remove one item
- * <p>
- * Note:
- * - This servlet creates a new EntityManager per request (thread-safe).
- * - It uses CartController for request handling.
  */
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart/*"})
 public class CartServlet extends HttpServlet {
@@ -55,8 +50,8 @@ public class CartServlet extends HttpServlet {
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
-            // Unexpected server-side error
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            System.err.println("ERROR CartServlet - doGet: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 
@@ -72,14 +67,12 @@ public class CartServlet extends HttpServlet {
 
         try (EntityManager em = JPAUtil.getEntityManager()) {
             switch (pathInfo) {
-                case "/add":
-                    cartController.handleAddToCart(req, resp);
-                    break;
-                default:
-                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                case "/add" -> cartController.handleAddToCart(req, resp);
+                default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            System.err.println("ERROR CartServlet - doPost: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 
@@ -94,8 +87,8 @@ public class CartServlet extends HttpServlet {
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
-            // Parsing errors or controller validation errors
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            System.err.println("ERROR CartServlet - doPut: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Internal server error");
         }
     }
 
@@ -118,7 +111,8 @@ public class CartServlet extends HttpServlet {
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            System.err.println("ERROR CartServlet - doDelete: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Internal server error");
         }
     }
 }
