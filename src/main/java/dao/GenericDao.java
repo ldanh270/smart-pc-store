@@ -2,6 +2,7 @@ package dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import utils.JwtUtil;
 
 import java.util.List;
 
@@ -12,17 +13,14 @@ import java.util.List;
  */
 public class GenericDao<T> {
     private final Class<T> entityClass;
-    protected EntityManager em;
 
     /**
      * Constructor
      *
      * @param entityClass the entity class
-     * @param em          the entity manager
      */
-    public GenericDao(Class<T> entityClass, EntityManager em) {
+    public GenericDao(Class<T> entityClass) {
         this.entityClass = entityClass;
-        this.em = em;
     }
 
     /**
@@ -31,7 +29,7 @@ public class GenericDao<T> {
      * @return the entity manager
      */
     public EntityManager getEntityManager() {
-        return em;
+        return JPAUtil.getEntityManager();
     }
 
     /**
@@ -41,7 +39,7 @@ public class GenericDao<T> {
      * @return the entity found
      */
     public T findById(Object id) {
-        return em.find(entityClass, id);
+        return getEntityManager().find(entityClass, id);
     }
 
 
@@ -52,7 +50,7 @@ public class GenericDao<T> {
      */
     public List<T> findAll() {
         String jpql = "SELECT e FROM " + entityClass.getSimpleName() + " e";
-        TypedQuery<T> query = em.createQuery(jpql, entityClass);
+        TypedQuery<T> query = getEntityManager().createQuery(jpql, entityClass);
         return query.getResultList();
     }
 
@@ -62,7 +60,7 @@ public class GenericDao<T> {
      * @param entity the entity to create
      */
     public void create(T entity) {
-        em.persist(entity);
+        getEntityManager().persist(entity);
     }
 
     /**
@@ -72,7 +70,7 @@ public class GenericDao<T> {
      * @return the updated entity
      */
     public T update(T entity) {
-        return em.merge(entity);
+        return getEntityManager().merge(entity);
     }
 
     /**
@@ -81,9 +79,9 @@ public class GenericDao<T> {
      * @param id the primary key of the entity to delete
      */
     public void delete(Object id) {
-        T entity = em.find(entityClass, id);
+        T entity = getEntityManager().find(entityClass, id);
         if (entity != null) {
-            em.remove(entity);
+            getEntityManager().remove(entity);
         }
     }
 }
