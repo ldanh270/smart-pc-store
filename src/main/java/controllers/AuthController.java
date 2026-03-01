@@ -97,8 +97,6 @@ public class AuthController {
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 
@@ -140,8 +138,6 @@ public class AuthController {
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 
@@ -166,8 +162,6 @@ public class AuthController {
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 }
