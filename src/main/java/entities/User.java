@@ -23,8 +23,8 @@ public class User {
     private String passwordHash;
 
     @Nationalized
-    @Column(name = "FullName")
-    private String fullName;
+    @Column(name = "DisplayName")
+    private String displayName;
 
     @Nationalized
     @Column(name = "Email")
@@ -39,8 +39,12 @@ public class User {
     private String address;
 
     @Nationalized
-    @Column(name = "Status")
+    @Column(name = "Status", length = 30)
     private String status;
+
+    @Nationalized
+    @Column(name = "Role", length = 30)
+    private String role;
 
     @ColumnDefault("getdate()")
     @Column(name = "CreatedAt")
@@ -49,10 +53,10 @@ public class User {
     public User() {
     }
 
-    public User(String username, String passwordHash, String fullName, String email) {
+    public User(String username, String passwordHash, String displayName, String email) {
         this.username = username;
         this.passwordHash = passwordHash;
-        this.fullName = fullName;
+        this.displayName = displayName;
         this.email = email;
     }
 
@@ -80,12 +84,12 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getEmail() {
@@ -118,6 +122,14 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public Instant getCreatedAt() {

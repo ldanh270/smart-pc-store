@@ -33,12 +33,12 @@ GO
 
 -- ---------------- USERS ----------------
 SET IDENTITY_INSERT Users ON;
-INSERT INTO Users (Id, Username, PasswordHash, FullName, Email, Phone, Address, Status) VALUES 
-(1, 'admin', 'hash_pw_1', 'System Admin', 'admin@pcstore.com', '0901000001', 'Server Room', 'Active'),
-(2, 'user_hcm', 'hash_pw_2', 'Nguyen Van A', 'vana@gmail.com', '0901000002', 'Quan 1, HCM', 'Active'),
-(3, 'user_hn', 'hash_pw_3', 'Tran Thi B', 'thib@yahoo.com', '0901000003', 'Cau Giay, HN', 'Active'),
-(4, 'user_dn', 'hash_pw_4', 'Le Van C', 'vanc@outlook.com', '0901000004', 'Hai Chau, DN', 'Blocked'),
-(5, 'user_vip', 'hash_pw_5', 'Pham Minh Vip', 'vip@tech.com', '0901000005', 'Landmark 81, HCM', 'Active');
+INSERT INTO Users (Id, Username, PasswordHash, DisplayName, Email, Phone, Address, Status, Role) VALUES 
+(1, 'admin', 'hash_pw_1', 'System Admin', 'admin@pcstore.com', '0901000001', 'Server Room', 'Active', 'admin'),
+(2, 'user_hcm', 'hash_pw_2', 'Nguyen Van A', 'vana@gmail.com', '0901000002', 'Quan 1, HCM', 'Active', 'user'),
+(3, 'user_hn', 'hash_pw_3', 'Tran Thi B', 'thib@yahoo.com', '0901000003', 'Cau Giay, HN', 'Active', 'user'),
+(4, 'user_dn', 'hash_pw_4', 'Le Van C', 'vanc@outlook.com', '0901000004', 'Hai Chau, DN', 'Blocked', 'user'),
+(5, 'user_vip', 'hash_pw_5', 'Pham Minh Vip', 'vip@tech.com', '0901000005', 'Landmark 81, HCM', 'Active', 'user');
 SET IDENTITY_INSERT Users OFF;
 
 -- ---------------- CATEGORIES ----------------
