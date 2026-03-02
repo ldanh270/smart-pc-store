@@ -34,9 +34,9 @@ public class AuthValidate {
             errors.add("Password must be at least 6 characters");
         }
 
-        // Validate full name
-        if (dto.getFullName() == null || dto.getFullName().trim().isEmpty()) {
-            errors.add("Fullname is required");
+        // Validate display name
+        if (dto.getDisplayName() == null || dto.getDisplayName().trim().isEmpty()) {
+            errors.add("Display name is required");
         }
 
         // Validate email

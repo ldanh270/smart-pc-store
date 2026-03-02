@@ -44,11 +44,12 @@ CREATE TABLE Users (
     Id            INT PRIMARY KEY IDENTITY(1,1), -- Tự tăng từ 1
     Username      NVARCHAR(255),
     PasswordHash  NVARCHAR(255),
-    FullName      NVARCHAR(255),
+    DisplayName   NVARCHAR(255),
     Email         NVARCHAR(255),
     Phone         NVARCHAR(255),
     Address       NVARCHAR(255),
-    Status        NVARCHAR(255),
+    Status        NVARCHAR(30),
+    Role          NVARCHAR(30),
     CreatedAt     DATETIME DEFAULT GETDATE()
 );
 GO
@@ -75,7 +76,10 @@ GO
 CREATE TABLE Categories (
     Id           INT PRIMARY KEY IDENTITY(1,1),
     CategoryName NVARCHAR(255),
-    Description  NVARCHAR(255)
+    Description  NVARCHAR(255),
+    ImageUrl     NVARCHAR(500),
+    Status       BIT NOT NULL DEFAULT 1,
+    ParentId     INT NULL
 );
 GO
 
