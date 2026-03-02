@@ -8,6 +8,7 @@ import controllers.AuthController;
 import dao.JPAUtil;
 import dao.SessionDao;
 import dao.UserDao;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,25 +24,23 @@ import java.io.IOException;
  */
 @WebServlet(name = "AuthServlet", urlPatterns = {"/auth/*"})
 public class AuthServlet extends HttpServlet {
-
-    // Dependency Injection
-    private AuthController authController;
-
-    @Override
-    public void init() {
-        UserDao userDAO = new UserDao(JPAUtil.getEntityManager());
-        SessionDao sessionDAO = new SessionDao(JPAUtil.getEntityManager());
+    private AuthController buildController(EntityManager em) {
+        UserDao userDAO = new UserDao(em);
+        SessionDao sessionDAO = new SessionDao(em);
         AuthService authService = new AuthService(userDAO, sessionDAO);
-        this.authController = new AuthController(authService);
+        return new AuthController(authService);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        EntityManager em = JPAUtil.getEntityManager();
+        AuthController authController = buildController(em);
 
         // Routing
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            if (em.isOpen()) em.close();
             return;
         }
 
@@ -68,6 +67,8 @@ public class AuthServlet extends HttpServlet {
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Internal Server Error: " + e.getMessage()
             );
+        } finally {
+            if (em.isOpen()) em.close();
         }
     }
 }
