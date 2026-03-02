@@ -83,6 +83,12 @@ public class AuthService {
      * @return An LoginResponseDto containing user details upon successful login.
      */
     public LoginResponseDto login(LoginRequestDto dto) {
+        if (dto == null
+                || dto.getUsername() == null || dto.getUsername().isBlank()
+                || dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Username and password are required");
+        }
+
         // Check if user exists
         User user = userDao.findByUsername(dto.getUsername());
 
