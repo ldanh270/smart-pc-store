@@ -20,9 +20,16 @@ public class PurchaseOrder {
     @Column(name = "OrderDate")
     private LocalDate orderDate;
 
+    @Column(name = "ExpectedDeliveryDate")
+    private LocalDate expectedDeliveryDate;
+
     @Nationalized
     @Column(name = "Status")
     private String status;
+
+    @Nationalized
+    @Column(name = "PoCode")
+    private String poCode;
 
     public Integer getId() {
         return id;
@@ -54,6 +61,22 @@ public class PurchaseOrder {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public LocalDate getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
+    }
+
+    public void setExpectedDeliveryDate(LocalDate expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
+    }
+
+    public String getPoCode() {
+        return poCode;
+    }
+
+    public void setPoCode(String poCode) {
+        this.poCode = poCode;
     }
 
 }
