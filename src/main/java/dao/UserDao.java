@@ -37,14 +37,10 @@ public class UserDao extends GenericDao<User> {
      * @return the User entity
      */
     public User findByUsername(String username) {
-        try {
-            String jpql = "SELECT u FROM User u WHERE u.username = :username";
-            TypedQuery<User> query = em.createQuery(jpql, User.class);
-            query.setParameter("username", username);
-            return query.getSingleResult();
-        } catch (jakarta.persistence.NoResultException e) {
-            return null;
-        }
+        String jpql = "SELECT u FROM User u WHERE u.username = :username";
+        TypedQuery<User> query = em.createQuery(jpql, User.class);
+        query.setParameter("username", username);
+        return query.getSingleResult();
     }
 
     /**

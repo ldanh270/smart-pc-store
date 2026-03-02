@@ -6,8 +6,8 @@ import entities.Session;
  * Data Access Object for Session entity.
  */
 public class SessionDao extends GenericDao<Session> {
-    public SessionDao(jakarta.persistence.EntityManager em) {
-        super(entities.Session.class, em);
+    public SessionDao() {
+        super(entities.Session.class);
     }
 
     /**
@@ -18,9 +18,10 @@ public class SessionDao extends GenericDao<Session> {
      */
     public Session findByRefreshToken(String refreshToken) {
         try {
-            return em.createQuery("SELECT s FROM Session s WHERE s.refreshToken = :refreshToken", Session.class)
-                    .setParameter("refreshToken", refreshToken)
-                    .getSingleResult();
+            return getEntityManager().createQuery(
+                    "SELECT s FROM Session s WHERE s.refreshToken = :refreshToken",
+                    Session.class
+            ).setParameter("refreshToken", refreshToken).getSingleResult();
         } catch (jakarta.persistence.NoResultException e) {
             return null;
         }

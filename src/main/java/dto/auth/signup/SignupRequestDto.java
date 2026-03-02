@@ -6,7 +6,7 @@ package dto.auth.signup;
 public class SignupRequestDto {
     private String username;
     private String password;
-    private String fullName;
+    private String displayName;
     private String email;
 
     public SignupRequestDto() {
@@ -28,12 +28,12 @@ public class SignupRequestDto {
         this.password = password;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getEmail() {

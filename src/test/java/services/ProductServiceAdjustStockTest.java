@@ -12,7 +12,7 @@ public class ProductServiceAdjustStockTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAdjustStockWithNullId() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
         try {
             svc.adjustStock(null, 5);
         } catch (IllegalArgumentException e) {

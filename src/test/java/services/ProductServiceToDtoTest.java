@@ -13,7 +13,7 @@ public class ProductServiceToDtoTest {
 
     @Test
     public void testStockStatusMapping() {
-        ProductService svc = new ProductService(null, null);
+        ProductService svc = new ProductService(null);
 
         Supplier s = new Supplier();
         s.setId(1);
