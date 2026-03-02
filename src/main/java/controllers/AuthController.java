@@ -77,6 +77,12 @@ public class AuthController {
         try {
             // Parse request body to Java object
             LoginRequestDto loginDto = HttpUtil.jsonToClass(req.getReader(), LoginRequestDto.class);
+            if (loginDto == null
+                    || loginDto.getUsername() == null || loginDto.getUsername().isBlank()
+                    || loginDto.getPassword() == null || loginDto.getPassword().isBlank()) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Username and password are required");
+                return;
+            }
 
             // Call service to authenticate user
             LoginResponseDto loginResponse = authService.login(loginDto);
@@ -97,6 +103,8 @@ public class AuthController {
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
