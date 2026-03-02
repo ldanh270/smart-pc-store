@@ -3,6 +3,7 @@ package servlets;
 import controllers.ProductController;
 import dao.JPAUtil;
 import dao.ProductDao;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,21 +19,17 @@ import java.io.IOException;
  */
 @WebServlet(name = "ProductServlet", urlPatterns = {"/products/*"})
 public class ProductServlet extends HttpServlet {
-
-    // Dependency Injection
-    private ProductController productController;
-
-    @Override
-    public void init() {
-        var em = JPAUtil.getEntityManager();
+    private ProductController buildController(EntityManager em) {
         ProductDao productDao = new ProductDao(em);
         ProductService productService = new ProductService(productDao, em);
-        this.productController = new ProductController(productService);
+        return new ProductController(productService);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        EntityManager em = JPAUtil.getEntityManager();
+        ProductController productController = buildController(em);
 
         try {
             // Routing:
@@ -56,16 +53,21 @@ public class ProductServlet extends HttpServlet {
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Internal Server Error: " + e.getMessage()
             );
+        } finally {
+            if (em.isOpen()) em.close();
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        EntityManager em = JPAUtil.getEntityManager();
+        ProductController productController = buildController(em);
 
         // Keep create route explicit to avoid conflicts with future POST actions.
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            if (em.isOpen()) em.close();
             return;
         }
 
@@ -84,15 +86,20 @@ public class ProductServlet extends HttpServlet {
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Internal Server Error: " + e.getMessage()
             );
+        } finally {
+            if (em.isOpen()) em.close();
         }
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        EntityManager em = JPAUtil.getEntityManager();
+        ProductController productController = buildController(em);
 
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            if (em.isOpen()) em.close();
             return;
         }
 
@@ -117,15 +124,20 @@ public class ProductServlet extends HttpServlet {
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Internal Server Error: " + e.getMessage()
             );
+        } finally {
+            if (em.isOpen()) em.close();
         }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
+        EntityManager em = JPAUtil.getEntityManager();
+        ProductController productController = buildController(em);
 
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            if (em.isOpen()) em.close();
             return;
         }
 
@@ -144,6 +156,8 @@ public class ProductServlet extends HttpServlet {
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Internal Server Error: " + e.getMessage()
             );
+        } finally {
+            if (em.isOpen()) em.close();
         }
     }
 }
