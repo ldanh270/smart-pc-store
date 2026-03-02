@@ -23,7 +23,7 @@ public class ProductDao extends GenericDao<Product> {
      * @return A list of products in the specified category.
      */
     public List<Product> findByCategoryId(Integer categoryId) {
-        String jpql = "SELECT p FROM Product p WHERE p.category.id = :categoryId";
+        String jpql = "SELECT p FROM Product p WHERE p.status = true AND p.category.id = :categoryId";
         TypedQuery<Product> query = em.createQuery(jpql, Product.class);
         query.setParameter("categoryId", categoryId);
         return query.getResultList();
@@ -36,7 +36,7 @@ public class ProductDao extends GenericDao<Product> {
      * @return A list of products supplied by the specified supplier.
      */
     public List<Product> findBySupplierId(Integer supplierId) {
-        String jpql = "SELECT p FROM Product p WHERE p.supplier.id = :supplierId";
+        String jpql = "SELECT p FROM Product p WHERE p.status = true AND p.supplier.id = :supplierId";
         TypedQuery<Product> query = em.createQuery(jpql, Product.class);
         query.setParameter("supplierId", supplierId);
         return query.getResultList();
@@ -50,7 +50,7 @@ public class ProductDao extends GenericDao<Product> {
      * @return A list of products matching the keyword.
      */
     public List<Product> searchByName(String keyword) {
-        String jpql = "SELECT p FROM Product p WHERE LOWER(p.productName) LIKE LOWER(:keyword)";
+        String jpql = "SELECT p FROM Product p WHERE p.status = true AND LOWER(p.productName) LIKE LOWER(:keyword)";
         TypedQuery<Product> query = em.createQuery(jpql, Product.class);
         query.setParameter("keyword", "%" + keyword + "%");
         return query.getResultList();
@@ -65,7 +65,7 @@ public class ProductDao extends GenericDao<Product> {
      * @return A paginated list of products.
      */
     public List<Product> findWithPagination(int page, int size) {
-        String jpql = "SELECT p FROM Product p";
+        String jpql = "SELECT p FROM Product p WHERE p.status = true";
         return em.createQuery(jpql, Product.class)
                 .setFirstResult(page * size)
                 .setMaxResults(size)
@@ -80,7 +80,7 @@ public class ProductDao extends GenericDao<Product> {
      * @return A list of products matching the keyword.
      */
     public List<Product> search(String keyword) {
-        String jpql = "SELECT p FROM Product p WHERE LOWER(p.productName) LIKE LOWER(:kw)";
+        String jpql = "SELECT p FROM Product p WHERE p.status = true AND LOWER(p.productName) LIKE LOWER(:kw)";
         return em.createQuery(jpql, Product.class)
                 .setParameter("kw", "%" + keyword + "%")
                 .getResultList();
@@ -104,6 +104,7 @@ public class ProductDao extends GenericDao<Product> {
                                       java.math.BigDecimal maxPrice, String keyword, Integer page, Integer size) {
         StringBuilder jpql = new StringBuilder("SELECT p FROM Product p WHERE 1=1");
 
+        if (status == null) jpql.append(" AND p.status = true");
         if (categoryId != null) jpql.append(" AND p.category.id = :categoryId");
         if (status != null) jpql.append(" AND p.status = :status");
         if (minPrice != null) jpql.append(" AND p.currentPrice >= :minPrice");
