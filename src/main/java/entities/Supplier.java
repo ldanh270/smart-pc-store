@@ -19,8 +19,23 @@ public class Supplier {
     @Column(name = "ContactInfo")
     private String contactInfo;
 
+    @Nationalized
+    @Column(name = "ComponentTypes")
+    private String componentTypes;
+
     @Column(name = "LeadTimeDays")
     private Integer leadTimeDays;
+
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
+
+    /**
+     * Ensure default active status for new records.
+     */
+    @PrePersist
+    public void prePersist() {
+        if (status == null) status = true;
+    }
 
     public Integer getId() {
         return id;
@@ -52,6 +67,22 @@ public class Supplier {
 
     public void setLeadTimeDays(Integer leadTimeDays) {
         this.leadTimeDays = leadTimeDays;
+    }
+
+    public String getComponentTypes() {
+        return componentTypes;
+    }
+
+    public void setComponentTypes(String componentTypes) {
+        this.componentTypes = componentTypes;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
 }
