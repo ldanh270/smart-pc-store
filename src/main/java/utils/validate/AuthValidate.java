@@ -45,7 +45,8 @@ public class AuthValidate {
         }
 
         // Email format check
-        if (!dto.getEmail().matches(Regex.EMAIL_REGEX)) {
+        if (dto.getEmail() != null && !dto.getEmail().trim().isEmpty()
+                && !dto.getEmail().matches(Regex.EMAIL_REGEX)) {
             errors.add("Invalid email format");
         }
 
