@@ -15,7 +15,7 @@ import java.io.IOException;
  * for protected endpoints and allows the request to proceed if the token is valid.
  * If the token is missing or invalid, it responds with a 401 Unauthorized status and an error message.
  */
-@WebFilter(urlPatterns = {"/users/*", "/cart/*", "/orders/*", "/payments/checkout"})
+@WebFilter(urlPatterns = { "/cart/*", "/orders/*", "/payments/checkout"})
 public class JwtAuthenticationFilter implements Filter {
 
     @Override
