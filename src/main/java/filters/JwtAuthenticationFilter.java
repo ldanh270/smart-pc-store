@@ -15,15 +15,10 @@ import java.io.IOException;
  * for protected endpoints and allows the request to proceed if the token is valid.
  * If the token is missing or invalid, it responds with a 401 Unauthorized status and an error message.
  */
-@WebFilter(urlPatterns = { "/cart/*", "/orders/*", "/payments/checkout"})
 public class JwtAuthenticationFilter implements Filter {
 
     @Override
-    public void doFilter(
-            ServletRequest request,
-            ServletResponse response,
-            FilterChain chain
-    ) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
         // Cast to HttpServletRequest and HttpServletResponse to access HTTP-specific methods
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;

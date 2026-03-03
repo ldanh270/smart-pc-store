@@ -15,14 +15,14 @@ import java.util.List;
 
 /**
  * UserController
- *
+ * <p>
  * Endpoints:
  * - GET    /users          : list users
  * - GET    /users/{id}     : get user by id
  * - POST   /users          : create user
  * - PUT    /users/{id}     : update user
  * - DELETE /users/{id}     : delete user
- *
+ * <p>
  * Note:
  * - Requires Authorization: Bearer <token> (same pattern as Cart/Auth)
  * - No role-based access control in current project (JWT contains only userId).
@@ -35,14 +35,8 @@ public class UserController {
         this.userService = userService;
     }
 
-    private void requireAuth(HttpServletRequest req) {
-        // Just validate token format + signature; throws if invalid
-        JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
-    }
-
     public void handleGetAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            requireAuth(req);
             List<UserDto> users = userService.getAll();
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, users);
         } catch (Exception e) {
@@ -52,7 +46,6 @@ public class UserController {
 
     public void handleGetById(HttpServletRequest req, HttpServletResponse resp, Integer id) throws IOException {
         try {
-            requireAuth(req);
             UserDto user = userService.getById(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, user);
         } catch (Exception e) {
@@ -62,7 +55,6 @@ public class UserController {
 
     public void handleCreate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            requireAuth(req);
             CreateUserRequestDto dto = HttpUtil.jsonToClass(req.getReader(), CreateUserRequestDto.class);
             UserDto created = userService.create(dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_CREATED, created);
@@ -73,7 +65,6 @@ public class UserController {
 
     public void handleUpdate(HttpServletRequest req, HttpServletResponse resp, Integer id) throws IOException {
         try {
-            requireAuth(req);
             UpdateUserRequestDto dto = HttpUtil.jsonToClass(req.getReader(), UpdateUserRequestDto.class);
             UserDto updated = userService.update(id, dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, updated);
@@ -84,7 +75,6 @@ public class UserController {
 
     public void handleDelete(HttpServletRequest req, HttpServletResponse resp, Integer id) throws IOException {
         try {
-            requireAuth(req);
             userService.delete(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "User deleted successfully");
         } catch (Exception e) {
