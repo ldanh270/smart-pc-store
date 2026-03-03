@@ -42,7 +42,6 @@ public class GenericDao<T> {
         return getEntityManager().find(entityClass, id);
     }
 
-
     /**
      * Find all entities
      *

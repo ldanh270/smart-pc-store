@@ -140,4 +140,13 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    // Alias for displayName — used by DTOs
+    public void setFullName(String fullName) {
+        this.displayName = fullName;
+    }
+
+    public String getFullName() {
+        return this.displayName;
+    }
+
 }

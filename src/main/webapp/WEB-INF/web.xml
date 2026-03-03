@@ -20,7 +20,6 @@
 
     <filter-mapping>
         <filter-name>JwtAuthenticationFilter</filter-name>
-        <url-pattern>/users/*</url-pattern>
         <url-pattern>/cart/*</url-pattern>
         <url-pattern>/orders/*</url-pattern>
         <url-pattern>/payments/checkout</url-pattern>
