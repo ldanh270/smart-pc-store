@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * GoodsReceiptNote entity.
@@ -27,6 +29,8 @@ public class GoodsReceiptNote {
     @Nationalized
     @Column(name = "Note")
     private String note;
+    @OneToMany(mappedBy = "grn")
+    private Set<GoodsReceiptNoteItem> goodsReceiptNoteItems = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -58,5 +62,13 @@ public class GoodsReceiptNote {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Set<GoodsReceiptNoteItem> getGoodsReceiptNoteItems() {
+        return goodsReceiptNoteItems;
+    }
+
+    public void setGoodsReceiptNoteItems(Set<GoodsReceiptNoteItem> goodsReceiptNoteItems) {
+        this.goodsReceiptNoteItems = goodsReceiptNoteItems;
     }
 }

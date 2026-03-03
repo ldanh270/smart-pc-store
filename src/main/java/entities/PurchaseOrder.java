@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "PurchaseOrders")
@@ -30,6 +32,10 @@ public class PurchaseOrder {
     @Nationalized
     @Column(name = "PoCode")
     private String poCode;
+    @OneToMany(mappedBy = "po")
+    private Set<GoodsReceiptNote> goodsReceiptNotes = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "po")
+    private Set<PurchaseOrderItem> purchaseOrderItems = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -77,6 +83,22 @@ public class PurchaseOrder {
 
     public void setPoCode(String poCode) {
         this.poCode = poCode;
+    }
+
+    public Set<GoodsReceiptNote> getGoodsReceiptNotes() {
+        return goodsReceiptNotes;
+    }
+
+    public void setGoodsReceiptNotes(Set<GoodsReceiptNote> goodsReceiptNotes) {
+        this.goodsReceiptNotes = goodsReceiptNotes;
+    }
+
+    public Set<PurchaseOrderItem> getPurchaseOrderItems() {
+        return purchaseOrderItems;
+    }
+
+    public void setPurchaseOrderItems(Set<PurchaseOrderItem> purchaseOrderItems) {
+        this.purchaseOrderItems = purchaseOrderItems;
     }
 
 }
