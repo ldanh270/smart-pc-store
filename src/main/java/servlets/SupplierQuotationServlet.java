@@ -3,7 +3,6 @@ package servlets;
 import controllers.SupplierQuotationController;
 import dao.JPAUtil;
 import dao.SupplierPriceHistoryDao;
-import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,9 +18,9 @@ import java.io.IOException;
  */
 @WebServlet(name = "SupplierQuotationServlet", urlPatterns = {"/supplier-quotations/*"})
 public class SupplierQuotationServlet extends HttpServlet {
-    private SupplierQuotationController buildController(EntityManager em) {
-        SupplierPriceHistoryDao priceHistoryDao = new SupplierPriceHistoryDao(em);
-        SupplierQuotationService quotationService = new SupplierQuotationService(priceHistoryDao, em);
+    private SupplierQuotationController buildController() {
+        SupplierPriceHistoryDao priceHistoryDao = new SupplierPriceHistoryDao();
+        SupplierQuotationService quotationService = new SupplierQuotationService(priceHistoryDao);
         return new SupplierQuotationController(quotationService);
     }
 
@@ -31,8 +30,7 @@ public class SupplierQuotationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        EntityManager em = JPAUtil.getEntityManager();
-        SupplierQuotationController supplierQuotationController = buildController(em);
+        SupplierQuotationController supplierQuotationController = buildController();
         try {
             if (pathInfo == null || "/".equals(pathInfo) || "/history".equals(pathInfo)) {
                 supplierQuotationController.handleGetHistory(req, resp);
@@ -42,7 +40,7 @@ public class SupplierQuotationServlet extends HttpServlet {
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
         }
     }
 
@@ -52,11 +50,10 @@ public class SupplierQuotationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        EntityManager em = JPAUtil.getEntityManager();
-        SupplierQuotationController supplierQuotationController = buildController(em);
+        SupplierQuotationController supplierQuotationController = buildController();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
             return;
         }
 
@@ -69,7 +66,7 @@ public class SupplierQuotationServlet extends HttpServlet {
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
         }
     }
 }

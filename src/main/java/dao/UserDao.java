@@ -1,20 +1,14 @@
 package dao;
 
 import entities.User;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 /**
  * Data Access Object for User entity
  */
 public class UserDao extends GenericDao<User> {
-    /**
-     * Constructor
-     *
-     * @param em the entity manager
-     */
-    public UserDao(EntityManager em) {
-        super(User.class, em);
+    public UserDao() {
+        super(User.class);
     }
 
     /**
@@ -25,7 +19,7 @@ public class UserDao extends GenericDao<User> {
      */
     public boolean existsByUsername(String username) {
         String jpql = "SELECT COUNT(u) FROM User u WHERE u.username = :username";
-        TypedQuery<Long> query = em.createQuery(jpql, Long.class);
+        TypedQuery<Long> query = JPAUtil.getEntityManager().createQuery(jpql, Long.class);
         query.setParameter("username", username);
         return query.getSingleResult() > 0;
     }
@@ -38,7 +32,7 @@ public class UserDao extends GenericDao<User> {
      */
     public User findByUsername(String username) {
         String jpql = "SELECT u FROM User u WHERE u.username = :username";
-        TypedQuery<User> query = em.createQuery(jpql, User.class);
+        TypedQuery<User> query = JPAUtil.getEntityManager().createQuery(jpql, User.class);
         query.setParameter("username", username);
         return query.getSingleResult();
     }
@@ -51,7 +45,7 @@ public class UserDao extends GenericDao<User> {
      */
     public boolean existsByEmail(String email) {
         String jpql = "SELECT COUNT(u) FROM User u WHERE u.email = :email";
-        TypedQuery<Long> query = em.createQuery(jpql, Long.class);
+        TypedQuery<Long> query = JPAUtil.getEntityManager().createQuery(jpql, Long.class);
         query.setParameter("email", email);
         return query.getSingleResult() > 0;
     }

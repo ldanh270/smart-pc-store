@@ -3,7 +3,6 @@ package dao;
 import entities.Cart;
 import entities.CartItem;
 import entities.Product;
-import jakarta.persistence.EntityManager;
 
 import java.util.List;
 

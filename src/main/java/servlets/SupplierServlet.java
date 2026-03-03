@@ -3,7 +3,6 @@ package servlets;
 import controllers.SupplierController;
 import dao.JPAUtil;
 import dao.SupplierDao;
-import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,9 +18,9 @@ import java.io.IOException;
  */
 @WebServlet(name = "SupplierServlet", urlPatterns = {"/suppliers/*"})
 public class SupplierServlet extends HttpServlet {
-    private SupplierController buildController(EntityManager em) {
-        SupplierDao supplierDao = new SupplierDao(em);
-        SupplierService supplierService = new SupplierService(supplierDao, em);
+    private SupplierController buildController() {
+        SupplierDao supplierDao = new SupplierDao();
+        SupplierService supplierService = new SupplierService(supplierDao);
         return new SupplierController(supplierService);
     }
 
@@ -31,8 +30,7 @@ public class SupplierServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        EntityManager em = JPAUtil.getEntityManager();
-        SupplierController supplierController = buildController(em);
+        SupplierController supplierController = buildController();
         try {
             if (pathInfo == null || "/".equals(pathInfo)) {
                 supplierController.handleGetAll(req, resp);
@@ -49,7 +47,7 @@ public class SupplierServlet extends HttpServlet {
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
         }
     }
 
@@ -59,11 +57,10 @@ public class SupplierServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        EntityManager em = JPAUtil.getEntityManager();
-        SupplierController supplierController = buildController(em);
+        SupplierController supplierController = buildController();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
             return;
         }
 
@@ -78,7 +75,7 @@ public class SupplierServlet extends HttpServlet {
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
         }
     }
 
@@ -88,11 +85,10 @@ public class SupplierServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        EntityManager em = JPAUtil.getEntityManager();
-        SupplierController supplierController = buildController(em);
+        SupplierController supplierController = buildController();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
             return;
         }
 
@@ -106,7 +102,7 @@ public class SupplierServlet extends HttpServlet {
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
         }
     }
 
@@ -116,11 +112,10 @@ public class SupplierServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        EntityManager em = JPAUtil.getEntityManager();
-        SupplierController supplierController = buildController(em);
+        SupplierController supplierController = buildController();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
             return;
         }
 
@@ -134,7 +129,7 @@ public class SupplierServlet extends HttpServlet {
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
         }
     }
 }

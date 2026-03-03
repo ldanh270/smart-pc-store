@@ -1,7 +1,6 @@
 package dao;
 
 import entities.Product;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
@@ -12,8 +11,8 @@ import java.util.List;
  */
 public class ProductDao extends GenericDao<Product> {
 
-    public ProductDao(EntityManager em) {
-        super(Product.class, em);
+    public ProductDao() {
+        super(Product.class);
     }
 
     /**
@@ -24,7 +23,7 @@ public class ProductDao extends GenericDao<Product> {
      */
     public List<Product> findByCategoryId(Integer categoryId) {
         String jpql = "SELECT p FROM Product p WHERE p.category.id = :categoryId";
-        TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+        TypedQuery<Product> query = JPAUtil.getEntityManager().createQuery(jpql, Product.class);
         query.setParameter("categoryId", categoryId);
         return query.getResultList();
     }
@@ -37,7 +36,7 @@ public class ProductDao extends GenericDao<Product> {
      */
     public List<Product> findBySupplierId(Integer supplierId) {
         String jpql = "SELECT p FROM Product p WHERE p.supplier.id = :supplierId";
-        TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+        TypedQuery<Product> query = JPAUtil.getEntityManager().createQuery(jpql, Product.class);
         query.setParameter("supplierId", supplierId);
         return query.getResultList();
     }
@@ -51,7 +50,7 @@ public class ProductDao extends GenericDao<Product> {
      */
     public List<Product> searchByName(String keyword) {
         String jpql = "SELECT p FROM Product p WHERE LOWER(p.productName) LIKE LOWER(:keyword)";
-        TypedQuery<Product> query = em.createQuery(jpql, Product.class);
+        TypedQuery<Product> query = JPAUtil.getEntityManager().createQuery(jpql, Product.class);
         query.setParameter("keyword", "%" + keyword + "%");
         return query.getResultList();
     }
@@ -66,7 +65,7 @@ public class ProductDao extends GenericDao<Product> {
      */
     public List<Product> findWithPagination(int page, int size) {
         String jpql = "SELECT p FROM Product p";
-        return em.createQuery(jpql, Product.class)
+        return JPAUtil.getEntityManager().createQuery(jpql, Product.class)
                 .setFirstResult(page * size)
                 .setMaxResults(size)
                 .getResultList();
@@ -81,7 +80,7 @@ public class ProductDao extends GenericDao<Product> {
      */
     public List<Product> search(String keyword) {
         String jpql = "SELECT p FROM Product p WHERE LOWER(p.productName) LIKE LOWER(:kw)";
-        return em.createQuery(jpql, Product.class)
+        return JPAUtil.getEntityManager().createQuery(jpql, Product.class)
                 .setParameter("kw", "%" + keyword + "%")
                 .getResultList();
     }
@@ -110,7 +109,7 @@ public class ProductDao extends GenericDao<Product> {
         if (maxPrice != null) jpql.append(" AND p.currentPrice <= :maxPrice");
         if (keyword != null && !keyword.isBlank()) jpql.append(" AND LOWER(p.productName) LIKE :kw");
 
-        TypedQuery<Product> query = em.createQuery(jpql.toString(), Product.class);
+        TypedQuery<Product> query = JPAUtil.getEntityManager().createQuery(jpql.toString(), Product.class);
 
         if (categoryId != null) query.setParameter("categoryId", categoryId);
         if (status != null) query.setParameter("status", status);

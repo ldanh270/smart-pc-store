@@ -9,7 +9,7 @@ public class SupplierServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithNullRequest() {
-        SupplierService svc = new SupplierService(null, null);
+        SupplierService svc = new SupplierService(null);
         try {
             svc.create(null);
         } catch (IllegalArgumentException e) {
@@ -20,7 +20,7 @@ public class SupplierServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithBlankSupplierName() {
-        SupplierService svc = new SupplierService(null, null);
+        SupplierService svc = new SupplierService(null);
         SupplierRequestDto dto = new SupplierRequestDto();
         dto.supplierName = "   ";
         dto.leadTimeDays = 3;
@@ -35,7 +35,7 @@ public class SupplierServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateWithNegativeLeadTime() {
-        SupplierService svc = new SupplierService(null, null);
+        SupplierService svc = new SupplierService(null);
         SupplierRequestDto dto = new SupplierRequestDto();
         dto.supplierName = "ABC";
         dto.leadTimeDays = -1;
@@ -50,7 +50,7 @@ public class SupplierServiceValidationTest {
 
     @Test
     public void testToDtoMapping() {
-        SupplierService svc = new SupplierService(null, null);
+        SupplierService svc = new SupplierService(null);
         Supplier supplier = new Supplier();
         supplier.setId(1);
         supplier.setSupplierName("ABC Supplier");

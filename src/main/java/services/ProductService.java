@@ -4,12 +4,7 @@ import dao.JPAUtil;
 import dao.ProductDao;
 import dto.product.ProductRequestDto;
 import dto.product.ProductResponseDto;
-// import dao.SupplierDao;
-// import dao.CategoryDao;
 import entities.Product;
-// import entities.Supplier;
-// import entities.Category;
-import jakarta.persistence.EntityManager;
 
 import java.math.BigDecimal;
 import java.util.List;

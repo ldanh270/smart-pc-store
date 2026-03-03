@@ -1,7 +1,6 @@
 package dao;
 
 import entities.Supplier;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
@@ -12,13 +11,8 @@ import java.util.List;
  */
 public class SupplierDao extends GenericDao<Supplier> {
 
-    /**
-     * Constructor.
-     *
-     * @param em JPA EntityManager.
-     */
-    public SupplierDao(EntityManager em) {
-        super(Supplier.class, em);
+    public SupplierDao() {
+        super(Supplier.class);
     }
 
     /**
@@ -29,14 +23,14 @@ public class SupplierDao extends GenericDao<Supplier> {
      */
     public List<Supplier> searchByName(String keyword) {
         String jpql = "SELECT s FROM Supplier s WHERE s.status = true AND LOWER(s.supplierName) LIKE :kw";
-        return em.createQuery(jpql, Supplier.class)
+        return JPAUtil.getEntityManager().createQuery(jpql, Supplier.class)
                 .setParameter("kw", "%" + keyword.toLowerCase() + "%")
                 .getResultList();
     }
 
     public List<Supplier> findAllActive() {
         String jpql = "SELECT s FROM Supplier s WHERE s.status = true";
-        TypedQuery<Supplier> query = em.createQuery(jpql, Supplier.class);
+        TypedQuery<Supplier> query = JPAUtil.getEntityManager().createQuery(jpql, Supplier.class);
         return query.getResultList();
     }
 }

@@ -1,10 +1,10 @@
 package services;
 
+import dao.JPAUtil;
 import dao.SupplierDao;
 import dto.supplier.SupplierRequestDto;
 import dto.supplier.SupplierResponseDto;
 import entities.Supplier;
-import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,17 +16,14 @@ import java.util.stream.Collectors;
 public class SupplierService {
 
     private final SupplierDao supplierDao;
-    private final EntityManager em;
 
     /**
      * Constructor.
      *
      * @param supplierDao Supplier DAO.
-     * @param em JPA EntityManager.
      */
-    public SupplierService(SupplierDao supplierDao, EntityManager em) {
+    public SupplierService(SupplierDao supplierDao) {
         this.supplierDao = supplierDao;
-        this.em = em;
     }
 
     /**
@@ -65,12 +62,12 @@ public class SupplierService {
         apply(dto, supplier);
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             supplierDao.create(supplier);
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
             return toDto(supplier);
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }
@@ -89,12 +86,12 @@ public class SupplierService {
         apply(dto, existing);
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             Supplier merged = supplierDao.update(existing);
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
             return toDto(merged);
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }
@@ -109,12 +106,12 @@ public class SupplierService {
         if (existing == null) throw new IllegalArgumentException("Supplier not found");
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             existing.setStatus(false);
             supplierDao.update(existing);
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }

@@ -3,7 +3,6 @@ package servlets;
 import controllers.SupplierAnalyticsController;
 import dao.JPAUtil;
 import dao.SupplierPriceHistoryDao;
-import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,8 +18,8 @@ import java.io.IOException;
  */
 @WebServlet(name = "SupplierAnalyticsServlet", urlPatterns = {"/supplier-analytics/*"})
 public class SupplierAnalyticsServlet extends HttpServlet {
-    private SupplierAnalyticsController buildController(EntityManager em) {
-        SupplierAnalyticsService supplierAnalyticsService = new SupplierAnalyticsService(new SupplierPriceHistoryDao(em));
+    private SupplierAnalyticsController buildController() {
+        SupplierAnalyticsService supplierAnalyticsService = new SupplierAnalyticsService(new SupplierPriceHistoryDao());
         return new SupplierAnalyticsController(supplierAnalyticsService);
     }
 
@@ -30,8 +29,7 @@ public class SupplierAnalyticsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        EntityManager em = JPAUtil.getEntityManager();
-        SupplierAnalyticsController supplierAnalyticsController = buildController(em);
+        SupplierAnalyticsController supplierAnalyticsController = buildController();
         try {
             if ("/price-compare".equals(pathInfo)) {
                 supplierAnalyticsController.handlePriceCompare(req, resp);
@@ -45,7 +43,7 @@ public class SupplierAnalyticsServlet extends HttpServlet {
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
-            if (em.isOpen()) em.close();
+            JPAUtil.closeEntityManager();
         }
     }
 }

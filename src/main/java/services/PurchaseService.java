@@ -6,7 +6,6 @@ import dto.purchase.GoodsReceiptResponseDto;
 import dto.purchase.PurchaseOrderCreateRequestDto;
 import dto.purchase.PurchaseOrderResponseDto;
 import entities.*;
-import jakarta.persistence.EntityManager;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -34,7 +33,6 @@ public class PurchaseService {
     private final GoodsReceiptNoteDao goodsReceiptNoteDao;
     private final GoodsReceiptNoteItemDao goodsReceiptNoteItemDao;
     private final InventoryTransactionDao inventoryTransactionDao;
-    private final EntityManager em;
 
     /**
      * Constructor.
@@ -46,8 +44,7 @@ public class PurchaseService {
                            SupplierPriceHistoryDao supplierPriceHistoryDao,
                            GoodsReceiptNoteDao goodsReceiptNoteDao,
                            GoodsReceiptNoteItemDao goodsReceiptNoteItemDao,
-                           InventoryTransactionDao inventoryTransactionDao,
-                           EntityManager em) {
+                           InventoryTransactionDao inventoryTransactionDao) {
         this.purchaseOrderDao = purchaseOrderDao;
         this.purchaseOrderItemDao = purchaseOrderItemDao;
         this.supplierDao = supplierDao;
@@ -56,7 +53,6 @@ public class PurchaseService {
         this.goodsReceiptNoteDao = goodsReceiptNoteDao;
         this.goodsReceiptNoteItemDao = goodsReceiptNoteItemDao;
         this.inventoryTransactionDao = inventoryTransactionDao;
-        this.em = em;
     }
 
     /**
@@ -81,7 +77,7 @@ public class PurchaseService {
         List<PurchaseOrderItem> poItems = new ArrayList<>();
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             purchaseOrderDao.create(po);
 
             for (PurchaseOrderCreateRequestDto.Item itemDto : dto.items) {
@@ -101,10 +97,10 @@ public class PurchaseService {
                 poItems.add(item);
             }
 
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
             return toPoDto(po, poItems);
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }
@@ -156,7 +152,7 @@ public class PurchaseService {
         List<GoodsReceiptNoteItem> grnItems = new ArrayList<>();
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             goodsReceiptNoteDao.create(grn);
 
             for (GoodsReceiptRequestDto.Item itemDto : dto.items) {
@@ -196,10 +192,10 @@ public class PurchaseService {
             po.setStatus(resolvePoStatus(poId, poItems));
             purchaseOrderDao.update(po);
 
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
             return toGrnDto(grn, grnItems);
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }

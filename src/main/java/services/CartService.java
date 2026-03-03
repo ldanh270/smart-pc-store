@@ -19,7 +19,7 @@ import java.util.List;
  * - Perform DB changes in transactions
  *
  * Important:
- * - This service uses DAO's EntityManager transaction boundaries explicitly.
+ * - This service uses JPAUtil-backed DAO transaction boundaries explicitly.
  * - Any exception inside transaction will rollback and rethrow.
  */
 public class CartService {

@@ -1,21 +1,14 @@
 package dao;
 
 import entities.GoodsReceiptNoteItem;
-import jakarta.persistence.EntityManager;
 
 /**
  * Data Access Object (DAO) for GoodsReceiptNoteItem entity.
  * Supports aggregate queries for received quantities.
  */
 public class GoodsReceiptNoteItemDao extends GenericDao<GoodsReceiptNoteItem> {
-
-    /**
-     * Constructor.
-     *
-     * @param em JPA EntityManager.
-     */
-    public GoodsReceiptNoteItemDao(EntityManager em) {
-        super(GoodsReceiptNoteItem.class, em);
+    public GoodsReceiptNoteItemDao() {
+        super(GoodsReceiptNoteItem.class);
     }
 
     /**
@@ -29,7 +22,7 @@ public class GoodsReceiptNoteItemDao extends GenericDao<GoodsReceiptNoteItem> {
         String jpql = "SELECT COALESCE(SUM(i.quantityReceived), 0) " +
                 "FROM GoodsReceiptNoteItem i " +
                 "WHERE i.grn.po.id = :poId AND i.product.id = :productId";
-        Long value = em.createQuery(jpql, Long.class)
+        Long value = JPAUtil.getEntityManager().createQuery(jpql, Long.class)
                 .setParameter("poId", poId)
                 .setParameter("productId", productId)
                 .getSingleResult();

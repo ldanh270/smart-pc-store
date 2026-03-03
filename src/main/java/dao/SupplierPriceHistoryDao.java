@@ -1,7 +1,6 @@
 package dao;
 
 import entities.SupplierPriceHistory;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
@@ -11,14 +10,8 @@ import java.util.List;
  * Supports quotation history retrieval and latest-price lookups.
  */
 public class SupplierPriceHistoryDao extends GenericDao<SupplierPriceHistory> {
-
-    /**
-     * Constructor.
-     *
-     * @param em JPA EntityManager.
-     */
-    public SupplierPriceHistoryDao(EntityManager em) {
-        super(SupplierPriceHistory.class, em);
+    public SupplierPriceHistoryDao() {
+        super(SupplierPriceHistory.class);
     }
 
     /**
@@ -32,7 +25,7 @@ public class SupplierPriceHistoryDao extends GenericDao<SupplierPriceHistory> {
         String jpql = "SELECT h FROM SupplierPriceHistory h " +
                 "WHERE h.product.id = :productId AND h.supplier.id = :supplierId " +
                 "ORDER BY h.effectiveDate ASC";
-        return em.createQuery(jpql, SupplierPriceHistory.class)
+        return JPAUtil.getEntityManager().createQuery(jpql, SupplierPriceHistory.class)
                 .setParameter("productId", productId)
                 .setParameter("supplierId", supplierId)
                 .getResultList();
@@ -49,7 +42,7 @@ public class SupplierPriceHistoryDao extends GenericDao<SupplierPriceHistory> {
         String jpql = "SELECT h FROM SupplierPriceHistory h " +
                 "WHERE h.product.id = :productId AND h.supplier.id = :supplierId " +
                 "ORDER BY h.effectiveDate DESC, h.id DESC";
-        List<SupplierPriceHistory> list = em.createQuery(jpql, SupplierPriceHistory.class)
+        List<SupplierPriceHistory> list = JPAUtil.getEntityManager().createQuery(jpql, SupplierPriceHistory.class)
                 .setParameter("productId", productId)
                 .setParameter("supplierId", supplierId)
                 .setMaxResults(1)
@@ -71,7 +64,7 @@ public class SupplierPriceHistoryDao extends GenericDao<SupplierPriceHistory> {
                 "  WHERE h2.product.id = :productId AND h2.supplier.id = h.supplier.id" +
                 ") " +
                 "ORDER BY h.importPrice ASC";
-        TypedQuery<SupplierPriceHistory> query = em.createQuery(jpql, SupplierPriceHistory.class);
+        TypedQuery<SupplierPriceHistory> query = JPAUtil.getEntityManager().createQuery(jpql, SupplierPriceHistory.class);
         query.setParameter("productId", productId);
         return query.getResultList();
     }

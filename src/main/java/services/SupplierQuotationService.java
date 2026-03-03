@@ -1,12 +1,12 @@
 package services;
 
 import dao.SupplierPriceHistoryDao;
+import dao.JPAUtil;
 import dto.supplierquotation.SupplierQuotationRequestDto;
 import dto.supplierquotation.SupplierQuotationResponseDto;
 import entities.Product;
 import entities.Supplier;
 import entities.SupplierPriceHistory;
-import jakarta.persistence.EntityManager;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,17 +21,14 @@ import java.util.stream.Collectors;
 public class SupplierQuotationService {
 
     private final SupplierPriceHistoryDao priceHistoryDao;
-    private final EntityManager em;
 
     /**
      * Constructor.
      *
      * @param priceHistoryDao Supplier price history DAO.
-     * @param em JPA EntityManager.
      */
-    public SupplierQuotationService(SupplierPriceHistoryDao priceHistoryDao, EntityManager em) {
+    public SupplierQuotationService(SupplierPriceHistoryDao priceHistoryDao) {
         this.priceHistoryDao = priceHistoryDao;
-        this.em = em;
     }
 
     /**
@@ -42,9 +39,9 @@ public class SupplierQuotationService {
      */
     public SupplierQuotationResponseDto create(SupplierQuotationRequestDto dto) {
         validate(dto);
-        Supplier supplier = em.find(Supplier.class, dto.supplierId);
+        Supplier supplier = JPAUtil.getEntityManager().find(Supplier.class, dto.supplierId);
         if (supplier == null) throw new IllegalArgumentException("Supplier not found");
-        Product product = em.find(Product.class, dto.productId);
+        Product product = JPAUtil.getEntityManager().find(Product.class, dto.productId);
         if (product == null) throw new IllegalArgumentException("Product not found");
 
         SupplierPriceHistory history = new SupplierPriceHistory();
@@ -54,12 +51,12 @@ public class SupplierQuotationService {
         history.setEffectiveDate(parseDateOrToday(dto.effectiveDate));
 
         try {
-            em.getTransaction().begin();
+            JPAUtil.getEntityManager().getTransaction().begin();
             priceHistoryDao.create(history);
-            em.getTransaction().commit();
+            JPAUtil.getEntityManager().getTransaction().commit();
             return toDto(history);
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
             throw e;
         }
     }

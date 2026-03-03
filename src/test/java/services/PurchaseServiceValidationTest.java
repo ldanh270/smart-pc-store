@@ -11,7 +11,7 @@ public class PurchaseServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreatePoWithNullRequest() {
-        PurchaseService svc = new PurchaseService(null, null, null, null, null, null, null, null, null);
+        PurchaseService svc = new PurchaseService(null, null, null, null, null, null, null, null);
         try {
             svc.createPurchaseOrder(null);
         } catch (IllegalArgumentException e) {
@@ -22,7 +22,7 @@ public class PurchaseServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreatePoWithMissingProductId() {
-        PurchaseService svc = new PurchaseService(null, null, null, null, null, null, null, null, null);
+        PurchaseService svc = new PurchaseService(null, null, null, null, null, null, null, null);
 
         PurchaseOrderCreateRequestDto dto = new PurchaseOrderCreateRequestDto();
         dto.supplierId = 1;
@@ -44,7 +44,7 @@ public class PurchaseServiceValidationTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreatePoWithInvalidUnitPrice() {
-        PurchaseService svc = new PurchaseService(null, null, null, null, null, null, null, null, null);
+        PurchaseService svc = new PurchaseService(null, null, null, null, null, null, null, null);
 
         PurchaseOrderCreateRequestDto dto = new PurchaseOrderCreateRequestDto();
         dto.supplierId = 1;
