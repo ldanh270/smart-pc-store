@@ -21,6 +21,7 @@ import java.net.URL;
  * CheckTransactionServlet handles checking transaction status via SePay API.
  * Endpoint: GET /check-transaction
  */
+@WebServlet("/check-transaction")
 public class CheckTransactionServlet extends HttpServlet {
 
     // API Token của SePay (Giữ bí mật ở phía server)

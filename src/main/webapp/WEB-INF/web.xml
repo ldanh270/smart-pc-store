@@ -25,25 +25,6 @@
         <url-pattern>/payments/checkout</url-pattern>
     </filter-mapping>
 
-    <!-- Explicit Servlet Mappings for the new features -->
-    <servlet>
-        <servlet-name>PaymentServlet</servlet-name>
-        <servlet-class>servlets.PaymentServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>PaymentServlet</servlet-name>
-        <url-pattern>/payment</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>CheckTransactionServlet</servlet-name>
-        <servlet-class>servlets.CheckTransactionServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>CheckTransactionServlet</servlet-name>
-        <url-pattern>/check-transaction</url-pattern>
-    </servlet-mapping>
-
     <!-- Welcome File List -->
     <welcome-file-list>
         <welcome-file>testPayment.jsp</welcome-file>

@@ -12,29 +12,64 @@ import java.util.Random;
 /**
  * Servlet xử lý tạo mã giao dịch và build link thanh toán QR.
  */
+@WebServlet("/payment")
 public class PaymentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        String orderId = request.getParameter("orderId");
-        if (orderId != null && !orderId.isEmpty()) {
+        String orderIdentifier = request.getParameter("orderId");
+        if (orderIdentifier != null && !orderIdentifier.isEmpty()) {
             try {
                 dao.OrderDAO orderDAO = new dao.OrderDAO();
-                entities.OrderModel order = orderDAO.getOrderById(Integer.parseInt(orderId));
+                entities.OrderModel order = null;
+                
+                try {
+                    // 1. Thử tìm theo ID số (khóa chính)
+                    int id = Integer.parseInt(orderIdentifier);
+                    order = orderDAO.getOrderById(id);
+                } catch (NumberFormatException e) {
+                    // Không phải số -> Chuyển sang tìm theo mã đơn hàng (orderCode)
+                    order = null; 
+                }
+                
+                // 2. Nếu tìm theo ID không ra (hoặc không phải số), thử tìm theo mã DHxxxx
+                if (order == null) {
+                    order = orderDAO.getOrderByCode(orderIdentifier);
+                }
+
                 if (order != null) {
-                    request.setAttribute("amount", order.getAmount());
-                    request.setAttribute("transactionCode", order.getTransactionCode());
+                    String transactionCode = order.getTransactionCode();
+                    double amount = order.getAmount();
                     
                     String qrUrl = String.format(
                         "https://qr.sepay.vn/img?acc=VQRQAELYF2308&bank=MBBank&amount=%.0f&des=%s",
-                        order.getAmount(), order.getTransactionCode()
+                        amount, transactionCode
                     );
-                    request.setAttribute("qrUrl", qrUrl);
-                    request.getSession().setAttribute("currentTransactionCode", order.getTransactionCode());
+                    
+                    if (isApiRequest(request)) {
+                        java.util.Map<String, Object> result = new java.util.HashMap<>();
+                        result.put("amount", amount);
+                        result.put("transactionCode", transactionCode);
+                        result.put("qrUrl", qrUrl);
+                        utils.HttpUtil.sendJson(response, HttpServletResponse.SC_OK, result);
+                        return;
+                    } else {
+                        request.setAttribute("amount", amount);
+                        request.setAttribute("transactionCode", transactionCode);
+                        request.setAttribute("qrUrl", qrUrl);
+                        request.getSession().setAttribute("currentTransactionCode", transactionCode);
+                    }
+                } else if (isApiRequest(request)) {
+                    utils.HttpUtil.sendJson(response, HttpServletResponse.SC_NOT_FOUND, "Order not found with identifier: " + orderIdentifier);
+                    return;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                if (isApiRequest(request)) {
+                    utils.HttpUtil.sendJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error: " + e.getMessage());
+                    return;
+                }
             }
         }
         // Chuyển hướng người dùng đến trang JSP khi truy cập GET /payment
@@ -47,17 +82,17 @@ public class PaymentServlet extends HttpServlet {
         
         try {
             // 1. Lấy số tiền từ input (amount)
-            String amount = request.getParameter("amount");
+            String amountStr = request.getParameter("amount");
             
             // Nếu là request JSON (từ Postman/AJAX), có thể amount nằm trong body
-            if (amount == null && request.getContentType() != null && request.getContentType().contains("application/json")) {
+            if (amountStr == null && request.getContentType() != null && request.getContentType().contains("application/json")) {
                 java.util.Map<String, Object> body = new com.google.gson.Gson().fromJson(request.getReader(), java.util.Map.class);
                 if (body != null && body.get("amount") != null) {
-                    amount = body.get("amount").toString();
+                    amountStr = body.get("amount").toString();
                 }
             }
 
-            if (amount == null || amount.isEmpty()) {
+            if (amountStr == null || amountStr.isEmpty()) {
                 if (isApiRequest(request)) {
                     utils.HttpUtil.sendJson(response, HttpServletResponse.SC_BAD_REQUEST, "Amount is required");
                 } else {
@@ -66,6 +101,7 @@ public class PaymentServlet extends HttpServlet {
                 return;
             }
             
+            double amount = Double.parseDouble(amountStr);
             // 2. Tạo chuỗi ngẫu nhiên 8 ký tự (chữ hoa, chữ thường, số)
             String transactionCode = generateRandomString(8);
 
@@ -74,7 +110,7 @@ public class PaymentServlet extends HttpServlet {
             entities.OrderModel newOrder = new entities.OrderModel();
             String orderCode = "DH" + (System.currentTimeMillis() % 1000000);
             newOrder.setOrderCode(orderCode);
-            newOrder.setAmount(Double.parseDouble(amount));
+            newOrder.setAmount(amount);
             newOrder.setTransactionCode(transactionCode);
             newOrder.setStatus("PENDING");
             newOrder.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
@@ -88,7 +124,7 @@ public class PaymentServlet extends HttpServlet {
             // https://qr.sepay.vn/img?acc=VQRQAELYF2308&bank=MBBank&amount=SO_TIEN&des=MA_GIAO_DICH
             String qrUrl = String.format(
                 "https://qr.sepay.vn/img?acc=VQRQAELYF2308&bank=MBBank&amount=%.0f&des=%s",
-                Double.parseDouble(amount), transactionCode
+                amount, transactionCode
             );
             
             // Lưu mã giao dịch vào Session để servlet kiểm tra có thể lấy ra đối chiếu
@@ -96,10 +132,10 @@ public class PaymentServlet extends HttpServlet {
 
             // 4. Trả về kết quả tùy theo loại request
             if (isApiRequest(request)) {
-                java.util.Map<String, String> result = new java.util.HashMap<>();
-                result.put("qrUrl", qrUrl);
-                result.put("transactionCode", transactionCode);
+                java.util.Map<String, Object> result = new java.util.HashMap<>();
                 result.put("amount", amount);
+                result.put("transactionCode", transactionCode);
+                result.put("qrUrl", qrUrl);
                 utils.HttpUtil.sendJson(response, HttpServletResponse.SC_OK, result);
             } else {
                 // Gửi dữ liệu sang JSP để hiển thị
