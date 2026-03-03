@@ -1,7 +1,6 @@
 package dao;
 
 import entities.User;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 /**
@@ -13,15 +12,6 @@ public class UserDao extends GenericDao<User> {
      */
     public UserDao() {
         super(User.class);
-    }
-
-    /**
-     * Constructor with EntityManager injection
-     *
-     * @param em the EntityManager to use
-     */
-    public UserDao(EntityManager em) {
-        super(User.class, em);
     }
 
     /**

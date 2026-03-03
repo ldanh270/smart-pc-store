@@ -1,7 +1,6 @@
 package dao;
 
 import entities.Session;
-import jakarta.persistence.EntityManager;
 
 /**
  * Data Access Object for Session entity.
@@ -9,10 +8,6 @@ import jakarta.persistence.EntityManager;
 public class SessionDao extends GenericDao<Session> {
     public SessionDao() {
         super(entities.Session.class);
-    }
-
-    public SessionDao(EntityManager em) {
-        super(entities.Session.class, em);
     }
 
     /**

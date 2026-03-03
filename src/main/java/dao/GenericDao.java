@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class GenericDao<T> {
     private final Class<T> entityClass;
-    private EntityManager em;
 
     /**
      * Constructor
@@ -24,16 +23,7 @@ public class GenericDao<T> {
         this.entityClass = entityClass;
     }
 
-    /**
-     * Constructor with EntityManager injection
-     *
-     * @param entityClass the entity class
-     * @param em          the EntityManager to use
-     */
-    public GenericDao(Class<T> entityClass, EntityManager em) {
-        this.entityClass = entityClass;
-        this.em = em;
-    }
+
 
     /**
      * Get the EntityManager
@@ -41,9 +31,6 @@ public class GenericDao<T> {
      * @return the entity manager
      */
     public EntityManager getEntityManager() {
-        if (this.em != null && this.em.isOpen()) {
-            return this.em;
-        }
         return JPAUtil.getEntityManager();
     }
 

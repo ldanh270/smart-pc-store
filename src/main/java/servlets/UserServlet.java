@@ -1,9 +1,10 @@
 package servlets;
 
 import controllers.UserController;
-import dao.JPAUtil;
+import dao.GenericDao;
 import dao.JPAUtil;
 import dao.UserDao;
+import entities.User;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,41 +19,42 @@ import java.io.IOException;
 /**
  * UserServlet
  *
- * Routes:
- * - GET /users => list users
- * - GET /users/{id} => detail
- * - POST /users => create
- * - PUT /users/{id} => update
- * - DELETE /users/{id} => delete
+ * Routes: - GET /users => list users - GET /users/{id} => detail - POST /users
+ * => create - PUT /users/{id} => update - DELETE /users/{id} => delete
  */
-@WebServlet(name = "UserServlet", urlPatterns = { "/users/*" })
+@WebServlet(name = "UserServlet", urlPatterns = {"/users/*"})
 public class UserServlet extends HttpServlet {
 
-    private UserController buildController(EntityManager em) {
-        UserDao userDao = new UserDao(em);
-        UserService userService = new UserService(userDao);
-        return new UserController(userService);
+    // Dependency Injection
+    private UserController userController;
+
+    @Override
+    public void init() {
+        UserDao userDao = new UserDao();
+        UserService cartService = new UserService(userDao);
+        this.userController = new UserController(cartService);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String pathInfo = req.getPathInfo(); // null or "/{id}"
-        try (EntityManager em = JPAUtil.getEntityManager()) {
-            UserController controller = buildController(em);
+
+        try {
+            String pathInfo = req.getPathInfo(); // null or "/{id}"
 
             if (pathInfo == null || "/".equals(pathInfo)) {
-                controller.handleGetAll(req, resp);
+                userController.handleGetAll(req, resp);
                 return;
             }
 
             // GET /users/{id}
-            Integer id = Integer.parseInt(pathInfo.substring(1));
-            controller.handleGetById(req, resp, id);
+            Integer id = Integer.valueOf(pathInfo.substring(1));
+            userController.handleGetById(req, resp, id);
 
         } catch (NumberFormatException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid user id");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        } catch (IOException e) {
+            System.err.println("ERROR UserServlet - doGet: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -64,7 +66,7 @@ public class UserServlet extends HttpServlet {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
                 return;
             }
-            buildController(em).handleCreate(req, resp);
+            userController.handleCreate(req, resp);
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
@@ -73,16 +75,16 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo(); // "/{id}"
-        try (EntityManager em = JPAUtil.getEntityManager()) {
+        try {
             if (pathInfo == null || "/".equals(pathInfo)) {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing user id");
                 return;
             }
-            Integer id = Integer.parseInt(pathInfo.substring(1));
-            buildController(em).handleUpdate(req, resp, id);
+            Integer id = Integer.valueOf(pathInfo.substring(1));
+            userController.handleUpdate(req, resp, id);
         } catch (NumberFormatException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid user id");
-        } catch (Exception e) {
+        } catch (IOException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
@@ -90,16 +92,16 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo(); // "/{id}"
-        try (EntityManager em = JPAUtil.getEntityManager()) {
+        try {
             if (pathInfo == null || "/".equals(pathInfo)) {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing user id");
                 return;
             }
-            Integer id = Integer.parseInt(pathInfo.substring(1));
-            buildController(em).handleDelete(req, resp, id);
+            Integer id = Integer.valueOf(pathInfo.substring(1));
+            userController.handleDelete(req, resp, id);
         } catch (NumberFormatException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid user id");
-        } catch (Exception e) {
+        } catch (IOException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
