@@ -18,11 +18,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter implements Filter {
 
     @Override
-    public void doFilter(
-            ServletRequest request,
-            ServletResponse response,
-            FilterChain chain
-    ) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
         // Cast to HttpServletRequest and HttpServletResponse to access HTTP-specific methods
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
