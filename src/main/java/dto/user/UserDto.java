@@ -11,6 +11,17 @@ public class UserDto {
     private String phone;
     private String address;
     private String status;
+    private String role;
+
+    public UserDto(int id, String username, String fullName, String email, String phone, String address, String status) {
+        this.id = id;
+        this.username = username;
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.status = status;
+    }
 
     /**
      * Constructor to initialize all fields of UserDto.
@@ -30,7 +41,8 @@ public class UserDto {
             String email,
             String phone,
             String address,
-            String status
+            String status,
+            String role
     ) {
         this.id = id;
         this.username = username;
@@ -39,6 +51,7 @@ public class UserDto {
         this.phone = phone;
         this.address = address;
         this.status = status;
+        this.role = role;
     }
 
     public int getId() {
@@ -95,5 +108,13 @@ public class UserDto {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

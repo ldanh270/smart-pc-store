@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import controllers.CategoryController;
 import dao.CategoryDao;
+import dao.JPAUtil;
 import dao.ProductDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -60,6 +61,8 @@ public class CategoryServlet extends HttpServlet {
         } catch (Exception e) {
             System.err.println("ERROR CategoryServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+        } finally {
+            JPAUtil.closeEntityManager();
         }
     }
 
@@ -84,6 +87,8 @@ public class CategoryServlet extends HttpServlet {
         } catch (Exception e) {
             System.err.println("ERROR CategoryServlet - doPost: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+        } finally {
+            JPAUtil.closeEntityManager();
         }
     }
 
@@ -108,6 +113,8 @@ public class CategoryServlet extends HttpServlet {
         } catch (Exception e) {
             System.err.println("ERROR CategoryServlet - doPut: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+        } finally {
+            JPAUtil.closeEntityManager();
         }
     }
 
@@ -132,6 +139,8 @@ public class CategoryServlet extends HttpServlet {
         } catch (Exception e) {
             System.err.println("ERROR CategoryServlet - doDelete: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+        } finally {
+            JPAUtil.closeEntityManager();
         }
     }
 }

@@ -1,7 +1,6 @@
 package dao;
 
 import entities.Product;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
 import java.util.List;
