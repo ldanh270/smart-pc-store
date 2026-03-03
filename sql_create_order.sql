@@ -1,0 +1,9 @@
+CREATE TABLE Orders (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    orderCode NVARCHAR(20) NOT NULL UNIQUE,
+    amount FLOAT NOT NULL,
+    transactionCode NVARCHAR(8) NOT NULL,
+    status NVARCHAR(20) DEFAULT 'PENDING',
+    createdAt DATETIME DEFAULT GETDATE()
+);
+GO

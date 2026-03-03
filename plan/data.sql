@@ -10,7 +10,7 @@ DELETE FROM DemandForecasts;
 DELETE FROM PriceForecasts;
 DELETE FROM RevenueDaily;
 DELETE FROM Payments;
-DELETE FROM OrderItems;
+DELETE FROM OrderDetails;
 DELETE FROM Orders;
 DELETE FROM CartItems;
 DELETE FROM Carts;
@@ -67,13 +67,13 @@ SET IDENTITY_INSERT Suppliers OFF;
 -- ---------------- PRODUCTS ----------------
 -- Lưu ý: SupplierId và CategoryId phải khớp với ID ở trên (1-4 và 1-5)
 SET IDENTITY_INSERT Products ON;
-INSERT INTO Products (Id, ProductName, SupplierId, CategoryId, Description, CurrentPrice, Quantity) VALUES 
-(1, 'Core i9-14900K', 1, 1, 'Intel Gen 14 Flagship', 600.00, 50),
-(2, 'Core i5-13600K', 1, 1, 'Intel Mid-range King', 300.00, 100),
-(3, 'RTX 4090 OC', 2, 2, 'Top Tier Gaming GPU', 1800.00, 10),
-(4, 'RTX 4070 Ti', 2, 2, 'High Performance GPU', 800.00, 25),
-(5, 'Samsung 990 Pro 1TB', 3, 4, 'Fastest NVMe SSD', 150.00, 200),
-(6, 'ROG Maximus Z790', 4, 5, 'Extreme Mainboard', 500.00, 15);
+INSERT INTO Products (Id, ProductName, SupplierId, CategoryId, Description, ImageUrl, CurrentPrice, Quantity) VALUES 
+(1, 'Core i9-14900K', 1, 1, 'Intel Gen 14 Flagship', 'https://example.com/i9.jpg', 600.00, 50),
+(2, 'Core i5-13600K', 1, 1, 'Intel Mid-range King', 'https://example.com/i5.jpg', 300.00, 100),
+(3, 'RTX 4090 OC', 2, 2, 'Top Tier Gaming GPU', 'https://example.com/4090.jpg', 1800.00, 10),
+(4, 'RTX 4070 Ti', 2, 2, 'High Performance GPU', 'https://example.com/4070.jpg', 800.00, 25),
+(5, 'Samsung 990 Pro 1TB', 3, 4, 'Fastest NVMe SSD', 'https://example.com/990pro.jpg', 150.00, 200),
+(6, 'ROG Maximus Z790', 4, 5, 'Extreme Mainboard', 'https://example.com/z790.jpg', 500.00, 15);
 SET IDENTITY_INSERT Products OFF;
 
 -- ---------------- HISTORY ----------------
@@ -138,19 +138,19 @@ SET IDENTITY_INSERT CartItems OFF;
 
 -- ---------------- ORDERS ----------------
 SET IDENTITY_INSERT Orders ON;
-INSERT INTO Orders (Id, UserId, OrderDate, Status, TotalAmount) VALUES 
-(1, 2, '2025-02-10 08:30:00', 'Completed', 750.00),
-(2, 3, '2025-02-11 09:00:00', 'Processing', 300.00),
-(3, 5, '2025-02-12 14:00:00', 'Cancelled', 1800.00);
+INSERT INTO Orders (Id, orderCode, amount, transactionCode, status, createdAt, UserId) VALUES 
+(1, 'DH2025021001', 750.00, 'TXN00001', 'Completed', '2025-02-10 08:30:00', 2),
+(2, 'DH2025021102', 300.00, 'TXN00002', 'PENDING', '2025-02-11 09:00:00', 3),
+(3, 'DH2025021203', 1800.00, 'TXN00003', 'CANCELLED', '2025-02-12 14:00:00', 5);
 SET IDENTITY_INSERT Orders OFF;
 
-SET IDENTITY_INSERT OrderItems ON;
-INSERT INTO OrderItems (Id, OrderId, ProductId, Quantity, UnitPrice) VALUES 
+SET IDENTITY_INSERT OrderDetails ON;
+INSERT INTO OrderDetails (Id, OrderId, ProductId, Quantity, UnitPrice) VALUES 
 (1, 1, 1, 1, 600.00),
 (2, 1, 5, 1, 150.00),
 (3, 2, 2, 1, 300.00),
 (4, 3, 3, 1, 1800.00);
-SET IDENTITY_INSERT OrderItems OFF;
+SET IDENTITY_INSERT OrderDetails OFF;
 
 -- ---------------- PAYMENTS ----------------
 SET IDENTITY_INSERT Payments ON;
