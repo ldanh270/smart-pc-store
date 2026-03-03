@@ -99,7 +99,7 @@ public class AuthService {
 
         try {
             // Create access token (JWT)
-            String accessToken = JwtUtil.generateAccessToken(user.getId());
+            String accessToken = JwtUtil.generateAccessToken(user.getId(),user.getUsername(),user.getRole());
 
             // // Create refresh token (UUID)
             String refreshToken = UUID.randomUUID().toString();
@@ -158,7 +158,11 @@ public class AuthService {
 
         try {
             // Generate new access token
-            String newAccessToken = JwtUtil.generateAccessToken(session.getUser().getId());
+            String newAccessToken = JwtUtil.generateAccessToken(
+                    session.getUser().getId(),
+                    session.getUser().getUsername(),
+                    session.getUser().getRole()
+            );
 
             // Return new access token
             return new AccessTokenResponseDto(true, newAccessToken, "Access token refreshed successfully");

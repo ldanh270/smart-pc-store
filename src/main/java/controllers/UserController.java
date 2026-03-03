@@ -25,7 +25,7 @@ import java.util.List;
  * <p>
  * Note:
  * - Requires Authorization: Bearer <token> (same pattern as Cart/Auth)
- * - No role-based access control in current project (JWT contains only userId).
+ * - Role-based access is enforced by RoleAuthorizationFilter.
  */
 public class UserController {
 
