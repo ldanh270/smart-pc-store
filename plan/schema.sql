@@ -76,7 +76,10 @@ GO
 CREATE TABLE Categories (
     Id           INT PRIMARY KEY IDENTITY(1,1),
     CategoryName NVARCHAR(255),
-    Description  NVARCHAR(255)
+    Description  NVARCHAR(255),
+    ImageUrl     NVARCHAR(500),
+    Status       BIT NOT NULL DEFAULT 1,
+    ParentId     INT NULL
 );
 GO
 

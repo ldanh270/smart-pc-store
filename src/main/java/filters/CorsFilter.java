@@ -16,41 +16,30 @@ import java.io.IOException;
 public class CorsFilter implements Filter {
 
     @Override
-    public void doFilter(
-            ServletRequest request,
-            ServletResponse response,
-            FilterChain chain
-    ) throws IOException, ServletException {
-        // Cast to HTTP-specific request and response objects
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+
         HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse res = getHttpServletResponse((HttpServletResponse) response);
+        HttpServletResponse res = (HttpServletResponse) response;
+
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+        res.setHeader("Access-Control-Max-Age", "3600");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
+
+        if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
+            res.setStatus(HttpServletResponse.SC_OK);
+            return;
+        }
 
         try {
-            // If the request method is OPTIONS, we can return immediately with the appropriate headers
-            if ("OPTIONS".equalsIgnoreCase(req.getMethod())) {
-                res.setStatus(HttpServletResponse.SC_OK);
-                return;
-            }
-            // Continue with the filter chain for other HTTP methods
-            chain.doFilter(request, res);
+            chain.doFilter(request, response);
         } catch (Exception e) {
-            System.out.println("ERROR CorsFilter - doFilter: " + e.getMessage());
-            HttpUtil.sendJson(res, HttpServletResponse.SC_UNAUTHORIZED, "Internal Server Error");
+            System.err.println("ERROR CorsFilter: " + e.getMessage());
+            if (!res.isCommitted()) {
+                res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            }
         }
-    }
-
-    /**
-     * Helper method to set CORS headers on the HTTP response.
-     *
-     * @param response The HttpServletResponse object to which CORS headers will be added.
-     * @return The modified HttpServletResponse with CORS headers set.
-     */
-    private static HttpServletResponse getHttpServletResponse(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-        response.setHeader("Access-Control-Max-Age", "3600");
-        return response;
     }
 }
