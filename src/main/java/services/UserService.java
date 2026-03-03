@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * UserService
- *
+ * <p>
  * Responsibilities:
  * - CRUD operations for User entity
  * - Validate uniqueness (username/email)
@@ -34,7 +34,8 @@ public class UserService {
                 u.getEmail(),
                 u.getPhone(),
                 u.getAddress(),
-                u.getStatus());
+                u.getStatus(),
+                u.getRole());
     }
 
     public List<UserDto> getAll() {
@@ -130,6 +131,9 @@ public class UserService {
                 u.setPasswordHash(passwordHash);
             }
 
+            if (dto.getRole() != null)
+                u.setRole(dto.getRole());
+
             userDao.update(u);
 
             userDao.getEntityManager().getTransaction().commit();
@@ -153,14 +157,14 @@ public class UserService {
 
             // 1. Delete Payments associated with the user's Orders
             em.createQuery(
-                    "DELETE FROM Payment p WHERE p.order.id IN " +
-                            "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
+                            "DELETE FROM Payment p WHERE p.order.id IN " +
+                                    "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
                     .setParameter("userId", id).executeUpdate();
 
             // 2. Delete OrderItems associated with the user's Orders
             em.createQuery(
-                    "DELETE FROM OrderItem oi WHERE oi.order.id IN " +
-                            "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
+                            "DELETE FROM OrderItem oi WHERE oi.order.id IN " +
+                                    "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
                     .setParameter("userId", id).executeUpdate();
 
             // 3. Delete Orders of user
@@ -169,8 +173,8 @@ public class UserService {
 
             // 4. Delete CartItems associated with the user's Carts
             em.createQuery(
-                    "DELETE FROM CartItem ci WHERE ci.cart.id IN " +
-                            "(SELECT c.id FROM Cart c WHERE c.user.id = :userId)")
+                            "DELETE FROM CartItem ci WHERE ci.cart.id IN " +
+                                    "(SELECT c.id FROM Cart c WHERE c.user.id = :userId)")
                     .setParameter("userId", id).executeUpdate();
 
             // 5. Delete Carts of user
