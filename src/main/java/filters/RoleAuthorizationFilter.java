@@ -62,14 +62,12 @@ public class RoleAuthorizationFilter implements Filter {
                 return;
             }
 
-            if (userEndpoint) {
-                if (!ROLE_USER.equals(role) && !ROLE_ADMIN.equals(role)) {
-                    HttpUtil.sendJson(res, HttpServletResponse.SC_FORBIDDEN, "Forbidden: user role required");
-                    return;
-                }
-                chain.doFilter(request, response);
+            if (!ROLE_USER.equals(role) && !ROLE_ADMIN.equals(role)) {
+                HttpUtil.sendJson(res, HttpServletResponse.SC_FORBIDDEN, "Forbidden: user role required");
                 return;
             }
+            chain.doFilter(request, response);
+            return;
         } catch (RuntimeException ex) {
             HttpUtil.sendJson(res, HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
         }
