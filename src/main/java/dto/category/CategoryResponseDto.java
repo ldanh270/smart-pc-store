@@ -1,7 +1,8 @@
 package dto.category;
 
-import dto.product.ProductResponseDto;
 import java.util.List;
+
+import dto.product.ProductResponseDto;
 
 /**
  * Data Transfer Object for category responses. Contains the category details

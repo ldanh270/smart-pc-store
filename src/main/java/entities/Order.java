@@ -19,16 +19,21 @@ public class Order {
     @JoinColumn(name = "UserId")
     private User user;
 
+    @Column(name = "orderCode", unique = true, nullable = false, length = 50)
+    private String orderCode;
+
+    @Column(name = "amount", nullable = false)
+    private Double amount;
+
+    @Column(name = "transactionCode", nullable = false, length = 10)
+    private String transactionCode;
+
     @ColumnDefault("getdate()")
-    @Column(name = "OrderDate")
-    private Instant orderDate;
+    @Column(name = "createdAt")
+    private Instant createdAt;
 
-    @Nationalized
-    @Column(name = "Status")
+    @Column(name = "status")
     private String status;
-
-    @Column(name = "TotalAmount", precision = 18, scale = 2)
-    private BigDecimal totalAmount;
 
     public Integer getId() {
         return id;
@@ -46,12 +51,36 @@ public class Order {
         this.user = user;
     }
 
-    public Instant getOrderDate() {
-        return orderDate;
+    public String getOrderCode() {
+        return orderCode;
     }
 
-    public void setOrderDate(Instant orderDate) {
-        this.orderDate = orderDate;
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public String getTransactionCode() {
+        return transactionCode;
+    }
+
+    public void setTransactionCode(String transactionCode) {
+        this.transactionCode = transactionCode;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getStatus() {
@@ -60,14 +89,6 @@ public class Order {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
     }
 
 }

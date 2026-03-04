@@ -7,6 +7,7 @@ import java.util.List;
  * Response DTO for goods receipt note details.
  */
 public class GoodsReceiptResponseDto {
+
     public Integer id;
     public Integer poId;
     public String receiptDate;
@@ -18,6 +19,7 @@ public class GoodsReceiptResponseDto {
      * GRN line item output.
      */
     public static class Item {
+
         public Integer productId;
         public String productName;
         public Integer quantityReceived;

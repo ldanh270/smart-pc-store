@@ -10,7 +10,7 @@ DELETE FROM DemandForecasts;
 DELETE FROM PriceForecasts;
 DELETE FROM RevenueDaily;
 DELETE FROM Payments;
-DELETE FROM OrderItems;
+DELETE FROM OrderDetails;
 DELETE FROM Orders;
 DELETE FROM CartItems;
 DELETE FROM Carts;
@@ -109,49 +109,47 @@ GO
 -- Lưu ý: SupplierId và CategoryId phải khớp với ID ở trên (1-4 và 1-5)
 -- ---------------- PRODUCTS ----------------
 SET IDENTITY_INSERT Products ON;
-
-INSERT INTO Products (Id, ProductName, SupplierId, CategoryId, Description, CurrentPrice, Quantity) VALUES 
+INSERT INTO Products (Id, ProductName, SupplierId, CategoryId, Description, ImageUrl, CurrentPrice, Quantity) VALUES 
 -- Nhóm CPU (CategoryId = 5)
-(1, N'Intel Core i9-14900K', 1, 5, N'Intel Gen 14 Flagship siêu mạnh', 14500000, 50),
-(2, N'Intel Core i5-13600K', 1, 5, N'Intel Mid-range King quốc dân', 7500000, 100),
-(3, N'AMD Ryzen 9 7950X', 2, 5, N'Hiệu năng đa nhân đỉnh cao cho Đồ họa', 13500000, 30),
+(1, N'Intel Core i9-14900K', 1, 5, N'Intel Gen 14 Flagship siêu mạnh', 'https://example.com/i9.jpg', 14500000, 50),
+(2, N'Intel Core i5-13600K', 1, 5, N'Intel Mid-range King quốc dân', 'https://example.com/i5.jpg', 7500000, 100),
+(3, N'AMD Ryzen 9 7950X', 2, 5, N'Hiệu năng đa nhân đỉnh cao cho Đồ họa', 'https://example.com/r9.jpg', 13500000, 30),
 
 -- Nhóm GPU (CategoryId = 6)
-(4, N'ASUS ROG Strix RTX 4090 OC 24GB', 3, 6, N'Top Tier Gaming GPU hiện nay', 55000000, 10),
-(5, N'GIGABYTE RTX 4070 Ti SUPER Windforce', 4, 6, N'High Performance GPU 2K Gaming', 22000000, 25),
-(6, N'MSI RTX 4060 Ventus 2X Black', 1, 6, N'Card màn hình quốc dân 1080p', 8500000, 60),
+(4, N'ASUS ROG Strix RTX 4090 OC 24GB', 3, 6, N'Top Tier Gaming GPU hiện nay', 'https://example.com/4090.jpg', 55000000, 10),
+(5, N'GIGABYTE RTX 4070 Ti SUPER Windforce', 4, 6, N'High Performance GPU 2K Gaming', 'https://example.com/4070.jpg', 22000000, 25),
+(6, N'MSI RTX 4060 Ventus 2X Black', 1, 6, N'Card màn hình quốc dân 1080p', 'https://example.com/4060.jpg', 8500000, 60),
 
 -- Nhóm RAM (CategoryId = 7)
-(7, N'Corsair Dominator Platinum RGB 32GB (2x16GB) DDR5', 1, 7, N'RAM DDR5 cao cấp có LED', 4500000, 40),
-(8, N'Kingston FURY Beast 16GB (2x8GB) DDR4', 2, 7, N'RAM DDR4 giá rẻ hiệu năng cao', 1200000, 100),
+(7, N'Corsair Dominator Platinum RGB 32GB (2x16GB) DDR5', 1, 7, N'RAM DDR5 cao cấp có LED', 'https://example.com/ram1.jpg', 4500000, 40),
+(8, N'Kingston FURY Beast 16GB (2x8GB) DDR4', 2, 7, N'RAM DDR4 giá rẻ hiệu năng cao', 'https://example.com/ram2.jpg', 1200000, 100),
 
 -- Nhóm Ổ Cứng (CategoryId = 8)
-(9, N'Samsung 990 Pro 1TB M.2 NVMe PCIe Gen 4.0', 3, 8, N'SSD NVMe tốc độ cao nhất', 2800000, 200),
-(10, N'WD Blue 2TB HDD 7200rpm', 4, 8, N'Ổ cứng HDD lưu trữ dung lượng cao', 1500000, 50),
+(9, N'Samsung 990 Pro 1TB M.2 NVMe PCIe Gen 4.0', 3, 8, N'SSD NVMe tốc độ cao nhất', 'https://example.com/990pro.jpg', 2800000, 200),
+(10, N'WD Blue 2TB HDD 7200rpm', 4, 8, N'Ổ cứng HDD lưu trữ dung lượng cao', 'https://example.com/hdd.jpg', 1500000, 50),
 
 -- Nhóm Mainboard (CategoryId = 9)
-(11, N'ASUS ROG Maximus Z790 Hero', 3, 9, N'Mainboard Extreme cho dân chơi', 16000000, 15),
-(12, N'MSI MAG B760M Mortar WiFi', 2, 9, N'Mainboard tầm trung m-ATX', 4500000, 40),
+(11, N'ASUS ROG Maximus Z790 Hero', 3, 9, N'Mainboard Extreme cho dân chơi', 'https://example.com/z790.jpg', 16000000, 15),
+(12, N'MSI MAG B760M Mortar WiFi', 2, 9, N'Mainboard tầm trung m-ATX', 'https://example.com/b760.jpg', 4500000, 40),
 
 -- Nhóm PC Gaming (CategoryId = 13)
-(13, N'PC Gaming Smart i5-13400F / RTX 4060', 1, 13, N'Chiến mượt mà mọi game eSport', 18500000, 10),
-(14, N'PC Gaming Smart i9-14900K / RTX 4090', 1, 13, N'Cỗ máy chiến game AAA tối thượng', 110000000, 3),
+(13, N'PC Gaming Smart i5-13400F / RTX 4060', 1, 13, N'Chiến mượt mà mọi game eSport', 'https://example.com/pc1.jpg', 18500000, 10),
+(14, N'PC Gaming Smart i9-14900K / RTX 4090', 1, 13, N'Cỗ máy chiến game AAA tối thượng', 'https://example.com/pc2.jpg', 110000000, 3),
 
 -- Nhóm Laptop Gaming (CategoryId = 16)
-(15, N'Acer Nitro 5 (Core i5, RTX 3050)', 2, 16, N'Laptop Gaming sinh viên', 19000000, 20),
-(16, N'ASUS ROG Zephyrus G14 (2024)', 3, 16, N'Laptop Gaming cao cấp mỏng nhẹ', 35000000, 8),
+(15, N'Acer Nitro 5 (Core i5, RTX 3050)', 2, 16, N'Laptop Gaming sinh viên', 'https://example.com/lap1.jpg', 19000000, 20),
+(16, N'ASUS ROG Zephyrus G14 (2024)', 3, 16, N'Laptop Gaming cao cấp mỏng nhẹ', 'https://example.com/lap2.jpg', 35000000, 8),
 
 -- Nhóm Màn Hình Gaming (CategoryId = 18)
-(17, N'LG UltraGear 27GN800-B 27 inch 144Hz', 4, 18, N'Màn hình Gaming 2K IPS', 6500000, 30),
-(18, N'Samsung Odyssey G9 49 inch cong', 3, 18, N'Màn hình cong siêu rộng', 28000000, 5),
+(17, N'LG UltraGear 27GN800-B 27 inch 144Hz', 4, 18, N'Màn hình Gaming 2K IPS', 'https://example.com/monitor1.jpg', 6500000, 30),
+(18, N'Samsung Odyssey G9 49 inch cong', 3, 18, N'Màn hình cong siêu rộng', 'https://example.com/monitor2.jpg', 28000000, 5),
 
 -- Nhóm Màn Hình Đồ Họa (CategoryId = 19)
-(19, N'DELL UltraSharp U2723QE 4K', 2, 19, N'Màn hình chuẩn màu thiết kế', 13500000, 15),
+(19, N'DELL UltraSharp U2723QE 4K', 2, 19, N'Màn hình chuẩn màu thiết kế', 'https://example.com/monitor3.jpg', 13500000, 15),
 
 -- Nhóm Phụ Kiện (CategoryId = 21 và 22)
-(20, N'Bàn phím cơ Akko 3098B Multi-modes', 3, 21, N'Bàn phím cơ không dây', 2200000, 45),
-(21, N'Chuột Logitech G Pro X Superlight 2', 1, 22, N'Chuột Gaming siêu nhẹ cho eSport', 3200000, 35);
-
+(20, N'Bàn phím cơ Akko 3098B Multi-modes', 3, 21, N'Bàn phím cơ không dây', 'https://example.com/kb.jpg', 2200000, 45),
+(21, N'Chuột Logitech G Pro X Superlight 2', 1, 22, N'Chuột Gaming siêu nhẹ cho eSport', 'https://example.com/mouse.jpg', 3200000, 35);
 SET IDENTITY_INSERT Products OFF;
 GO
 
@@ -217,19 +215,32 @@ SET IDENTITY_INSERT CartItems OFF;
 
 -- ---------------- ORDERS ----------------
 SET IDENTITY_INSERT Orders ON;
-INSERT INTO Orders (Id, UserId, OrderDate, Status, TotalAmount) VALUES 
-(1, 2, '2025-02-10 08:30:00', 'Completed', 750.00),
-(2, 3, '2025-02-11 09:00:00', 'Processing', 300.00),
-(3, 5, '2025-02-12 14:00:00', 'Cancelled', 1800.00);
+INSERT INTO Orders (Id, orderCode, amount, transactionCode, status, createdAt, UserId) VALUES 
+(1, 'DH2025021001', 750.00, 'TXN00001', 'Completed', '2025-02-10 08:30:00', 2),
+(2, 'DH2025021102', 300.00, 'TXN00002', 'PENDING', '2025-02-11 09:00:00', 3),
+(3, 'DH2025021203', 1800.00, 'TXN00003', 'CANCELLED', '2025-02-12 14:00:00', 5);
 SET IDENTITY_INSERT Orders OFF;
 
-SET IDENTITY_INSERT OrderItems ON;
-INSERT INTO OrderItems (Id, OrderId, ProductId, Quantity, UnitPrice) VALUES 
+/* ==========================================================================
+   7. EXTRA DATA
+   ========================================================================== */
+CREATE TABLE Orders_Extra (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    orderCode NVARCHAR(20) NOT NULL UNIQUE,
+    amount FLOAT NOT NULL,
+    transactionCode NVARCHAR(8) NOT NULL,
+    status NVARCHAR(20) DEFAULT 'PENDING',
+    createdAt DATETIME DEFAULT GETDATE()
+);
+GO
+
+SET IDENTITY_INSERT OrderDetails ON;
+INSERT INTO OrderDetails (Id, OrderId, ProductId, Quantity, UnitPrice) VALUES 
 (1, 1, 1, 1, 600.00),
 (2, 1, 5, 1, 150.00),
 (3, 2, 2, 1, 300.00),
 (4, 3, 3, 1, 1800.00);
-SET IDENTITY_INSERT OrderItems OFF;
+SET IDENTITY_INSERT OrderDetails OFF;
 
 -- ---------------- PAYMENTS ----------------
 SET IDENTITY_INSERT Payments ON;

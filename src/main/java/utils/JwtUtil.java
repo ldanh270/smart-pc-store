@@ -1,12 +1,5 @@
 package utils;
 
-import configs.JwtConfig;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.SecureRandom;
@@ -14,10 +7,18 @@ import java.util.Date;
 import java.util.HexFormat;
 import java.util.Locale;
 
+import configs.JwtConfig;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
 /**
  * Utility class for generating and validating JSON Web Tokens (JWT).
  */
 public class JwtUtil {
+
     private static final int BYTE_SIZE = 64;
 
     /**
@@ -87,17 +88,13 @@ public class JwtUtil {
     }
 
     /**
-     * Parse JWT from Authorization header and return userId.
-     * Header format: "Bearer <token>"
+     * Parse JWT from Authorization header and return userId. Header format:
+     * "Bearer <token>"
      */
     public static Integer getUserIdFromAuthorizationHeader(String header) {
         String token = extractBearerToken(header);
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            Claims claims = Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
             return ((Number) claims.get("userId")).intValue();
         } catch (JwtException e) {
             throw new RuntimeException("Invalid or expired token: " + e.getMessage());

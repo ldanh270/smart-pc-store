@@ -6,6 +6,7 @@ import dto.user.UserDto;
  * Data Transfer Object (DTO) for authentication responses.
  */
 public class LoginResponseDto {
+
     private boolean success;
     private String accessToken;
     private String refreshToken;

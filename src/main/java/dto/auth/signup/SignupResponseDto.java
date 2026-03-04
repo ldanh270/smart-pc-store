@@ -4,6 +4,7 @@ package dto.auth.signup;
  * Data Transfer Object for Signup Response
  */
 public class SignupResponseDto {
+
     private boolean success;
     private String message;
 

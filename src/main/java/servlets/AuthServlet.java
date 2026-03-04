@@ -1,8 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package servlets;
+
+import java.io.IOException;
 
 import controllers.AuthController;
 import dao.JPAUtil;
@@ -15,8 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.AuthService;
 import utils.HttpUtil;
-
-import java.io.IOException;
 
 /**
  * AuthServlet handles authentication-related HTTP requests.

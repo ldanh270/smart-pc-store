@@ -7,6 +7,7 @@ import java.util.List;
  * Response DTO for purchase order details.
  */
 public class PurchaseOrderResponseDto {
+
     public Integer id;
     public String poCode;
     public Integer supplierId;
@@ -21,6 +22,7 @@ public class PurchaseOrderResponseDto {
      * PO line item output.
      */
     public static class Item {
+
         public Integer id;
         public Integer productId;
         public String productName;

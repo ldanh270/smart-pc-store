@@ -1,5 +1,8 @@
 package controllers;
 
+import java.io.IOException;
+import java.util.List;
+
 import dto.ApiResponse;
 import dto.supplierquotation.SupplierQuotationRequestDto;
 import dto.supplierquotation.SupplierQuotationResponseDto;
@@ -8,19 +11,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.SupplierQuotationService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
- * Controller class for supplier quotation endpoints.
- * Handles quotation creation and history retrieval requests.
+ * Controller class for supplier quotation endpoints. Handles quotation creation
+ * and history retrieval requests.
  */
 public class SupplierQuotationController {
 
     private final SupplierQuotationService supplierQuotationService;
 
     /**
-     * Constructor.
+     * Constructor
      *
      * @param supplierQuotationService Supplier quotation service dependency.
      */
@@ -35,14 +35,20 @@ public class SupplierQuotationController {
         try {
             SupplierQuotationRequestDto dto = HttpUtil.jsonToClass(req.getReader(), SupplierQuotationRequestDto.class);
             SupplierQuotationResponseDto created = supplierQuotationService.create(dto);
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_CREATED, new ApiResponse<>(true, "Quotation created", created));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_CREATED,
+                    new ApiResponse<>(true, "Quotation created", created)
+            );
         } catch (IllegalArgumentException e) {
-            int status = ("Supplier not found".equals(e.getMessage()) || "Product not found".equals(e.getMessage()))
-                    ? HttpServletResponse.SC_NOT_FOUND
-                    : HttpServletResponse.SC_BAD_REQUEST;
+            int status = ("Supplier not found".equals(e.getMessage()) || "Product not found".equals(e.getMessage())) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
             HttpUtil.sendJson(resp, status, new ApiResponse<>(false, e.getMessage(), null));
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new ApiResponse<>(false, "Internal server error", null));
+        } catch (IOException e) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    new ApiResponse<>(false, "Internal server error", null)
+            );
         }
     }
 
@@ -51,15 +57,19 @@ public class SupplierQuotationController {
      */
     public void handleGetHistory(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            Integer productId = Integer.parseInt(req.getParameter("productId"));
-            Integer supplierId = Integer.parseInt(req.getParameter("supplierId"));
+            Integer productId = Integer.valueOf(req.getParameter("productId"));
+            Integer supplierId = Integer.valueOf(req.getParameter("supplierId"));
             List<SupplierQuotationResponseDto> history = supplierQuotationService.getHistory(productId, supplierId);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, history);
         } catch (NumberFormatException e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "productId and supplierId must be valid integers");
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "productId and supplierId must be valid integers"
+            );
         } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-        } catch (Exception e) {
+        } catch (IOException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }

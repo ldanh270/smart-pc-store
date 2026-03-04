@@ -6,6 +6,7 @@ import java.math.BigDecimal;
  * Response DTO for supplier quotation history records.
  */
 public class SupplierQuotationResponseDto {
+
     public Integer id;
     public Integer supplierId;
     public String supplierName;

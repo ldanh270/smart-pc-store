@@ -3,9 +3,9 @@ package dto.product;
 import java.math.BigDecimal;
 
 /**
- * Data Transfer Object for product response data.
- * Includes product details, related entity info (supplier, category), and computed stock status.
- * Returned by all product retrieval/modification endpoints.
+ * Data Transfer Object for product response data. Includes product details,
+ * related entity info (supplier, category), and computed stock status. Returned
+ * by all product retrieval/modification endpoints.
  */
 public class ProductResponseDto {
 

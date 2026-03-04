@@ -20,7 +20,7 @@ public class SupplierController {
     private final SupplierService supplierService;
 
     /**
-     * Constructor.
+     * Constructor
      *
      * @param supplierService Supplier service dependency.
      */
@@ -61,11 +61,19 @@ public class SupplierController {
         try {
             SupplierRequestDto dto = HttpUtil.jsonToClass(req.getReader(), SupplierRequestDto.class);
             SupplierResponseDto created = supplierService.create(dto);
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_CREATED, new ApiResponse<>(true, "Supplier created", created));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_CREATED,
+                    new ApiResponse<>(true, "Supplier created", created)
+            );
         } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, new ApiResponse<>(false, e.getMessage(), null));
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new ApiResponse<>(false, "Internal server error", null));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    new ApiResponse<>(false, "Internal server error", null)
+            );
         }
     }
 
@@ -79,12 +87,20 @@ public class SupplierController {
             SupplierResponseDto updated = supplierService.update(id, dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, new ApiResponse<>(true, "Supplier updated", updated));
         } catch (NumberFormatException e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, new ApiResponse<>(false, "Invalid supplier id", null));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    new ApiResponse<>(false, "Invalid supplier id", null)
+            );
         } catch (IllegalArgumentException e) {
             int status = "Supplier not found".equals(e.getMessage()) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
             HttpUtil.sendJson(resp, status, new ApiResponse<>(false, e.getMessage(), null));
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new ApiResponse<>(false, "Internal server error", null));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    new ApiResponse<>(false, "Internal server error", null)
+            );
         }
     }
 
@@ -97,12 +113,20 @@ public class SupplierController {
             supplierService.delete(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, new ApiResponse<>(true, "Supplier deactivated", null));
         } catch (NumberFormatException e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, new ApiResponse<>(false, "Invalid supplier id", null));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    new ApiResponse<>(false, "Invalid supplier id", null)
+            );
         } catch (IllegalArgumentException e) {
             int status = "Supplier not found".equals(e.getMessage()) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
             HttpUtil.sendJson(resp, status, new ApiResponse<>(false, e.getMessage(), null));
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new ApiResponse<>(false, "Internal server error", null));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    new ApiResponse<>(false, "Internal server error", null)
+            );
         }
     }
 }

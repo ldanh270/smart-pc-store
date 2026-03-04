@@ -19,7 +19,7 @@ public class SupplierAnalyticsController {
     private final SupplierAnalyticsService supplierAnalyticsService;
 
     /**
-     * Constructor.
+     * Constructor
      *
      * @param supplierAnalyticsService Supplier analytics service dependency.
      */
@@ -58,7 +58,11 @@ public class SupplierAnalyticsController {
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, result);
         } catch (NumberFormatException e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "productId and supplierId must be valid integers");
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "productId and supplierId must be valid integers"
+            );
         } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {

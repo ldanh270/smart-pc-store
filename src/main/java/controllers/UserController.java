@@ -1,31 +1,25 @@
 package controllers;
 
+import java.io.IOException;
+import java.util.List;
+
 import dto.user.CreateUserRequestDto;
 import dto.user.UpdateUserRequestDto;
 import dto.user.UserDto;
-import services.UserService;
-import utils.HttpUtil;
-import utils.JwtUtil;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.util.List;
+import services.UserService;
+import utils.HttpUtil;
 
 /**
  * UserController
  * <p>
- * Endpoints:
- * - GET    /users          : list users
- * - GET    /users/{id}     : get user by id
- * - POST   /users          : create user
- * - PUT    /users/{id}     : update user
- * - DELETE /users/{id}     : delete user
+ * Endpoints: - GET /users : list users - GET /users/{id} : get user by id -
+ * POST /users : create user - PUT /users/{id} : update user - DELETE
+ * /users/{id} : delete user
  * <p>
- * Note:
- * - Requires Authorization: Bearer <token> (same pattern as Cart/Auth)
- * - Role-based access is enforced by RoleAuthorizationFilter.
+ * Note: - Requires Authorization: Bearer <token> (same pattern as Cart/Auth) -
+ * Role-based access is enforced by RoleAuthorizationFilter.
  */
 public class UserController {
 
@@ -39,7 +33,7 @@ public class UserController {
         try {
             List<UserDto> users = userService.getAll();
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, users);
-        } catch (Exception e) {
+        } catch (IOException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
@@ -48,7 +42,7 @@ public class UserController {
         try {
             UserDto user = userService.getById(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, user);
-        } catch (Exception e) {
+        } catch (IOException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
@@ -58,7 +52,7 @@ public class UserController {
             CreateUserRequestDto dto = HttpUtil.jsonToClass(req.getReader(), CreateUserRequestDto.class);
             UserDto created = userService.create(dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_CREATED, created);
-        } catch (Exception e) {
+        } catch (IOException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
@@ -68,7 +62,7 @@ public class UserController {
             UpdateUserRequestDto dto = HttpUtil.jsonToClass(req.getReader(), UpdateUserRequestDto.class);
             UserDto updated = userService.update(id, dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, updated);
-        } catch (Exception e) {
+        } catch (IOException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }
@@ -77,7 +71,7 @@ public class UserController {
         try {
             userService.delete(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "User deleted successfully");
-        } catch (Exception e) {
+        } catch (IOException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         }
     }

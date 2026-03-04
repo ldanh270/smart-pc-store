@@ -7,6 +7,7 @@ import java.util.List;
  * Request DTO for creating a purchase order.
  */
 public class PurchaseOrderCreateRequestDto {
+
     public Integer supplierId;
     public String expectedDeliveryDate;
     public String note;
@@ -16,6 +17,7 @@ public class PurchaseOrderCreateRequestDto {
      * PO line item input.
      */
     public static class Item {
+
         public Integer productId;
         public Integer quantity;
         public BigDecimal unitPrice;

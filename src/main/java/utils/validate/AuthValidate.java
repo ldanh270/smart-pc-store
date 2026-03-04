@@ -1,11 +1,14 @@
 package utils.validate;
 
-import configs.Regex;
-import dto.auth.signup.SignupRequestDto;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import configs.Regex;
+import dto.auth.signup.SignupRequestDto;
+
+/**
+ * Validate authentication data
+ */
 public class AuthValidate {
 
     /**
@@ -45,8 +48,7 @@ public class AuthValidate {
         }
 
         // Email format check
-        if (dto.getEmail() != null && !dto.getEmail().trim().isEmpty()
-                && !dto.getEmail().matches(Regex.EMAIL_REGEX)) {
+        if (dto.getEmail() != null && !dto.getEmail().trim().isEmpty() && !dto.getEmail().matches(Regex.EMAIL_REGEX)) {
             errors.add("Invalid email format");
         }
 

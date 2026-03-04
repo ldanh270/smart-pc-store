@@ -22,7 +22,7 @@ IF OBJECT_ID('DemandForecasts','U') IS NOT NULL DROP TABLE DemandForecasts
 IF OBJECT_ID('PriceForecasts','U') IS NOT NULL DROP TABLE PriceForecasts
 IF OBJECT_ID('RevenueDaily','U') IS NOT NULL DROP TABLE RevenueDaily
 IF OBJECT_ID('Payments','U') IS NOT NULL DROP TABLE Payments
-IF OBJECT_ID('OrderItems','U') IS NOT NULL DROP TABLE OrderItems
+IF OBJECT_ID('OrderDetails','U') IS NOT NULL DROP TABLE OrderDetails
 IF OBJECT_ID('Orders','U') IS NOT NULL DROP TABLE Orders
 IF OBJECT_ID('CartItems','U') IS NOT NULL DROP TABLE CartItems
 IF OBJECT_ID('Carts','U') IS NOT NULL DROP TABLE Carts
@@ -103,6 +103,7 @@ CREATE TABLE Products (
     SupplierId   INT,
     CategoryId   INT,
     Description  NVARCHAR(255),
+    ImageUrl     NVARCHAR(255),
     CurrentPrice DECIMAL(18,2),
     Status BIT NOT NULL DEFAULT 1,
     Quantity     INT
@@ -338,11 +339,13 @@ GO
    ORDERS
 ========================= */
 CREATE TABLE Orders (
-    Id          INT PRIMARY KEY IDENTITY(1,1),
-    UserId      INT,
-    OrderDate   DATETIME DEFAULT GETDATE(),
-    Status      NVARCHAR(255),
-    TotalAmount DECIMAL(18,2)
+    id              INT PRIMARY KEY IDENTITY(1,1),
+    orderCode       NVARCHAR(50) UNIQUE NOT NULL,
+    amount          FLOAT NOT NULL,
+    transactionCode NVARCHAR(10) NOT NULL,
+    status          NVARCHAR(20) DEFAULT 'PENDING',
+    createdAt       DATETIME DEFAULT GETDATE(),
+    UserId          INT -- Keep existing for potential relation
 );
 GO
 
@@ -351,7 +354,7 @@ ADD CONSTRAINT FK_Orders_Users
 FOREIGN KEY (UserId) REFERENCES Users(Id);
 GO
 
-CREATE TABLE OrderItems (
+CREATE TABLE OrderDetails (
     Id        INT PRIMARY KEY IDENTITY(1,1),
     OrderId   INT,
     ProductId INT,
@@ -360,13 +363,13 @@ CREATE TABLE OrderItems (
 );
 GO
 
-ALTER TABLE OrderItems
-ADD CONSTRAINT FK_OrderItems_Orders
+ALTER TABLE OrderDetails
+ADD CONSTRAINT FK_OrderDetails_Orders
 FOREIGN KEY (OrderId) REFERENCES Orders(Id);
 GO
 
-ALTER TABLE OrderItems
-ADD CONSTRAINT FK_OrderItems_Products
+ALTER TABLE OrderDetails
+ADD CONSTRAINT FK_OrderDetails_Products
 FOREIGN KEY (ProductId) REFERENCES Products(Id);
 GO
 

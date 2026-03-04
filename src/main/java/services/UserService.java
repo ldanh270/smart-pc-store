@@ -35,7 +35,8 @@ public class UserService {
                 u.getPhone(),
                 u.getAddress(),
                 u.getStatus(),
-                u.getRole());
+                u.getRole()
+        );
     }
 
     public List<UserDto> getAll() {
@@ -44,8 +45,7 @@ public class UserService {
 
     public UserDto getById(Integer id) {
         User u = userDao.findById(id);
-        if (u == null)
-            throw new RuntimeException("User not found");
+        if (u == null) throw new RuntimeException("User not found");
         return toDto(u);
     }
 
@@ -54,13 +54,10 @@ public class UserService {
             throw new RuntimeException("Username is required");
         if (dto.getPassword() == null || dto.getPassword().isBlank())
             throw new RuntimeException("Password is required");
-        if (dto.getEmail() == null || dto.getEmail().isBlank())
-            throw new RuntimeException("Email is required");
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) throw new RuntimeException("Email is required");
 
-        if (userDao.existsByUsername(dto.getUsername()))
-            throw new RuntimeException("Username is already exists");
-        if (userDao.existsByEmail(dto.getEmail()))
-            throw new RuntimeException("Email is already exists");
+        if (userDao.existsByUsername(dto.getUsername())) throw new RuntimeException("Username is already exists");
+        if (userDao.existsByEmail(dto.getEmail())) throw new RuntimeException("Email is already exists");
 
         try {
             userDao.getEntityManager().getTransaction().begin();
@@ -90,13 +87,12 @@ public class UserService {
 
     public UserDto update(Integer id, UpdateUserRequestDto dto) {
         User u = userDao.findById(id);
-        if (u == null)
-            throw new RuntimeException("User not found");
+        if (u == null) throw new RuntimeException("User not found");
 
         // Uniqueness checks only if user changes these fields
         if (dto.getUsername() != null && !dto.getUsername().isBlank()) {
-            if (userDao.existsByUsernameExceptId(dto.getUsername(), id))
-                throw new RuntimeException("Username is already exists");
+            if (userDao.existsByUsernameExceptId(dto.getUsername(), id)) throw new RuntimeException(
+                    "Username is already exists");
         }
 
         if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
@@ -107,23 +103,17 @@ public class UserService {
         try {
             userDao.getEntityManager().getTransaction().begin();
 
-            if (dto.getUsername() != null && !dto.getUsername().isBlank())
-                u.setUsername(dto.getUsername());
+            if (dto.getUsername() != null && !dto.getUsername().isBlank()) u.setUsername(dto.getUsername());
 
-            if (dto.getFullName() != null)
-                u.setFullName(dto.getFullName());
+            if (dto.getFullName() != null) u.setFullName(dto.getFullName());
 
-            if (dto.getEmail() != null && !dto.getEmail().isBlank())
-                u.setEmail(dto.getEmail());
+            if (dto.getEmail() != null && !dto.getEmail().isBlank()) u.setEmail(dto.getEmail());
 
-            if (dto.getPhone() != null)
-                u.setPhone(dto.getPhone());
+            if (dto.getPhone() != null) u.setPhone(dto.getPhone());
 
-            if (dto.getAddress() != null)
-                u.setAddress(dto.getAddress());
+            if (dto.getAddress() != null) u.setAddress(dto.getAddress());
 
-            if (dto.getStatus() != null)
-                u.setStatus(dto.getStatus());
+            if (dto.getStatus() != null) u.setStatus(dto.getStatus());
 
             // Optional password update
             if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
@@ -131,8 +121,7 @@ public class UserService {
                 u.setPasswordHash(passwordHash);
             }
 
-            if (dto.getRole() != null)
-                u.setRole(dto.getRole());
+            if (dto.getRole() != null) u.setRole(dto.getRole());
 
             userDao.update(u);
 
@@ -148,42 +137,37 @@ public class UserService {
 
     public void delete(Integer id) {
         User u = userDao.findById(id);
-        if (u == null)
-            throw new RuntimeException("User not found");
+        if (u == null) throw new RuntimeException("User not found");
 
         try {
             EntityManager em = userDao.getEntityManager();
             em.getTransaction().begin();
 
             // 1. Delete Payments associated with the user's Orders
-            em.createQuery(
-                            "DELETE FROM Payment p WHERE p.order.id IN " +
-                                    "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
-                    .setParameter("userId", id).executeUpdate();
+            em.createQuery("DELETE FROM Payment p WHERE p.order.id IN " + "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
+                    .setParameter("userId", id)
+                    .executeUpdate();
 
             // 2. Delete OrderItems associated with the user's Orders
-            em.createQuery(
-                            "DELETE FROM OrderItem oi WHERE oi.order.id IN " +
-                                    "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
-                    .setParameter("userId", id).executeUpdate();
+            em.createQuery("DELETE FROM OrderItem oi WHERE oi.order.id IN " + "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
+                    .setParameter("userId", id)
+                    .executeUpdate();
 
             // 3. Delete Orders of user
-            em.createQuery(
-                    "DELETE FROM Order o WHERE o.user.id = :userId").setParameter("userId", id).executeUpdate();
+            em.createQuery("DELETE FROM Order o WHERE o.user.id = :userId").setParameter("userId", id).executeUpdate();
 
             // 4. Delete CartItems associated with the user's Carts
-            em.createQuery(
-                            "DELETE FROM CartItem ci WHERE ci.cart.id IN " +
-                                    "(SELECT c.id FROM Cart c WHERE c.user.id = :userId)")
-                    .setParameter("userId", id).executeUpdate();
+            em.createQuery("DELETE FROM CartItem ci WHERE ci.cart.id IN " + "(SELECT c.id FROM Cart c WHERE c.user.id = :userId)")
+                    .setParameter("userId", id)
+                    .executeUpdate();
 
             // 5. Delete Carts of user
-            em.createQuery(
-                    "DELETE FROM Cart c WHERE c.user.id = :userId").setParameter("userId", id).executeUpdate();
+            em.createQuery("DELETE FROM Cart c WHERE c.user.id = :userId").setParameter("userId", id).executeUpdate();
 
             // 6. Delete Sessions of user
-            em.createQuery(
-                    "DELETE FROM Session s WHERE s.user.id = :userId").setParameter("userId", id).executeUpdate();
+            em.createQuery("DELETE FROM Session s WHERE s.user.id = :userId")
+                    .setParameter("userId", id)
+                    .executeUpdate();
 
             // 7. Delete User
             userDao.delete(id);

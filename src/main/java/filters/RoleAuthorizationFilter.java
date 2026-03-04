@@ -1,5 +1,8 @@
 package filters;
 
+import java.io.IOException;
+import java.util.Locale;
+
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,13 +13,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import utils.HttpUtil;
 import utils.JwtUtil;
 
-import java.io.IOException;
-import java.util.Locale;
-
 /**
  * Role-based authorization filter using JWT role claim.
  */
 public class RoleAuthorizationFilter implements Filter {
+
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_USER = "USER";
 
@@ -62,14 +63,11 @@ public class RoleAuthorizationFilter implements Filter {
                 return;
             }
 
-            if (userEndpoint) {
-                if (!ROLE_USER.equals(role) && !ROLE_ADMIN.equals(role)) {
-                    HttpUtil.sendJson(res, HttpServletResponse.SC_FORBIDDEN, "Forbidden: user role required");
-                    return;
-                }
-                chain.doFilter(request, response);
+            if (!ROLE_USER.equals(role) && !ROLE_ADMIN.equals(role)) {
+                HttpUtil.sendJson(res, HttpServletResponse.SC_FORBIDDEN, "Forbidden: user role required");
                 return;
             }
+            chain.doFilter(request, response);
         } catch (RuntimeException ex) {
             HttpUtil.sendJson(res, HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
         }
@@ -91,11 +89,21 @@ public class RoleAuthorizationFilter implements Filter {
         boolean isWriteMethod = "POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(
                 method);
 
-        if (path.startsWith("/users")) return true;
-        if (path.startsWith("/suppliers")) return true;
-        if (path.startsWith("/purchase-orders")) return true;
-        if (path.startsWith("/supplier-analytics") || path.startsWith("/supplier-quotations")) return true;
-        if (isWriteMethod && path.startsWith("/products")) return true;
+        if (path.startsWith("/users")) {
+            return true;
+        }
+        if (path.startsWith("/suppliers")) {
+            return true;
+        }
+        if (path.startsWith("/purchase-orders")) {
+            return true;
+        }
+        if (path.startsWith("/supplier-analytics") || path.startsWith("/supplier-quotations")) {
+            return true;
+        }
+        if (isWriteMethod && path.startsWith("/products")) {
+            return true;
+        }
         return isWriteMethod && path.startsWith("/categories");
     }
 
@@ -103,7 +111,9 @@ public class RoleAuthorizationFilter implements Filter {
         String servletPath = req.getServletPath() == null ? "" : req.getServletPath();
         String pathInfo = req.getPathInfo() == null ? "" : req.getPathInfo();
         String fullPath = servletPath + pathInfo;
-        if (fullPath.isBlank()) return "/";
+        if (fullPath.isBlank()) {
+            return "/";
+        }
         if (fullPath.length() > 1 && fullPath.endsWith("/")) {
             return fullPath.substring(0, fullPath.length() - 1);
         }

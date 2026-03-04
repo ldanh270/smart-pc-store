@@ -7,6 +7,7 @@ import jakarta.persistence.TypedQuery;
  * Data Access Object for User entity
  */
 public class UserDao extends GenericDao<User> {
+
     public UserDao() {
         super(User.class);
     }
@@ -53,7 +54,7 @@ public class UserDao extends GenericDao<User> {
     /**
      * Check if username exists for another user (exclude current id).
      *
-     * @param username  username to check
+     * @param username username to check
      * @param excludeId current user id to exclude
      * @return true if another user already uses this username
      */
@@ -68,7 +69,7 @@ public class UserDao extends GenericDao<User> {
     /**
      * Check if email exists for another user (exclude current id).
      *
-     * @param email     email to check
+     * @param email email to check
      * @param excludeId current user id to exclude
      * @return true if another user already uses this email
      */

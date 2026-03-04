@@ -1,17 +1,17 @@
 package services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import dao.JPAUtil;
 import dao.SupplierDao;
 import dto.supplier.SupplierRequestDto;
 import dto.supplier.SupplierResponseDto;
 import entities.Supplier;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
- * Service class for supplier management.
- * Handles supplier CRUD operations, validation, and DTO mapping.
+ * Service class for supplier management. Handles supplier CRUD operations,
+ * validation, and DTO mapping.
  */
 public class SupplierService {
 
@@ -34,8 +34,11 @@ public class SupplierService {
      */
     public List<SupplierResponseDto> getAllDtos(String q) {
         List<Supplier> suppliers;
-        if (q == null || q.isBlank()) suppliers = supplierDao.findAllActive();
-        else suppliers = supplierDao.searchByName(q);
+        if (q == null || q.isBlank()) {
+            suppliers = supplierDao.findAllActive();
+        } else {
+            suppliers = supplierDao.searchByName(q);
+        }
         return suppliers.stream().map(this::toDto).collect(Collectors.toList());
     }
 
@@ -67,7 +70,9 @@ public class SupplierService {
             JPAUtil.getEntityManager().getTransaction().commit();
             return toDto(supplier);
         } catch (Exception e) {
-            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
             throw e;
         }
     }
@@ -75,14 +80,16 @@ public class SupplierService {
     /**
      * Update supplier information by id.
      *
-     * @param id Supplier ID.
+     * @param id  Supplier ID.
      * @param dto Supplier update request.
      * @return Updated supplier DTO.
      */
     public SupplierResponseDto update(Integer id, SupplierRequestDto dto) {
         validate(dto);
         Supplier existing = supplierDao.findById(id);
-        if (existing == null) throw new IllegalArgumentException("Supplier not found");
+        if (existing == null) {
+            throw new IllegalArgumentException("Supplier not found");
+        }
         apply(dto, existing);
 
         try {
@@ -91,7 +98,9 @@ public class SupplierService {
             JPAUtil.getEntityManager().getTransaction().commit();
             return toDto(merged);
         } catch (Exception e) {
-            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
             throw e;
         }
     }
@@ -103,7 +112,9 @@ public class SupplierService {
      */
     public void delete(Integer id) {
         Supplier existing = supplierDao.findById(id);
-        if (existing == null) throw new IllegalArgumentException("Supplier not found");
+        if (existing == null) {
+            throw new IllegalArgumentException("Supplier not found");
+        }
 
         try {
             JPAUtil.getEntityManager().getTransaction().begin();
@@ -111,7 +122,9 @@ public class SupplierService {
             supplierDao.update(existing);
             JPAUtil.getEntityManager().getTransaction().commit();
         } catch (Exception e) {
-            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
             throw e;
         }
     }
@@ -138,11 +151,15 @@ public class SupplierService {
         supplier.setContactInfo(dto.contactInfo);
         supplier.setComponentTypes(dto.componentTypes);
         supplier.setLeadTimeDays(dto.leadTimeDays);
-        if (dto.status != null) supplier.setStatus(dto.status);
+        if (dto.status != null) {
+            supplier.setStatus(dto.status);
+        }
     }
 
     private void validate(SupplierRequestDto dto) {
-        if (dto == null) throw new IllegalArgumentException("Request body is required");
+        if (dto == null) {
+            throw new IllegalArgumentException("Request body is required");
+        }
         if (dto.supplierName == null || dto.supplierName.isBlank()) {
             throw new IllegalArgumentException("Supplier name is required");
         }

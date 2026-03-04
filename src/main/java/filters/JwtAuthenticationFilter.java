@@ -1,20 +1,26 @@
 package filters;
 
-import jakarta.servlet.*;
+import java.io.IOException;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.HttpUtil;
 import utils.JwtUtil;
 
-import java.io.IOException;
-
 /**
- * Filter to authenticate requests using JWT access tokens.
- * This filter checks for the presence of a valid JWT token in the Authorization header
- * for protected endpoints and allows the request to proceed if the token is valid.
- * If the token is missing or invalid, it responds with a 401 Unauthorized status and an error message.
+ * Filter to authenticate requests using JWT access tokens. This filter checks
+ * for the presence of a valid JWT token in the Authorization header for
+ * protected endpoints and allows the request to proceed if the token is valid.
+ * If the token is missing or invalid, it responds with a 401 Unauthorized
+ * status and an error message.
  */
+@WebFilter(urlPatterns = {"/cart/*", "/payments/checkout"})
 public class JwtAuthenticationFilter implements Filter {
 
     @Override
@@ -32,7 +38,7 @@ public class JwtAuthenticationFilter implements Filter {
 
             // Continue with the filter chain (proceed to the requested resource)
             chain.doFilter(request, response);
-        } catch (Exception e) {
+        } catch (ServletException | IOException e) {
             System.out.println("ERROR JWTAuthenticationFilter - doFilter: " + e.getMessage());
             HttpUtil.sendJson(res, HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
         }

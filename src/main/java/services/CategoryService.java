@@ -1,7 +1,6 @@
 package services;
 
 import java.util.List;
-import dto.product.ProductResponseDto;
 import java.util.stream.Collectors;
 
 import dao.CategoryDao;

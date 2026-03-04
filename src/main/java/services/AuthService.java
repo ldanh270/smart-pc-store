@@ -1,21 +1,22 @@
 package services;
 
+import java.time.Instant;
+import java.util.UUID;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import configs.JwtConfig;
 import dao.SessionDao;
 import dao.UserDao;
-import dto.auth.login.LoginResponseDto;
 import dto.auth.login.LoginRequestDto;
+import dto.auth.login.LoginResponseDto;
 import dto.auth.refresh.AccessTokenResponseDto;
 import dto.auth.signup.SignupRequestDto;
 import dto.auth.signup.SignupResponseDto;
 import dto.user.UserDto;
 import entities.Session;
 import entities.User;
-import org.mindrot.jbcrypt.BCrypt;
 import utils.JwtUtil;
-
-import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Service class for handling authentication-related operations.
@@ -34,7 +35,8 @@ public class AuthService {
      * Signup a new user.
      *
      * @param dto The signup data transfer object containing user details.
-     * @return A SignupResponseDto indicating the success or failure of the registration.
+     * @return A SignupResponseDto indicating the success or failure of the
+     * registration.
      */
     public SignupResponseDto signup(SignupRequestDto dto) {
         // Check if username already exists
@@ -79,67 +81,71 @@ public class AuthService {
     /**
      * Login a user.
      *
-     * @param dto The login data transfer object containing username and password.
-     * @return An LoginResponseDto containing user details upon successful login.
+     * @param dto The login data transfer object containing username and
+     *            password.
+     * @return An LoginResponseDto containing user details upon successful
+     * login.
      */
     public LoginResponseDto login(LoginRequestDto dto) {
-        if (dto == null
-                || dto.getUsername() == null || dto.getUsername().isBlank()
-                || dto.getPassword() == null || dto.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Username and password are required");
-        }
-
-        // Check if user exists
-        User user = userDao.findByUsername(dto.getUsername());
-
-        // Check if correct password
-        if (user == null || !BCrypt.checkpw(dto.getPassword(), user.getPasswordHash())) {
-            return new LoginResponseDto("Invalid username or password");
+        if (dto == null || dto.getUsername() == null || dto.getUsername()
+                .isBlank() || dto.getPassword() == null || dto.getPassword().isBlank()) {
+            return new LoginResponseDto("Username and password are required");
         }
 
         try {
-            // Create access token (JWT)
-            String accessToken = JwtUtil.generateAccessToken(user.getId(),user.getUsername(),user.getRole());
-
-            // // Create refresh token (UUID)
-            String refreshToken = UUID.randomUUID().toString();
-
-            // Create session in DB
-            sessionDao.getEntityManager().getTransaction().begin();
-
-            Session session = new Session();
-
-            session.setUser(user);
-
-            session.setRefreshToken(refreshToken);
-
-            // Set expiration date for refresh token (e.g., 7 days)
-            session.setExpiredAt(Instant.now().plusMillis(JwtConfig.REFRESH_TOKEN_TTL));
-
-            sessionDao.create(session);
-            sessionDao.getEntityManager().getTransaction().commit();
-
-            // Respond with access token, refresh token and user info
-            return new LoginResponseDto(
-                    accessToken, refreshToken, new UserDto(
-                    user.getId(),
-                    user.getUsername(),
-                    user.getDisplayName(),
-                    user.getEmail(),
-                    user.getPhone(),
-                    user.getAddress(),
-                    user.getStatus(),
-                    user.getRole()
-            )
-            );
-
-        } catch (Exception e) {
-            if (sessionDao.getEntityManager().getTransaction().isActive()) {
-                sessionDao.getEntityManager().getTransaction().rollback();
+            // Check if user exists
+            User user = userDao.findByUsername(dto.getUsername());
+            // Check if correct password
+            if (user == null || !BCrypt.checkpw(dto.getPassword(), user.getPasswordHash())) {
+                return new LoginResponseDto("Wrong username or password");
             }
-            System.err.println("AuthService - login ERROR: " + e.getMessage());
-            return new LoginResponseDto("Internal server error");
+
+            try {
+                // Create access token (JWT)
+                String accessToken = JwtUtil.generateAccessToken(user.getId(), user.getUsername(), user.getRole());
+
+                // // Create refresh token (UUID)
+                String refreshToken = UUID.randomUUID().toString();
+
+                // Create session in DB
+                sessionDao.getEntityManager().getTransaction().begin();
+
+                Session session = new Session();
+
+                session.setUser(user);
+
+                session.setRefreshToken(refreshToken);
+
+                // Set expiration date for refresh token (e.g., 7 days)
+                session.setExpiredAt(Instant.now().plusMillis(JwtConfig.REFRESH_TOKEN_TTL));
+
+                sessionDao.create(session);
+                sessionDao.getEntityManager().getTransaction().commit();
+
+                // Respond with access token, refresh token and user info
+                return new LoginResponseDto(
+                        accessToken, refreshToken, new UserDto(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getDisplayName(),
+                        user.getEmail(),
+                        user.getPhone(),
+                        user.getAddress(),
+                        user.getStatus(),
+                        user.getRole()
+                )
+                );
+
+            } catch (Exception e) {
+                if (sessionDao.getEntityManager().getTransaction().isActive()) {
+                    sessionDao.getEntityManager().getTransaction().rollback();
+                }
+                System.err.println("AuthService - login ERROR: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            return new LoginResponseDto("Wrong username or password");
         }
+        return null;
     }
 
     /**

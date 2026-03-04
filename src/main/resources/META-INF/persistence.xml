@@ -6,7 +6,7 @@
         <!-- Provider -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <!-- Entities -->
-        <class>entities.OrderItem</class>
+        <class>entities.OrderDetail</class>
         <class>entities.Cart</class>
         <class>entities.InventoryTransaction</class>
         <class>entities.Category</class>

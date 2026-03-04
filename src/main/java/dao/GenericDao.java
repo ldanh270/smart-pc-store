@@ -2,7 +2,6 @@ package dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import utils.JwtUtil;
 
 import java.util.List;
 

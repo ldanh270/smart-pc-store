@@ -1,7 +1,13 @@
 package servlets;
 
+import java.io.IOException;
+
 import controllers.CartController;
-import dao.*;
+import dao.CartDao;
+import dao.CartItemDao;
+import dao.GenericDao;
+import dao.JPAUtil;
+import dao.UserDao;
 import entities.Product;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,16 +17,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.CartService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 /**
- * CartServlet
- * Endpoints:
- * - GET    /cart/               => get cart items
- * - POST   /cart/add            => add product to cart
- * - PUT    /cart/items/{id}     => update quantity of an item
- * - DELETE /cart/               => clear cart (after checkout)
- * - DELETE /cart/items/{id}     => remove one item
+ * CartServlet Endpoints: - GET /cart/ => get cart items - POST /cart/add => add
+ * product to cart - PUT /cart/items/{id} => update quantity of an item - DELETE
+ * /cart/ => clear cart (after checkout) - DELETE /cart/items/{id} => remove one
+ * item
  */
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart/*"})
 public class CartServlet extends HttpServlet {
@@ -48,7 +49,7 @@ public class CartServlet extends HttpServlet {
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("ERROR CartServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         } finally {
@@ -68,10 +69,12 @@ public class CartServlet extends HttpServlet {
 
         try {
             switch (pathInfo) {
-                case "/add" -> cartController.handleAddToCart(req, resp);
-                default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                case "/add" ->
+                    cartController.handleAddToCart(req, resp);
+                default ->
+                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("ERROR CartServlet - doPost: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         } finally {
@@ -84,12 +87,12 @@ public class CartServlet extends HttpServlet {
         String pathInfo = req.getPathInfo(); // expected: /items/{id}
         try {
             if (pathInfo != null && pathInfo.startsWith("/items/")) {
-                Integer cartItemId = Integer.parseInt(pathInfo.substring("/items/".length()));
+                Integer cartItemId = Integer.valueOf(pathInfo.substring("/items/".length()));
                 cartController.handleUpdateQuantity(req, resp, cartItemId);
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             System.err.println("ERROR CartServlet - doPut: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Internal server error");
         } finally {
@@ -109,13 +112,13 @@ public class CartServlet extends HttpServlet {
 
             // DELETE /cart/items/{id} => remove one item
             if (pathInfo.startsWith("/items/")) {
-                Integer cartItemId = Integer.parseInt(pathInfo.substring("/items/".length()));
+                Integer cartItemId = Integer.valueOf(pathInfo.substring("/items/".length()));
                 cartController.handleRemoveItem(req, resp, cartItemId);
                 return;
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             System.err.println("ERROR CartServlet - doDelete: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Internal server error");
         } finally {

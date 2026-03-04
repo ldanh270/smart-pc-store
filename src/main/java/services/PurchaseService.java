@@ -1,22 +1,39 @@
 package services;
 
-import dao.*;
-import dto.purchase.GoodsReceiptRequestDto;
-import dto.purchase.GoodsReceiptResponseDto;
-import dto.purchase.PurchaseOrderCreateRequestDto;
-import dto.purchase.PurchaseOrderResponseDto;
-import entities.*;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import dao.GoodsReceiptNoteDao;
+import dao.GoodsReceiptNoteItemDao;
+import dao.InventoryTransactionDao;
+import dao.JPAUtil;
+import dao.ProductDao;
+import dao.PurchaseOrderDao;
+import dao.PurchaseOrderItemDao;
+import dao.SupplierDao;
+import dao.SupplierPriceHistoryDao;
+import dto.purchase.GoodsReceiptRequestDto;
+import dto.purchase.GoodsReceiptResponseDto;
+import dto.purchase.PurchaseOrderCreateRequestDto;
+import dto.purchase.PurchaseOrderResponseDto;
+import entities.GoodsReceiptNote;
+import entities.GoodsReceiptNoteItem;
+import entities.InventoryTransaction;
+import entities.Product;
+import entities.PurchaseOrder;
+import entities.PurchaseOrderItem;
+import entities.Supplier;
+import entities.SupplierPriceHistory;
+
 /**
- * Service class for purchasing workflow.
- * Handles PO creation, GRN processing, stock updates, and PO status transitions.
+ * Service class for purchasing workflow. Handles PO creation, GRN processing,
+ * stock updates, and PO status transitions.
  */
 public class PurchaseService {
 
@@ -37,14 +54,16 @@ public class PurchaseService {
     /**
      * Constructor.
      */
-    public PurchaseService(PurchaseOrderDao purchaseOrderDao,
-                           PurchaseOrderItemDao purchaseOrderItemDao,
-                           SupplierDao supplierDao,
-                           ProductDao productDao,
-                           SupplierPriceHistoryDao supplierPriceHistoryDao,
-                           GoodsReceiptNoteDao goodsReceiptNoteDao,
-                           GoodsReceiptNoteItemDao goodsReceiptNoteItemDao,
-                           InventoryTransactionDao inventoryTransactionDao) {
+    public PurchaseService(
+            PurchaseOrderDao purchaseOrderDao,
+            PurchaseOrderItemDao purchaseOrderItemDao,
+            SupplierDao supplierDao,
+            ProductDao productDao,
+            SupplierPriceHistoryDao supplierPriceHistoryDao,
+            GoodsReceiptNoteDao goodsReceiptNoteDao,
+            GoodsReceiptNoteItemDao goodsReceiptNoteItemDao,
+            InventoryTransactionDao inventoryTransactionDao
+    ) {
         this.purchaseOrderDao = purchaseOrderDao;
         this.purchaseOrderItemDao = purchaseOrderItemDao;
         this.supplierDao = supplierDao;
@@ -56,8 +75,8 @@ public class PurchaseService {
     }
 
     /**
-     * Create a purchase order with multiple items.
-     * Uses provided unit price or latest quotation when unit price is missing.
+     * Create a purchase order with multiple items. Uses provided unit price or
+     * latest quotation when unit price is missing.
      *
      * @param dto Purchase order request.
      * @return Created purchase order response.
@@ -65,7 +84,9 @@ public class PurchaseService {
     public PurchaseOrderResponseDto createPurchaseOrder(PurchaseOrderCreateRequestDto dto) {
         validateCreatePo(dto);
         Supplier supplier = supplierDao.findById(dto.supplierId);
-        if (supplier == null) throw new IllegalArgumentException("Supplier not found");
+        if (supplier == null) {
+            throw new IllegalArgumentException("Supplier not found");
+        }
 
         PurchaseOrder po = new PurchaseOrder();
         po.setSupplier(supplier);
@@ -82,7 +103,9 @@ public class PurchaseService {
 
             for (PurchaseOrderCreateRequestDto.Item itemDto : dto.items) {
                 Product product = productDao.findById(itemDto.productId);
-                if (product == null) throw new IllegalArgumentException("Product not found: " + itemDto.productId);
+                if (product == null) {
+                    throw new IllegalArgumentException("Product not found: " + itemDto.productId);
+                }
                 if (itemDto.quantity == null || itemDto.quantity <= 0) {
                     throw new IllegalArgumentException("Quantity must be > 0");
                 }
@@ -99,8 +122,10 @@ public class PurchaseService {
 
             JPAUtil.getEntityManager().getTransaction().commit();
             return toPoDto(po, poItems);
-        } catch (Exception e) {
-            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
+        } catch (IllegalArgumentException e) {
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
             throw e;
         }
     }
@@ -113,17 +138,19 @@ public class PurchaseService {
      */
     public PurchaseOrderResponseDto getPurchaseOrder(Integer poId) {
         PurchaseOrder po = purchaseOrderDao.findById(poId);
-        if (po == null) return null;
+        if (po == null) {
+            return null;
+        }
         List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPoId(poId);
         return toPoDto(po, items);
     }
 
     /**
-     * Receive goods for a purchase order and create GRN record.
-     * Also updates product stock and writes inventory transactions.
+     * Receive goods for a purchase order and create GRN record. Also updates
+     * product stock and writes inventory transactions.
      *
      * @param poId Purchase order ID.
-     * @param dto Goods receipt request.
+     * @param dto  Goods receipt request.
      * @return Goods receipt response.
      */
     public GoodsReceiptResponseDto receiveGoods(Integer poId, GoodsReceiptRequestDto dto) {
@@ -132,7 +159,9 @@ public class PurchaseService {
         }
 
         PurchaseOrder po = purchaseOrderDao.findById(poId);
-        if (po == null) throw new IllegalArgumentException("Purchase order not found");
+        if (po == null) {
+            throw new IllegalArgumentException("Purchase order not found");
+        }
         if (STATUS_CANCELLED.equalsIgnoreCase(po.getStatus())) {
             throw new IllegalArgumentException("Cannot receive goods for cancelled PO");
         }
@@ -141,8 +170,10 @@ public class PurchaseService {
         }
 
         List<PurchaseOrderItem> poItems = purchaseOrderItemDao.findByPoId(poId);
-        Map<Integer, PurchaseOrderItem> poItemByProduct = poItems.stream()
-                .collect(Collectors.toMap(i -> i.getProduct().getId(), i -> i));
+        Map<Integer, PurchaseOrderItem> poItemByProduct = poItems.stream().collect(Collectors.toMap(
+                i -> i.getProduct()
+                        .getId(), i -> i
+        ));
 
         GoodsReceiptNote grn = new GoodsReceiptNote();
         grn.setPo(po);
@@ -162,7 +193,10 @@ public class PurchaseService {
                     throw new IllegalArgumentException("Product " + itemDto.productId + " not found in PO");
                 }
 
-                int alreadyReceived = goodsReceiptNoteItemDao.sumReceivedQuantityByPoAndProduct(poId, itemDto.productId);
+                int alreadyReceived = goodsReceiptNoteItemDao.sumReceivedQuantityByPoAndProduct(
+                        poId,
+                        itemDto.productId
+                );
                 int remaining = orderedItem.getQuantity() - alreadyReceived;
                 if (itemDto.quantityReceived > remaining) {
                     throw new IllegalArgumentException("Received quantity exceeds remaining quantity for product " + itemDto.productId);
@@ -177,7 +211,8 @@ public class PurchaseService {
                 grnItems.add(grnItem);
 
                 Product product = orderedItem.getProduct();
-                int oldQty = product.getQuantity() == null ? 0 : product.getQuantity();
+                Integer productQty = product.getQuantity();
+                int oldQty = productQty == null ? 0 : productQty;
                 product.setQuantity(oldQty + itemDto.quantityReceived);
                 productDao.update(product);
 
@@ -194,8 +229,10 @@ public class PurchaseService {
 
             JPAUtil.getEntityManager().getTransaction().commit();
             return toGrnDto(grn, grnItems);
-        } catch (Exception e) {
-            if (JPAUtil.getEntityManager().getTransaction().isActive()) JPAUtil.getEntityManager().getTransaction().rollback();
+        } catch (IllegalArgumentException e) {
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
             throw e;
         }
     }
@@ -230,7 +267,8 @@ public class PurchaseService {
         dto.supplierId = po.getSupplier().getId();
         dto.supplierName = po.getSupplier().getSupplierName();
         dto.orderDate = po.getOrderDate() == null ? null : po.getOrderDate().toString();
-        dto.expectedDeliveryDate = po.getExpectedDeliveryDate() == null ? null : po.getExpectedDeliveryDate().toString();
+        dto.expectedDeliveryDate = po.getExpectedDeliveryDate() == null ? null : po.getExpectedDeliveryDate()
+                .toString();
         dto.status = po.getStatus();
 
         BigDecimal total = BigDecimal.ZERO;
@@ -276,13 +314,25 @@ public class PurchaseService {
     }
 
     private void validateCreatePo(PurchaseOrderCreateRequestDto dto) {
-        if (dto == null) throw new IllegalArgumentException("Request body is required");
-        if (dto.supplierId == null) throw new IllegalArgumentException("supplierId is required");
-        if (dto.items == null || dto.items.isEmpty()) throw new IllegalArgumentException("At least one item is required");
+        if (dto == null) {
+            throw new IllegalArgumentException("Request body is required");
+        }
+        if (dto.supplierId == null) {
+            throw new IllegalArgumentException("supplierId is required");
+        }
+        if (dto.items == null || dto.items.isEmpty()) {
+            throw new IllegalArgumentException("At least one item is required");
+        }
         for (PurchaseOrderCreateRequestDto.Item item : dto.items) {
-            if (item == null) throw new IllegalArgumentException("Item is required");
-            if (item.productId == null) throw new IllegalArgumentException("productId is required");
-            if (item.quantity == null || item.quantity <= 0) throw new IllegalArgumentException("Quantity must be > 0");
+            if (item == null) {
+                throw new IllegalArgumentException("Item is required");
+            }
+            if (item.productId == null) {
+                throw new IllegalArgumentException("productId is required");
+            }
+            if (item.quantity == null || item.quantity <= 0) {
+                throw new IllegalArgumentException("Quantity must be > 0");
+            }
             if (item.unitPrice != null && item.unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("unitPrice must be > 0");
             }
@@ -290,8 +340,12 @@ public class PurchaseService {
     }
 
     private void validateReceiveItem(GoodsReceiptRequestDto.Item item) {
-        if (item == null) throw new IllegalArgumentException("Item is required");
-        if (item.productId == null) throw new IllegalArgumentException("productId is required");
+        if (item == null) {
+            throw new IllegalArgumentException("Item is required");
+        }
+        if (item.productId == null) {
+            throw new IllegalArgumentException("productId is required");
+        }
         if (item.quantityReceived == null || item.quantityReceived <= 0) {
             throw new IllegalArgumentException("quantityReceived must be > 0");
         }
@@ -301,7 +355,9 @@ public class PurchaseService {
     }
 
     private LocalDate parseDate(String date) {
-        if (date == null || date.isBlank()) return null;
+        if (date == null || date.isBlank()) {
+            return null;
+        }
         try {
             return LocalDate.parse(date);
         } catch (DateTimeParseException ex) {

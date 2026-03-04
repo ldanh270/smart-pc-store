@@ -7,6 +7,7 @@ import java.util.List;
  * Response DTO for supplier price trend analysis.
  */
 public class PriceTrendResponseDto {
+
     public Integer supplierId;
     public String supplierName;
     public Integer productId;
@@ -21,6 +22,7 @@ public class PriceTrendResponseDto {
      * Time-series data point.
      */
     public static class Point {
+
         public String effectiveDate;
         public BigDecimal importPrice;
     }

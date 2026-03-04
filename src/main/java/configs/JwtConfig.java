@@ -4,6 +4,10 @@ import utils.EnvHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 
 /**
  * JwtConfig class to manage JWT token settings.
@@ -30,11 +34,7 @@ public class JwtConfig {
 
     public static Integer getUserIdFromToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-             .setSigningKey(getSignInKey())
-             .build()
-             .parseClaimsJws(token)
-             .getBody();
+            Claims claims = Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
             return claims.get("userId", Integer.class);
         } catch (JwtException e) {
             throw new RuntimeException("Invalid or expired token");
@@ -49,7 +49,8 @@ public class JwtConfig {
         return getUserIdFromToken(token);
     }
 
-    private static byte[] getSignInKey() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private static Key getSignInKey() {
+        byte[] keyBytes = ACCESS_TOKEN_SECRET.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

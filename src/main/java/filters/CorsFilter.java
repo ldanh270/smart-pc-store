@@ -1,12 +1,15 @@
 package filters;
 
-import jakarta.servlet.*;
+import java.io.IOException;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import utils.HttpUtil;
-
-import java.io.IOException;
 
 /**
  * Filter to handle Cross-Origin Resource Sharing (CORS) for the application.
@@ -16,8 +19,11 @@ import java.io.IOException;
 public class CorsFilter implements Filter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(
+            ServletRequest request,
+            ServletResponse response,
+            FilterChain chain
+    ) throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
@@ -35,7 +41,7 @@ public class CorsFilter implements Filter {
 
         try {
             chain.doFilter(request, response);
-        } catch (Exception e) {
+        } catch (ServletException | IOException e) {
             System.err.println("ERROR CorsFilter: " + e.getMessage());
             if (!res.isCommitted()) {
                 res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
