@@ -24,9 +24,9 @@ public class GenericDao<T> {
     }
 
     /**
-     * Get the EntityManager
+     * Get the current thread-bound EntityManager from JPAUtil.
      *
-     * @return the entity manager
+     * @return active entity manager
      */
     public EntityManager getEntityManager() {
         return JPAUtil.getEntityManager();

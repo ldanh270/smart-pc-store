@@ -2,7 +2,6 @@ package dao;
 
 import entities.Cart;
 import entities.User;
-import jakarta.persistence.EntityManager;
 
 /**
  * CartDao

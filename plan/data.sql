@@ -96,6 +96,11 @@ INSERT INTO Suppliers (Id, SupplierName, ContactInfo, LeadTimeDays) VALUES
 (4, 'Asus Tek', 'distributor@asus.com', 3);
 SET IDENTITY_INSERT Suppliers OFF;
 
+UPDATE dbo.Suppliers
+SET Status = 1
+WHERE Status IS NULL;
+GO
+
 /* ==========================================================================
    3. INSERT PRODUCTS & HISTORY
    ========================================================================== */

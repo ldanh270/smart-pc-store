@@ -3,6 +3,9 @@ package entities;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "Suppliers")
 public class Supplier {
@@ -19,8 +22,29 @@ public class Supplier {
     @Column(name = "ContactInfo")
     private String contactInfo;
 
+    @Nationalized
+    @Column(name = "ComponentTypes")
+    private String componentTypes;
+
     @Column(name = "LeadTimeDays")
     private Integer leadTimeDays;
+
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
+    @OneToMany(mappedBy = "supplier")
+    private Set<Product> products = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "supplier")
+    private Set<PurchaseOrder> purchaseOrders = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "supplier")
+    private Set<SupplierPriceHistory> supplierPriceHistories = new LinkedHashSet<>();
+
+    /**
+     * Ensure default active status for new records.
+     */
+    @PrePersist
+    public void prePersist() {
+        if (status == null) status = true;
+    }
 
     public Integer getId() {
         return id;
@@ -52,6 +76,46 @@ public class Supplier {
 
     public void setLeadTimeDays(Integer leadTimeDays) {
         this.leadTimeDays = leadTimeDays;
+    }
+
+    public String getComponentTypes() {
+        return componentTypes;
+    }
+
+    public void setComponentTypes(String componentTypes) {
+        this.componentTypes = componentTypes;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
+    }
+
+    public Set<PurchaseOrder> getPurchaseOrders() {
+        return purchaseOrders;
+    }
+
+    public void setPurchaseOrders(Set<PurchaseOrder> purchaseOrders) {
+        this.purchaseOrders = purchaseOrders;
+    }
+
+    public Set<SupplierPriceHistory> getSupplierPriceHistories() {
+        return supplierPriceHistories;
+    }
+
+    public void setSupplierPriceHistories(Set<SupplierPriceHistory> supplierPriceHistories) {
+        this.supplierPriceHistories = supplierPriceHistories;
     }
 
 }

@@ -35,24 +35,47 @@ public class ProductController {
      * @throws IOException if I/O error occurs.
      */
     public void handleGetAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        // read filter params
-        String q = req.getParameter("q");
-        String cat = req.getParameter("categoryId");
-        String st = req.getParameter("status");
-        String min = req.getParameter("minPrice");
-        String max = req.getParameter("maxPrice");
-        String pageStr = req.getParameter("page");
-        String sizeStr = req.getParameter("size");
+        try {
+            // read filter params
+            String q = req.getParameter("q");
+            String cat = req.getParameter("categoryId");
+            String st = req.getParameter("status");
+            String min = req.getParameter("minPrice");
+            String max = req.getParameter("maxPrice");
+            String pageStr = req.getParameter("page");
+            String sizeStr = req.getParameter("size");
 
-        Integer categoryId = (cat == null || cat.isBlank()) ? null : Integer.parseInt(cat);
-        Boolean status = (st == null || st.isBlank()) ? null : Boolean.parseBoolean(st);
-        java.math.BigDecimal minPrice = (min == null || min.isBlank()) ? null : new java.math.BigDecimal(min);
-        java.math.BigDecimal maxPrice = (max == null || max.isBlank()) ? null : new java.math.BigDecimal(max);
-        Integer page = (pageStr == null || pageStr.isBlank()) ? null : Integer.parseInt(pageStr);
-        Integer size = (sizeStr == null || sizeStr.isBlank()) ? null : Integer.parseInt(sizeStr);
+            Integer categoryId = (cat == null || cat.isBlank()) ? null : Integer.parseInt(cat);
+            Boolean status;
+            if (st == null || st.isBlank()) {
+                status = null;
+            } else if ("true".equalsIgnoreCase(st) || "false".equalsIgnoreCase(st)) {
+                status = Boolean.parseBoolean(st);
+            } else {
+                throw new IllegalArgumentException("status must be true or false");
+            }
+            java.math.BigDecimal minPrice = (min == null || min.isBlank()) ? null : new java.math.BigDecimal(min);
+            java.math.BigDecimal maxPrice = (max == null || max.isBlank()) ? null : new java.math.BigDecimal(max);
+            Integer page = (pageStr == null || pageStr.isBlank()) ? null : Integer.parseInt(pageStr);
+            Integer size = (sizeStr == null || sizeStr.isBlank()) ? null : Integer.parseInt(sizeStr);
 
-        List<ProductResponseDto> products = productService.searchWithFilters(categoryId, status, minPrice, maxPrice, q, page, size);
-        HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, products);
+            if ((page == null) != (size == null)) {
+                throw new IllegalArgumentException("Both page and size must be provided together");
+            }
+            if (page != null && page < 0) {
+                throw new IllegalArgumentException("page must be >= 0");
+            }
+            if (size != null && size <= 0) {
+                throw new IllegalArgumentException("size must be > 0");
+            }
+
+            List<ProductResponseDto> products = productService.searchWithFilters(categoryId, status, minPrice, maxPrice, q, page, size);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, products);
+        } catch (NumberFormatException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid numeric query parameter");
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        }
     }
 
     /**
@@ -126,6 +149,11 @@ public class ProductController {
 
         } catch (NumberFormatException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid product id");
+        } catch (IllegalArgumentException e) {
+            int status = "Product not found".equals(e.getMessage())
+                    ? HttpServletResponse.SC_NOT_FOUND
+                    : HttpServletResponse.SC_BAD_REQUEST;
+            HttpUtil.sendJson(resp, status, e.getMessage());
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }

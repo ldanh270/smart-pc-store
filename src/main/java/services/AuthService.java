@@ -83,6 +83,12 @@ public class AuthService {
      * @return An LoginResponseDto containing user details upon successful login.
      */
     public LoginResponseDto login(LoginRequestDto dto) {
+        if (dto == null
+                || dto.getUsername() == null || dto.getUsername().isBlank()
+                || dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Username and password are required");
+        }
+
         // Check if user exists
         User user = userDao.findByUsername(dto.getUsername());
 
@@ -93,7 +99,7 @@ public class AuthService {
 
         try {
             // Create access token (JWT)
-            String accessToken = JwtUtil.generateAccessToken(user.getId());
+            String accessToken = JwtUtil.generateAccessToken(user.getId(),user.getUsername(),user.getRole());
 
             // // Create refresh token (UUID)
             String refreshToken = UUID.randomUUID().toString();
@@ -122,7 +128,8 @@ public class AuthService {
                     user.getEmail(),
                     user.getPhone(),
                     user.getAddress(),
-                    user.getStatus()
+                    user.getStatus(),
+                    user.getRole()
             )
             );
 
@@ -152,7 +159,11 @@ public class AuthService {
 
         try {
             // Generate new access token
-            String newAccessToken = JwtUtil.generateAccessToken(session.getUser().getId());
+            String newAccessToken = JwtUtil.generateAccessToken(
+                    session.getUser().getId(),
+                    session.getUser().getUsername(),
+                    session.getUser().getRole()
+            );
 
             // Return new access token
             return new AccessTokenResponseDto(true, newAccessToken, "Access token refreshed successfully");
