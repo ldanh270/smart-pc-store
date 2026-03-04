@@ -1,32 +1,20 @@
-package entities;
+package dto.order;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
-public class OrderModel {
-    private int id;
+public class OrderResponseDto {
+    private Integer id;
     private String orderCode;
-    private double amount;
+    private Double amount;
     private String transactionCode;
     private String status;
-    private Timestamp createdAt;
+    private Instant createdAt;
 
-    public OrderModel() {
-    }
-
-    public OrderModel(int id, String orderCode, double amount, String transactionCode, String status, Timestamp createdAt) {
-        this.id = id;
-        this.orderCode = orderCode;
-        this.amount = amount;
-        this.transactionCode = transactionCode;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -38,11 +26,11 @@ public class OrderModel {
         this.orderCode = orderCode;
     }
 
-    public double getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
@@ -62,11 +50,11 @@ public class OrderModel {
         this.status = status;
     }
 
-    public Timestamp getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

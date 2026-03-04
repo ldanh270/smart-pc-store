@@ -232,10 +232,10 @@ GO
 ========================= */
 CREATE TABLE Orders (
     id              INT PRIMARY KEY IDENTITY(1,1),
-    orderCode       VARCHAR(50) UNIQUE NOT NULL,
+    orderCode       NVARCHAR(50) UNIQUE NOT NULL,
     amount          FLOAT NOT NULL,
-    transactionCode VARCHAR(10) NOT NULL,
-    status          VARCHAR(20) DEFAULT 'PENDING',
+    transactionCode NVARCHAR(10) NOT NULL,
+    status          NVARCHAR(20) DEFAULT 'PENDING',
     createdAt       DATETIME DEFAULT GETDATE(),
     UserId          INT -- Keep existing for potential relation
 );

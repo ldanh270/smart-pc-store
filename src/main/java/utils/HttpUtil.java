@@ -1,10 +1,16 @@
 package utils;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.time.Instant;
 
 /**
  * Utility class for handling HTTP requests and responses, particularly for JSON data.
@@ -13,7 +19,14 @@ public class HttpUtil {
     /**
      * Gson instance for JSON serialization and deserialization.
      */
-    private static final Gson gson = new Gson();
+    private static final com.google.gson.Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Instant.class, new JsonSerializer<Instant>() {
+                @Override
+                public JsonElement serialize(Instant src, Type typeOfSrc, JsonSerializationContext context) {
+                    return new JsonPrimitive(src.toString());
+                }
+            })
+            .create();
 
     /**
      * Deserialize JSON from BufferedReader to an object of specified Java class.

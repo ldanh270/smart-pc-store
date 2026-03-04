@@ -1,0 +1,165 @@
+{
+	"info": {
+		"_postman_id": "7d9e4a3c-8b2f-4c1d-9e5a-7f6d5c4b3a21",
+		"name": "Smart PC Store API (Refactored)",
+		"description": "Collection cho các API quản lý đơn hàng và thanh toán QR đã được refactor",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Get All Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Order Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/detail?id=DH2025021203",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"detail"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "DH2025021203"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [\n        {\n            \"productId\": 1,\n            \"quantity\": 2\n        },\n        {\n            \"productId\": 5,\n            \"quantity\": 1\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Order",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/orders/delete?id=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"orders",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment & QR",
+			"item": [
+				{
+					"name": "Get QR Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/payment/qr?orderId=DH2025021203",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payment",
+								"qr"
+							],
+							"query": [
+								{
+									"key": "orderId",
+									"value": "DH2025021203"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Payment Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/check-transaction?txnCode=ABC12345",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"check-transaction"
+							],
+							"query": [
+								{
+									"key": "txnCode",
+									"value": "ABC12345"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/smart_pc_store_war"
+		}
+	]
+}

@@ -19,7 +19,6 @@ public class Order {
     @JoinColumn(name = "UserId")
     private User user;
 
-    @Nationalized
     @Column(name = "orderCode", unique = true, nullable = false, length = 50)
     private String orderCode;
 
@@ -33,7 +32,6 @@ public class Order {
     @Column(name = "createdAt")
     private Instant createdAt;
 
-    @Nationalized
     @Column(name = "status")
     private String status;
 
