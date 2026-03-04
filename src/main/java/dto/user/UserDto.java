@@ -6,29 +6,19 @@ package dto.user;
 public class UserDto {
     private int id;
     private String username;
-    private String fullName;
+    private String displayName;
     private String email;
     private String phone;
     private String address;
     private String status;
     private String role;
 
-    public UserDto(int id, String username, String fullName, String email, String phone, String address, String status) {
-        this.id = id;
-        this.username = username;
-        this.fullName = fullName;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-        this.status = status;
-    }
-
     /**
      * Constructor to initialize all fields of UserDto.
      *
      * @param id       the user ID
      * @param username the username
-     * @param fullName the full name of the user
+     * @param displayName the full name of the user
      * @param email    the email address
      * @param phone    the phone number
      * @param address  the physical address
@@ -37,7 +27,25 @@ public class UserDto {
     public UserDto(
             int id,
             String username,
-            String fullName,
+            String displayName,
+            String email,
+            String phone,
+            String address,
+            String status
+    ) {
+        this.id = id;
+        this.username = username;
+        this.displayName = displayName;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.status = status;
+    }
+
+    public UserDto(
+            int id,
+            String username,
+            String displayName,
             String email,
             String phone,
             String address,
@@ -46,7 +54,7 @@ public class UserDto {
     ) {
         this.id = id;
         this.username = username;
-        this.fullName = fullName;
+        this.displayName = displayName;
         this.email = email;
         this.phone = phone;
         this.address = address;
@@ -70,12 +78,12 @@ public class UserDto {
         this.username = username;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getEmail() {
