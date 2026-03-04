@@ -221,6 +221,19 @@ INSERT INTO Orders (Id, orderCode, amount, transactionCode, status, createdAt, U
 (3, 'DH2025021203', 1800.00, 'TXN00003', 'CANCELLED', '2025-02-12 14:00:00', 5);
 SET IDENTITY_INSERT Orders OFF;
 
+/* ==========================================================================
+   7. EXTRA DATA
+   ========================================================================== */
+CREATE TABLE Orders_Extra (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    orderCode NVARCHAR(20) NOT NULL UNIQUE,
+    amount FLOAT NOT NULL,
+    transactionCode NVARCHAR(8) NOT NULL,
+    status NVARCHAR(20) DEFAULT 'PENDING',
+    createdAt DATETIME DEFAULT GETDATE()
+);
+GO
+
 SET IDENTITY_INSERT OrderDetails ON;
 INSERT INTO OrderDetails (Id, OrderId, ProductId, Quantity, UnitPrice) VALUES 
 (1, 1, 1, 1, 600.00),

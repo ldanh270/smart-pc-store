@@ -1,7 +1,7 @@
 package servlets;
 
 import controllers.OrderController;
-import dao.OrderDao;
+import dao.OrderDAO;
 import dao.OrderDetailDao;
 import dao.ProductDao;
 import jakarta.servlet.ServletException;
@@ -20,7 +20,7 @@ public class OrderServlet extends HttpServlet {
 
     @Override
     public void init() {
-        OrderDao orderDao = new OrderDao();
+        OrderDAO orderDao = new OrderDAO();
         OrderDetailDao orderDetailDao = new OrderDetailDao();
         ProductDao productDao = new ProductDao();
         OrderService orderService = new OrderService(orderDao, orderDetailDao, productDao);

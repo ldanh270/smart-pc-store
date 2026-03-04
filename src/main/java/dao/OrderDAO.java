@@ -4,8 +4,8 @@ import entities.Order;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-public class OrderDao extends GenericDao<Order> {
-    public OrderDao() {
+public class OrderDAO extends GenericDao<Order> {
+    public OrderDAO() {
         super(Order.class);
     }
 

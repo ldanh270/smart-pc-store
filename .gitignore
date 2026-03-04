@@ -42,3 +42,6 @@ out/
 TODO.md
 
 .smarttomcat/
+
+# Postman
+smart-pc-store-api.postman_collection.json

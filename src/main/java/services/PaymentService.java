@@ -1,14 +1,14 @@
 package services;
 
-import dao.OrderDao;
+import dao.OrderDAO;
 import dto.payment.PaymentResponseDto;
 import entities.Order;
 import utils.NumberUtil;
 
 public class PaymentService {
-    private final OrderDao orderDao;
+    private final OrderDAO orderDao;
 
-    public PaymentService(OrderDao orderDao) {
+    public PaymentService(OrderDAO orderDao) {
         this.orderDao = orderDao;
     }
 

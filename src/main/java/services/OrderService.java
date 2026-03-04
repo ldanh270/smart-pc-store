@@ -1,6 +1,6 @@
 package services;
 
-import dao.OrderDao;
+import dao.OrderDAO;
 import dao.OrderDetailDao;
 import dao.ProductDao;
 import dto.order.CreateOrderRequestDto;
@@ -20,11 +20,11 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class OrderService {
-    private final OrderDao orderDao;
+    private final OrderDAO orderDao;
     private final OrderDetailDao orderDetailDao;
     private final ProductDao productDao;
 
-    public OrderService(OrderDao orderDao, OrderDetailDao orderDetailDao, ProductDao productDao) {
+    public OrderService(OrderDAO orderDao, OrderDetailDao orderDetailDao, ProductDao productDao) {
         this.orderDao = orderDao;
         this.orderDetailDao = orderDetailDao;
         this.productDao = productDao;

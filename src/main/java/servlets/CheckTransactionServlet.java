@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dao.OrderDao;
+import dao.OrderDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -30,7 +30,7 @@ public class CheckTransactionServlet extends HttpServlet {
 
     @Override
     public void init() {
-        OrderDao orderDao = new OrderDao();
+        OrderDAO orderDao = new OrderDAO();
         this.paymentService = new PaymentService(orderDao);
     }
 

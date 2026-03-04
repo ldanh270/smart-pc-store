@@ -1,7 +1,7 @@
 package servlets;
 
 import controllers.PaymentController;
-import dao.OrderDao;
+import dao.OrderDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,7 +18,7 @@ public class PaymentServlet extends HttpServlet {
 
     @Override
     public void init() {
-        OrderDao orderDao = new OrderDao();
+        OrderDAO orderDao = new OrderDAO();
         PaymentService paymentService = new PaymentService(orderDao);
         this.paymentController = new PaymentController(paymentService);
     }
