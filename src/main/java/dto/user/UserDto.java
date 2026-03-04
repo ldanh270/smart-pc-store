@@ -16,13 +16,13 @@ public class UserDto {
     /**
      * Constructor to initialize all fields of UserDto.
      *
-     * @param id       the user ID
-     * @param username the username
+     * @param id          the user ID
+     * @param username    the username
      * @param displayName the full name of the user
-     * @param email    the email address
-     * @param phone    the phone number
-     * @param address  the physical address
-     * @param status   the account status
+     * @param email       the email address
+     * @param phone       the phone number
+     * @param address     the physical address
+     * @param status      the account status
      */
     public UserDto(
             int id,

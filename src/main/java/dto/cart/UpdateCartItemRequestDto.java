@@ -5,9 +5,16 @@ package dto.cart;
  */
 public class UpdateCartItemRequestDto {
 
-    /** New quantity (if <= 0, item will be removed) */
+    /**
+     * New quantity (if <= 0, item will be removed)
+     */
     private Integer quantity;
 
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 }

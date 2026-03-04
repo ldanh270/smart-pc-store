@@ -96,7 +96,7 @@ public class CategoryController {
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                new ApiResponse<>(false, "Internal server error", e.getMessage())
+                    new ApiResponse<>(false, "Internal server error", e.getMessage())
             );
         }
     }

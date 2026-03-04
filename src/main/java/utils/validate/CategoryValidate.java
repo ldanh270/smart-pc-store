@@ -1,11 +1,21 @@
 package utils.validate;
 
-import dto.category.CategoryRequestDto;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import dto.category.CategoryRequestDto;
+
+/**
+ * Validate category data
+ */
 public class CategoryValidate {
+
+    /**
+     * Validate create category data
+     *
+     * @param dto Category request data
+     * @return List of validation error messages
+     */
     public static List<String> validateCreateCategory(CategoryRequestDto dto) {
         // List to hold validation error messages
         List<String> errors = new ArrayList<>();

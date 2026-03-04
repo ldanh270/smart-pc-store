@@ -1,9 +1,16 @@
 package servlets;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import dao.OrderDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,18 +21,12 @@ import jakarta.servlet.http.HttpSession;
 import services.PaymentService;
 import utils.HttpUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 @WebServlet(name = "CheckTransactionServlet", urlPatterns = {"/check-transaction"})
 public class CheckTransactionServlet extends HttpServlet {
 
     private static final String API_TOKEN = "Bearer E7EQFSUFXWLBW1NMNQ6HPUBJF8WTYMY0RDXYJONAT72IIBSPO52ZOHM1QCRO9WQZ";
     private static final String SEPAY_API_URL = "https://my.sepay.vn/userapi/transactions/list";
-    
+
     private PaymentService paymentService;
 
     @Override
@@ -35,9 +36,11 @@ public class CheckTransactionServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
+    protected void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws ServletException, IOException {
+
         String currentCode = request.getParameter("txnCode");
         if (currentCode == null || currentCode.isEmpty()) {
             HttpSession session = request.getSession();
@@ -58,7 +61,7 @@ public class CheckTransactionServlet extends HttpServlet {
 
             boolean found = false;
             String message = "Chưa tìm thấy giao dịch";
-            
+
             if (transactions != null) {
                 for (JsonElement element : transactions) {
                     JsonObject txn = element.getAsJsonObject();

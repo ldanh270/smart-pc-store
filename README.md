@@ -6,334 +6,177 @@
   <img src="https://img.shields.io/badge/Maven-3.x-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" alt="Maven"/>
 </p>
 
-# 🖥️ Smart PC Store
+# 🖥️ Smart PC Store API
 
-> A modern, full-featured e-commerce web application for PC components and computer systems built
-> with Java Servlet, Jakarta EE, and JPA/Hibernate.
+> A modern, enterprise-grade RESTful API backend for a PC components and customized systems
+> e-commerce platform. Built on Jakarta EE standards leveraging pure Java Servlets, JPA/Hibernate,
+> and Microsoft SQL Server.
 
 ---
 
 ## 📖 Table of Contents
 
 - [Overview](#-overview)
-- [Features](#-features)
+- [Key Features](#-key-features)
 - [Technology Stack](#-technology-stack)
-- [Architecture](#-architecture)
+- [Software Architecture](#-software-architecture)
 - [Project Structure](#-project-structure)
 - [Database Schema](#-database-schema)
 - [Getting Started](#-getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Configuration](#configuration)
-    - [Database Setup](#database-setup)
-    - [Build & Deploy](#build--deploy)
 - [API Reference](#-api-reference)
 - [Security](#-security)
 - [Testing](#-testing)
 - [Contributing](#-contributing)
 - [License](#-license)
-- [Team](#-team)
 
 ---
 
 ## 🎯 Overview
 
-**Smart PC Store** is a comprehensive e-commerce platform designed for buying and selling PC
-components and computer systems. The application provides a robust backend infrastructure built on
-Jakarta EE standards with a clean, layered architecture following industry best practices.
+**Smart PC Store** provides a highly scalable and robust backend infrastructure to an advanced
+e-commerce platform catered towards PC building enthusiasts. Incorporating an explicit layered
+architecture, it separates routing, business logics, and data persistence clearly, making it fully
+compliant with real-world industry standards.
 
-### Key Highlights
+### Core Strengths
 
-- 🔐 **Secure Authentication** — JWT-based access tokens with refresh token rotation
-- 🗄️ **Robust Data Layer** — JPA/Hibernate ORM with Microsoft SQL Server
-- 📦 **Inventory Management** — Real-time stock tracking with transaction history
-- 📊 **Analytics Ready** — Built-in revenue tracking and demand/price forecasting models
-- 🛒 **Complete E-commerce Flow** — From cart management to order processing and payments
+- 🔐 **Enhanced Security** — Stateful refresh token rotation paired with stateless JWT access
+  tokens, wrapped with BCrypt password encoding.
+- 🗄️ **Robust Data Persistence** — Comprehensive JPA/Hibernate mappings representing advanced
+  relationship types against a Microsoft SQL Server database.
+- 🏢 **B2B & Inventory Engine** — Elaborate Supplier Management system supporting quotations,
+  purchase orders, price histories, and strict transaction logging.
+- 📊 **Business Intelligence** — Built-in supplier analytics, daily revenue aggregation, and
+  forecasting endpoints to support business decisions.
+- 🛒 **Full E-commerce Lifecycle** — Handles complex state changes from shopping cart modifications,
+  checkout, and inventory decrementing to payment integrations.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-### 🔐 Authentication & Authorization
+### 🛡️ Authentication & Authorization
 
-- User registration with input validation
-- Secure login with JWT access tokens
-- Refresh token mechanism for session persistence
-- Password hashing using BCrypt
+- Robust registration flows with payload validation.
+- Secure standard login generating access and refresh tokens.
+- Refresh token persistence preventing invalid token reuse.
 
-### 🛍️ Product Management
+### 🛍️ Client Shopping Experience
 
-- Product catalog with categories
-- Supplier management with price history tracking
-- Inventory tracking with transaction logs
+- Product catalogs fetching with categorization.
+- Active cart manipulation tied tightly to user sessions.
+- Clean checkout processes translating carts into fulfillable orders.
+- Native payment processing module.
 
-### 🛒 Shopping Experience
+### 🏢 Supplier & Procurement Management
 
-- Shopping cart functionality
-- Order placement and management
-- Multiple payment method support
-- Order status tracking
+- Complete vendor profiles (`SupplierController`).
+- Flexible quotation requests mapping supplier prices histories (`SupplierQuotationController`).
+- Strict B2B purchase order (PO) generation to restock inventory (`PurchaseController`).
+- Supplier performance tracking and business analytics (`SupplierAnalyticsController`).
 
-### 📈 Analytics & Forecasting
+### ⚙️ Administrative Controls
 
-- Daily revenue aggregation
-- Price forecasting models
-- Demand prediction capabilities
-
-### 👥 User Management
-
-- User profile management
-- Address and contact information
-- Order history
+- Product, category, and user CRUD panels.
+- Order dispute and status tracking.
+- Precise ledger mechanisms via the `InventoryTransaction` table preventing dead stock issues.
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Category               | Technology              | Version     |
-|------------------------|-------------------------|-------------|
-| **Language**           | Java                    | 17          |
-| **Framework**          | Jakarta Servlet API     | 6.0.0       |
-| **ORM**                | Hibernate Core          | 6.4.4.Final |
-| **Persistence**        | Jakarta Persistence API | 3.1.0       |
-| **Database**           | Microsoft SQL Server    | 2019+       |
-| **Build Tool**         | Apache Maven            | 3.x         |
-| **Authentication**     | JJWT (JSON Web Token)   | 0.11.5      |
-| **Password Hashing**   | jBCrypt                 | 0.4         |
-| **JSON Processing**    | Google Gson             | 2.10.1      |
-| **Environment Config** | dotenv-java             | 3.0.0       |
-| **Testing**            | JUnit                   | 4.13.1      |
-| **Server**             | Apache Tomcat           | 10.x+       |
+| Category              | Technology / Library      | Version     | Purpose                                   |
+| --------------------- | ------------------------- | ----------- | ----------------------------------------- |
+| **Core Language**     | Java SE                   | 17          | Base language syntax                      |
+| **Web Framework**     | Jakarta Servlet API       | 6.0.0       | HTTP Request/Response handling, Filters   |
+| **ORM & Persistence** | Hibernate Core + JPA      | 6.4.4.Final | Database mapping and transaction handling |
+| **Relational DB**     | Microsoft SQL Server      | 2019+       | Main data storage                         |
+| **Build & Deploy**    | Apache Maven & Tomcat     | 3.x / 10.x+ | Dependency management and server runtime  |
+| **Security (Auth)**   | JJWT (JSON Web Token)     | 0.11.5      | Auth tokenization                         |
+| **Security (Crypto)** | jBCrypt                   | 0.4         | Hashing user passwords securely           |
+| **Utilities**         | Google Gson & dotenv-java | Latest      | JSON parsing and env variable handling    |
+| **Automated Testing** | JUnit                     | 4.13.1      | Assuring business logic layer stability   |
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Software Architecture
 
-The application follows a **layered architecture** pattern ensuring separation of concerns and
-maintainability:
+This application strictly implements an **N-Tier Architecture** emphasizing clear Domain-Driven
+boundary limits:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    CLIENT (Browser/API)                 │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                  PRESENTATION LAYER                     │
-│  ┌───────────────┐    ┌───────────────┐                 │
-│  │   Servlets    │◄──►│  Controllers  │                 │
-│  │ (URL Routing) │    │ (Request      │                 │
-│  │               │    │  Handling)    │                 │
-│  └───────────────┘    └───────────────┘                 │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                   SERVICE LAYER                         │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │               Business Logic                      │  │
-│  │     • AuthService • ProductService • etc.         │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                DATA ACCESS LAYER (DAO)                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐  │
-│  │ GenericDao  │  │  UserDao    │  │  SessionDao     │  │
-│  │  (Base)     │  │             │  │                 │  │
-│  └─────────────┘  └─────────────┘  └─────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│              PERSISTENCE LAYER (JPA/Hibernate)          │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │             Entity Manager + Entities             │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                    DATABASE LAYER                       │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │              Microsoft SQL Server                 │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
+```text
+CLIENT REQUESTS -> 🌐 HTTP Routes (Servlets/Controllers)
+                      ↓
+BUSINESS RULES  -> 🧠 Service Layer (DTOs & Validation)
+                      ↓
+DATA ACCESS     -> 🗃️ DAO Layer (Generic Interfaces)
+                      ↓
+PERSISTENCE     -> 🛡️ JPA/Hibernate Entities
+                      ↓
+DATABASE        -> 💽 SQL Server
 ```
 
-### Design Patterns Used
+Key Design Patterns enforced across the codebase:
 
-- **DAO Pattern** — Abstracts data access logic from business logic
-- **DTO Pattern** — Data Transfer Objects for clean API contracts
-- **Service Layer Pattern** — Encapsulates business logic
-- **MVC Pattern** — Separation of Model, View, and Controller
+- **Singleton & Factories** through Custom `JPAUtil` handlers.
+- **DAO Pattern** leveraging a powerful generic base class (`GenericDao`).
+- **DTO Pattern** completely stripping presentation APIs from database internal entities formatting.
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 smart-pc-store/
-├── 📂 src/
-│   ├── 📂 main/
-│   │   ├── 📂 java/
-│   │   │   ├── 📂 configs/              # Application configurations
-│   │   │   │   ├── DatabaseConfig.java  # Database connection settings
-│   │   │   │   ├── JwtConfig.java       # JWT token configuration
-│   │   │   │   ├── Regex.java           # Validation patterns
-│   │   │   │   └── UrlConfig.java       # URL routing configuration
-│   │   │   │
-│   │   │   ├── 📂 controllers/          # Request handlers
-│   │   │   │   └── AuthController.java  # Authentication controller
-│   │   │   │
-│   │   │   ├── 📂 dao/                  # Data Access Objects
-│   │   │   │   ├── GenericDao.java      # Base DAO with CRUD operations
-│   │   │   │   ├── JPAUtil.java         # JPA EntityManager utility
-│   │   │   │   ├── SessionDao.java      # Session data access
-│   │   │   │   └── UserDao.java         # User data access
-│   │   │   │
-│   │   │   ├── 📂 dto/                  # Data Transfer Objects
-│   │   │   │   ├── 📂 auth/
-│   │   │   │   │   ├── AuthResponse.java
-│   │   │   │   │   ├── LoginDto.java
-│   │   │   │   │   └── RegisterDto.java
-│   │   │   │   ├── 📂 product/
-│   │   │   │   └── 📂 user/
-│   │   │   │       └── UserDto.java
-│   │   │   │
-│   │   │   ├── 📂 entities/             # JPA Entity classes
-│   │   │   │   ├── Cart.java
-│   │   │   │   ├── CartItem.java
-│   │   │   │   ├── Category.java
-│   │   │   │   ├── DemandForecast.java
-│   │   │   │   ├── InventoryTransaction.java
-│   │   │   │   ├── Order.java
-│   │   │   │   ├── OrderItem.java
-│   │   │   │   ├── Payment.java
-│   │   │   │   ├── PriceForecast.java
-│   │   │   │   ├── Product.java
-│   │   │   │   ├── PurchaseOrder.java
-│   │   │   │   ├── PurchaseOrderItem.java
-│   │   │   │   ├── RevenueDaily.java
-│   │   │   │   ├── Session.java
-│   │   │   │   ├── Supplier.java
-│   │   │   │   ├── SupplierPriceHistory.java
-│   │   │   │   └── User.java
-│   │   │   │
-│   │   │   ├── 📂 filters/              # Servlet filters
-│   │   │   │
-│   │   │   ├── 📂 services/             # Business logic layer
-│   │   │   │   └── AuthService.java
-│   │   │   │
-│   │   │   ├── 📂 servlets/             # HTTP endpoint handlers
-│   │   │   │   ├── AuthServlet.java     # /auth/* endpoints
-│   │   │   │   └── DefaultServlet.java  # Default routes
-│   │   │   │
-│   │   │   └── 📂 utils/                # Utility classes
-│   │   │       ├── EnvHelper.java       # Environment variable helper
-│   │   │       ├── HttpUtil.java        # HTTP request/response utilities
-│   │   │       ├── JwtUtil.java         # JWT token utilities
-│   │   │       └── 📂 validate/
-│   │   │           └── AuthValidate.java
-│   │   │
-│   │   ├── 📂 resources/
-│   │   │   └── 📂 META-INF/
-│   │   │       └── persistence.xml      # JPA configuration
-│   │   │
-│   │   └── 📂 webapp/
-│   │       ├── 📂 META-INF/
-│   │       ├── 📂 WEB-INF/
-│   │       └── index.jsp
-│   │
-│   └── 📂 test/                         # Unit tests
-│
-├── 📂 plan/                             # Project planning files
-│   ├── schema.sql                       # Database schema
-│   ├── data.sql                         # Sample data
-│   └── TasksList.drawio                 # Task diagram
-│
-├── .env                                 # Environment variables
-├── .gitignore                           # Git ignore rules
-├── pom.xml                              # Maven configuration
-└── README.md                            # This file
+├── 📂 src/main/java/
+│   ├── 📂 configs/        # App-wide configurations (DB, JWT, Regex validations)
+│   ├── 📂 controllers/    # Request dispatchers (Auth, Product, Orders, Suppliers, etc.)
+│   ├── 📂 dao/            # Data Access Objects (CRUD base logics)
+│   ├── 📂 dto/            # Data Transfer Objects tailored per entity
+│   ├── 📂 entities/       # Hibernate mapped Java Models
+│   ├── 📂 filters/        # Pre-execution Servlet Interceptors (CORS, Auth)
+│   ├── 📂 services/       # Top-level transactional business logic computations
+│   ├── 📂 servlets/       # Raw HTTP endpoint mapping definitions
+│   └── 📂 utils/          # Encryption, environment, and String utilities
+├── 📂 src/main/resources/
+│   └── 📂 META-INF/
+│       └── persistence.xml # Database persistence unit declarations
+├── 📂 test/               # Unit testing directories
+├── 📂 plan/               # Project database schemas and design documents
+├── .env                   # Environment variables (Ignored by Git)
+└── pom.xml                # Maven project object model
 ```
 
 ---
 
 ## 🗄️ Database Schema
 
-The application uses a comprehensive relational database schema designed for e-commerce operations:
+The backbone relational database incorporates more than 15 optimized tables handling immense B2B/B2C
+hybrid loads:
 
-### Entity Relationship Diagram
+### Core Tables Snapshot
 
-```
-┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-│    Users     │───┬───│   Sessions   │       │  Categories  │
-└──────────────┘   │   └──────────────┘       └──────────────┘
-       │           │                                 │
-       │           │                                 │
-       ▼           │                                 ▼
-┌──────────────┐   │   ┌──────────────┐       ┌──────────────┐
-│    Carts     │   │   │   Suppliers  │───────│   Products   │
-└──────────────┘   │   └──────────────┘       └──────────────┘
-       │           │          │                      │
-       ▼           │          ▼                      │
-┌──────────────┐   │   ┌────────────────────┐        │
-│  CartItems   │   │   │SupplierPriceHistory│        │
-└──────────────┘   │   └────────────────────┘        │
-                   │                                 │
-       ┌───────────┘                                 │
-       │                                             │
-       ▼                                             ▼
-┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-│    Orders    │───────│  OrderItems  │───────│ InventoryTxn │
-└──────────────┘       └──────────────┘       └──────────────┘
-       │
-       ▼
-┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-│   Payments   │       │ RevenueDaily │       │  Forecasts   │
-└──────────────┘       └──────────────┘       └──────────────┘
-```
+- **Core Entities:** `Users`, `Sessions`, `Categories`, `Products`
+- **Shopping Flow:** `Carts`, `CartItems`, `Orders`, `OrderItems`, `Payments`
+- **Supply Operations:** `Suppliers`, `SupplierPriceHistories`, `PurchaseOrders`,
+  `PurchaseOrderItems`
+- **Internal Logs & Stats:** `InventoryTransactions`, `RevenueDaily`, `DemandForecasts`,
+  `PriceForecasts`
 
-### Core Tables
-
-| Table                    | Description                                   |
-|--------------------------|-----------------------------------------------|
-| `Users`                  | User accounts with authentication credentials |
-| `Sessions`               | Active user sessions with refresh tokens      |
-| `Categories`             | Product categorization                        |
-| `Products`               | Product catalog with pricing and inventory    |
-| `Suppliers`              | Vendor information and lead times             |
-| `SupplierPriceHistories` | Historical import pricing data                |
-| `Carts`                  | User shopping carts                           |
-| `CartItems`              | Items in shopping carts                       |
-| `Orders`                 | Customer orders                               |
-| `OrderItems`             | Line items in orders                          |
-| `Payments`               | Payment transactions                          |
-| `InventoryTransactions`  | Stock movement history                        |
-| `PurchaseOrders`         | Supplier purchase orders                      |
-| `PurchaseOrderItems`     | Items in purchase orders                      |
-| `RevenueDaily`           | Daily revenue aggregations                    |
-| `DemandForecasts`        | Product demand predictions                    |
-| `PriceForecasts`         | Product price predictions                     |
+See the explicit schema definition within [plan/schema.sql](./plan/schema.sql).
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+Ensure you have installed:
 
-Ensure you have the following installed on your system:
+- [Java JDK 17+](https://adoptium.net/)
+- [Apache Maven 3.8+](https://maven.apache.org/download.cgi)
+- [Microsoft SQL Server 2019+](https://www.microsoft.com/sql-server)
+- [Apache Tomcat 10.1+](https://tomcat.apache.org/download-10.cgi)
 
-| Software                 | Version      | Download                                              |
-|--------------------------|--------------|-------------------------------------------------------|
-| **Java JDK**             | 17 or higher | [Download](https://adoptium.net/)                     |
-| **Apache Maven**         | 3.8+         | [Download](https://maven.apache.org/download.cgi)     |
-| **Microsoft SQL Server** | 2019+        | [Download](https://www.microsoft.com/sql-server)      |
-| **Apache Tomcat**        | 10.1+        | [Download](https://tomcat.apache.org/download-10.cgi) |
-
-### Installation
+### Installation & Setup
 
 1. **Clone the Repository**
 
@@ -342,304 +185,116 @@ Ensure you have the following installed on your system:
    cd smart-pc-store
    ```
 
-2. **Install Dependencies**
-
-   ```bash
-   mvn clean install
-   ```
-
-### Configuration
-
-1. **Environment Variables**
-
-   Create a `.env` file in the project root:
+2. **Configure Environment Variables** Create a `.env` file at the root folder:
 
    ```env
-   # Authentication
+   # JWT Configuration
    ACCESS_TOKEN_SECRET=your_secure_256_bit_hex_secret_key_here
-
-   # Optional: Override default database settings
-   # DB_URL=jdbc:sqlserver://localhost:1433;databaseName=SMART_PC_STORE
-   # DB_USER=sa
-   # DB_PASSWORD=your_password
    ```
 
-   > ⚠️ **Important:** Generate a secure secret key for production. Use a 256-bit (64 hex
-   > characters) random string.
-
-2. **JPA Configuration**
-
-   Update `src/main/resources/META-INF/persistence.xml` with your database credentials:
+3. **Configure Database Connection** Update `src/main/resources/META-INF/persistence.xml` with your
+   SQL server details if needed:
 
    ```xml
-   <property name="jakarta.persistence.jdbc.url"
-             value="jdbc:sqlserver://localhost:1433;databaseName=SMART_PC_STORE;encrypt=true;trustServerCertificate=true"/>
-   <property name="jakarta.persistence.jdbc.user" value="your_username"/>
-   <property name="jakarta.persistence.jdbc.password" value="your_password"/>
+   <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=SMART_PC_STORE;encrypt=true;trustServerCertificate=true"/>
+   <property name="jakarta.persistence.jdbc.user" value="sa"/>
+   <property name="jakarta.persistence.jdbc.password" value="YourPasswordHere"/>
    ```
 
-### Database Setup
+4. **Initialize the Database** Import and execute the `plan/schema.sql` directly inside your SQL
+   Server instance, and optionally `plan/data.sql` to populate sample testing data.
 
-1. **Connect to SQL Server** using your preferred client (SSMS, Azure Data Studio, etc.)
-
-2. **Execute the Schema Script**
-
-   Run the SQL script located at `plan/schema.sql` to create the database and all tables:
-
-   ```sql
-   -- This script creates the SMART_PC_STORE database and all required tables
-   -- See plan/schema.sql for the complete script
-   ```
-
-3. **(Optional) Load Sample Data**
-
-   ```sql
-   -- Execute plan/data.sql for sample data
-   ```
-
-### Build & Deploy
-
-1. **Build the WAR File**
-
+5. **Build & Deploy**
    ```bash
    mvn clean package
    ```
-
-   The WAR file will be generated at: `target/smart-pc-store.war`
-
-2. **Deploy to Tomcat**
-    - Copy `smart-pc-store.war` to your Tomcat's `webapps/` directory
-    - Or use your IDE's server integration
-
-3. **Access the Application**
-
-   ```
-   http://localhost:8080/smart-pc-store
-   ```
+   Deploy the `target/smart-pc-store.war` to your local Apache Tomcat's `webapps` folder and boot up
+   the server.
 
 ---
 
 ## 📡 API Reference
 
-### Base URL
+Base REST URL format: `http://localhost:8080/smart-pc-store`
 
-```
-http://localhost:8080/smart-pc-store
-```
+_(A detailed Postman / OpenAPI collection is heavily recommended for viewing complex endpoints.
+Below is a subset.)_
 
-### Authentication Endpoints
+### Core Endpoints
 
-| Method | Endpoint        | Description                      |
-|--------|-----------------|----------------------------------|
-| `POST` | `/auth/signup`  | Register a new user              |
-| `POST` | `/auth/login`   | Authenticate user and get tokens |
-| `POST` | `/auth/refresh` | Refresh access token (WIP)       |
-
-#### Register User
-
-```http
-POST /auth/signup
-Content-Type: application/json
-
-{
-  "username": "johndoe",
-  "password": "SecurePass123!",
-  "fullName": "John Doe",
-  "email": "john.doe@example.com"
-}
-```
-
-**Response (201 Created):**
-
-```json
-{
-  "message": "Register successfully"
-}
-```
-
-#### Login
-
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "username": "johndoe",
-  "password": "SecurePass123!"
-}
-```
-
-**Response (200 OK):**
-
-```json
-{
-  "success": true,
-  "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
-  "refreshToken": "550e8400-e29b-41d4-a716-446655440000",
-  "user": {
-    "id": 1,
-    "username": "johndoe",
-    "fullName": "John Doe",
-    "email": "john.doe@example.com",
-    "phone": null,
-    "address": null,
-    "status": "active"
-  }
-}
-```
-
-### Error Responses
-
-| Status Code | Description                                |
-|-------------|--------------------------------------------|
-| `400`       | Bad Request - Invalid input or JSON format |
-| `401`       | Unauthorized - Invalid credentials         |
-| `404`       | Not Found - Endpoint not found             |
-| `409`       | Conflict - User already exists             |
-| `500`       | Internal Server Error                      |
+| Resource      | Methods                        | Purpose                                                          |
+| ------------- | ------------------------------ | ---------------------------------------------------------------- |
+| `/auth/*`     | `POST`                         | User sign up, login, and token refreshes.                        |
+| `/products`   | `GET`, `POST`, `PUT`, `DELETE` | Managing the public system catalog and product stock details.    |
+| `/categories` | `GET`, `POST`, `PUT`, `DELETE` | Hierarchical management for computer part typologies.            |
+| `/cart`       | `GET`, `POST`, `DELETE`        | Managing active user shopping intentions.                        |
+| `/orders`     | `GET`, `POST`, `PUT`           | Processing checkout actions and modifying fulfillment sequences. |
+| `/suppliers`  | `GET`, `POST`, `PUT`, `DELETE` | Tracking B2B manufacturers and vendor relationships.             |
+| `/purchases`  | `GET`, `POST`                  | Issuing Purchase Orders internally to replenish main inventory.  |
+| `/analytics`  | `GET`                          | Generating data blocks mapping out supplier activities.          |
 
 ---
 
 ## 🔐 Security
 
-### Authentication Flow
+This application features rigorous enterprise-grade security practices:
 
-```
-┌────────────┐     ┌─────────────┐     ┌──────────────┐
-│   Client   │────►│   Server    │────►│   Database   │
-└────────────┘     └─────────────┘     └──────────────┘
-      │                   │                    │
-      │  1. POST /login   │                    │
-      │───────────────────►                    │
-      │                   │  2. Validate user  │
-      │                   │────────────────────►
-      │                   │                    │
-      │                   │◄────────────────────
-      │                   │  3. Create tokens  │
-      │                   │                    │
-      │◄───────────────────                    │
-      │  4. Return tokens │                    │
-      │                   │                    │
-      │  5. API Request   │                    │
-      │  + Bearer Token   │                    │
-      │───────────────────►                    │
-      │                   │  6. Validate JWT   │
-      │                   │────────────────────►
-      │                   │                    │
-      │◄───────────────────                    │
-      │  7. Response      │                    │
-```
-
-### Security Features
-
-- **Password Hashing** — BCrypt with automatic salt generation
-- **JWT Tokens** — HS256 signed access tokens with configurable expiration
-- **Refresh Tokens** — UUID-based tokens stored in database with expiration
-- **Input Validation** — Server-side validation for all user inputs
-- **SQL Injection Prevention** — JPA/Hibernate parameterized queries
-
-### Best Practices
-
-- Store `ACCESS_TOKEN_SECRET` securely (environment variable)
-- Use HTTPS in production
-- Rotate refresh tokens on each use
-- Set appropriate CORS policies
-- Implement rate limiting for authentication endpoints
+1. **Separation of Tokens:** Client access utilizes `HS256` JWT while refresh cycles rely on UUID
+   strings tightly verified against persistence states.
+2. **Password Cryptography:** BCrypt hashes integrated deeply into the User Service logic intercept
+   plain texts inherently at registration.
+3. **Hibernate Prepared Statements:** Entity management guarantees zero SQL-injection
+   vulnerabilities natively through ORM encapsulation parameters.
+4. **Servlet Filtering:** All private routes mandatorily pass through a core JWT validation `Filter`
+   validating bearer prefixes seamlessly.
 
 ---
 
 ## 🧪 Testing
 
-### Running Tests
+The repository establishes a structured unit-testing baseline primarily validating core `Services`
+and Data Access Objects using **JUnit**.
+
+To execute the test suite:
 
 ```bash
-# Run all tests
-mvn test
+mvn clean test
+```
 
-# Run specific test class
-mvn test -Dtest=AuthServiceTest
+To run tests alongside coverage generation plugins (if configured):
 
-# Generate test coverage report
+```bash
 mvn test jacoco:report
-```
-
-### Test Structure
-
-```
-src/test/
-├── java/
-│   ├── dao/
-│   │   └── UserDaoTest.java
-│   ├── services/
-│   │   └── AuthServiceTest.java
-│   └── utils/
-│       └── JwtUtilTest.java
 ```
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please follow these steps:
+We welcome educational and structural contributions to the codebase:
 
-1. **Fork the Repository**
+1. Fork this repository.
+2. Form a descriptive feature branch (`git checkout -b feature/Implement-Stripe`).
+3. Commit logically coherent changes (`git commit -m "Add Stripe SDK dependency"`).
+4. Push your changes securely to the fork (`git push origin feature/Implement-Stripe`).
+5. Open a Pull Request detailing what bug/feature was resolved.
 
-2. **Create a Feature Branch**
+### Style Guide
 
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-
-3. **Commit Your Changes**
-
-   ```bash
-   git commit -m 'Add amazing feature'
-   ```
-
-4. **Push to the Branch**
-
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-
-5. **Open a Pull Request**
-
-### Code Style Guidelines
-
-- Follow Java naming conventions
-- Write meaningful commit messages
-- Include JavaDoc for public methods
-- Write unit tests for new features
-- Keep methods focused and small
+- Consistent descriptive JavaDoc labeling for Services.
+- Separation of DTOs — _Never leak Entities into Controller responses._
+- Proper English commit messages.
 
 ---
 
 ## 📄 License
 
-This project is developed for **educational purposes**. All rights reserved.
-
----
-
-## 👥 Team
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/ldanh270">
-        <img src="https://github.com/ldanh270.png" width="100px;" alt="ldanh270"/><br />
-        <sub><b>ldanh270</b></sub>
-      </a><br />
-      <sub>Developer</sub>
-    </td>
-  </tr>
-</table>
+This repository is strictly provisioned for **educational and portfolio purposes**. Original
+codebase rights belong strictly to the author.
 
 ---
 
 <p align="center">
-  <b>⭐ If you find this project useful, please give it a star! ⭐</b>
-</p>
-
-<p align="center">
-  Made with ❤️ using Java & Jakarta EE
+  <b>⭐ Provided this project inspired your own architectures, please leave a star! ⭐</b><br/>
+  Made with ❤️ focusing on modern Java Enterprise Engineering
 </p>

@@ -1,14 +1,15 @@
 package controllers;
 
+import java.io.IOException;
+
 import dto.payment.PaymentResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.PaymentService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 public class PaymentController {
+
     private final PaymentService paymentService;
 
     public PaymentController(PaymentService paymentService) {

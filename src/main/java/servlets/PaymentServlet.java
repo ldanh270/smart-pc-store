@@ -1,5 +1,7 @@
 package servlets;
 
+import java.io.IOException;
+
 import controllers.PaymentController;
 import dao.OrderDAO;
 import jakarta.servlet.ServletException;
@@ -10,10 +12,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.PaymentService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
+/**
+ * PaymentServlet handles payment-related requests
+ */
 @WebServlet(name = "PaymentServlet", urlPatterns = {"/payment/*"})
 public class PaymentServlet extends HttpServlet {
+
     private PaymentController paymentController;
 
     @Override
@@ -32,8 +36,8 @@ public class PaymentServlet extends HttpServlet {
             } else {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("ERROR PaymentServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
         }
     }

@@ -2,7 +2,11 @@ package dto.order;
 
 import java.util.List;
 
+/**
+ * Data Transfer Object for order creation requests.
+ */
 public class CreateOrderRequestDto {
+
     private List<OrderItemRequestDto> items;
 
     public List<OrderItemRequestDto> getItems() {
@@ -14,6 +18,7 @@ public class CreateOrderRequestDto {
     }
 
     public static class OrderItemRequestDto {
+
         private Integer productId;
         private Integer quantity;
 

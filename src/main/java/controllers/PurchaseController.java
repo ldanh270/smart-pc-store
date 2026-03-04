@@ -21,7 +21,7 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
 
     /**
-     * Constructor.
+     * Constructor
      *
      * @param purchaseService Purchase service dependency.
      */
@@ -34,16 +34,22 @@ public class PurchaseController {
      */
     public void handleCreatePo(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            PurchaseOrderCreateRequestDto dto = HttpUtil.jsonToClass(req.getReader(), PurchaseOrderCreateRequestDto.class);
+            PurchaseOrderCreateRequestDto dto = HttpUtil.jsonToClass(
+                    req.getReader(),
+                    PurchaseOrderCreateRequestDto.class
+            );
             PurchaseOrderResponseDto created = purchaseService.createPurchaseOrder(dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_CREATED, new ApiResponse<>(true, "PO created", created));
         } catch (IllegalArgumentException e) {
-            int status = ("Supplier not found".equals(e.getMessage()) || e.getMessage().startsWith("Product not found:"))
-                    ? HttpServletResponse.SC_NOT_FOUND
-                    : HttpServletResponse.SC_BAD_REQUEST;
+            int status = ("Supplier not found".equals(e.getMessage()) || e.getMessage()
+                    .startsWith("Product not found:")) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
             HttpUtil.sendJson(resp, status, new ApiResponse<>(false, e.getMessage(), null));
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new ApiResponse<>(false, "Internal server error", null));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    new ApiResponse<>(false, "Internal server error", null)
+            );
         }
     }
 
@@ -76,14 +82,20 @@ public class PurchaseController {
             GoodsReceiptResponseDto received = purchaseService.receiveGoods(poId, dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, new ApiResponse<>(true, "Goods received", received));
         } catch (NumberFormatException e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, new ApiResponse<>(false, "Invalid purchase order id", null));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    new ApiResponse<>(false, "Invalid purchase order id", null)
+            );
         } catch (IllegalArgumentException e) {
-            int status = "Purchase order not found".equals(e.getMessage())
-                    ? HttpServletResponse.SC_NOT_FOUND
-                    : HttpServletResponse.SC_BAD_REQUEST;
+            int status = "Purchase order not found".equals(e.getMessage()) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
             HttpUtil.sendJson(resp, status, new ApiResponse<>(false, e.getMessage(), null));
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new ApiResponse<>(false, "Internal server error", null));
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    new ApiResponse<>(false, "Internal server error", null)
+            );
         }
     }
 }

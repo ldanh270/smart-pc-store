@@ -1,5 +1,7 @@
 package servlets;
 
+import java.io.IOException;
+
 import controllers.SupplierController;
 import dao.JPAUtil;
 import dao.SupplierDao;
@@ -11,13 +13,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.SupplierService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 /**
  * SupplierServlet handles supplier-related HTTP requests.
  */
 @WebServlet(name = "SupplierServlet", urlPatterns = {"/suppliers/*"})
 public class SupplierServlet extends HttpServlet {
+
     private SupplierController buildController() {
         SupplierDao supplierDao = new SupplierDao();
         SupplierService supplierService = new SupplierService(supplierDao);
@@ -44,8 +45,13 @@ public class SupplierServlet extends HttpServlet {
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("ERROR SupplierServlet - doGet: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -65,15 +71,18 @@ public class SupplierServlet extends HttpServlet {
         }
 
         try {
-            switch (pathInfo) {
-                case "/create":
-                    supplierController.handleCreate(req, resp);
-                    break;
-                default:
-                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+            if (pathInfo.equals("/create")) {
+                supplierController.handleCreate(req, resp);
+            } else {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("ERROR SupplierServlet - doPost: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -83,7 +92,7 @@ public class SupplierServlet extends HttpServlet {
      * Route supplier PUT endpoints.
      */
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         SupplierController supplierController = buildController();
         if (pathInfo == null || pathInfo.equals("/")) {
@@ -99,8 +108,12 @@ public class SupplierServlet extends HttpServlet {
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -110,7 +123,7 @@ public class SupplierServlet extends HttpServlet {
      * Route supplier DELETE endpoints.
      */
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         SupplierController supplierController = buildController();
         if (pathInfo == null || pathInfo.equals("/")) {
@@ -126,8 +139,12 @@ public class SupplierServlet extends HttpServlet {
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }

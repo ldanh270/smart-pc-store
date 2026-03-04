@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package servlets;
 
 import java.io.IOException;
@@ -19,10 +15,6 @@ import services.CategoryService;
 import services.ProductService;
 import utils.HttpUtil;
 
-/**
- *
- * @author ducan
- */
 @WebServlet(name = "CategoryServlet", urlPatterns = {"/categories/*"})
 public class CategoryServlet extends HttpServlet {
 
@@ -58,7 +50,7 @@ public class CategoryServlet extends HttpServlet {
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("ERROR CategoryServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         } finally {
@@ -79,12 +71,10 @@ public class CategoryServlet extends HttpServlet {
         try {
             // Routing: POST /categories/create
             switch (pathInfo) {
-                case "/create" ->
-                    categoryController.handleCreate(req, resp);
-                default ->
-                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                case "/create" -> categoryController.handleCreate(req, resp);
+                default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("ERROR CategoryServlet - doPost: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         } finally {
@@ -110,7 +100,7 @@ public class CategoryServlet extends HttpServlet {
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("ERROR CategoryServlet - doPut: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         } finally {
@@ -136,7 +126,7 @@ public class CategoryServlet extends HttpServlet {
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("ERROR CategoryServlet - doDelete: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         } finally {

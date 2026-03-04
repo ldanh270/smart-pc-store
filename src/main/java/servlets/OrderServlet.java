@@ -1,5 +1,7 @@
 package servlets;
 
+import java.io.IOException;
+
 import controllers.OrderController;
 import dao.OrderDAO;
 import dao.OrderDetailDao;
@@ -12,10 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.OrderService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 @WebServlet(name = "OrderServlet", urlPatterns = {"/orders/*"})
 public class OrderServlet extends HttpServlet {
+
     private OrderController orderController;
 
     @Override
@@ -34,27 +35,33 @@ public class OrderServlet extends HttpServlet {
             String action = req.getParameter("action");
 
             if (pathInfo == null || pathInfo.equals("/")) {
-                if ("view".equals(action)) {
-                    orderController.handleGetDetail(req, resp);
-                } else if ("all".equals(action)) {
+                if (null == action) {
                     orderController.handleGetAll(req, resp);
-                } else if ("delete".equals(action)) {
-                    orderController.handleDelete(req, resp);
                 } else {
-                    orderController.handleGetAll(req, resp);
+                    switch (action) {
+                        case "view" ->
+                            orderController.handleGetDetail(req, resp);
+                        case "all" ->
+                            orderController.handleGetAll(req, resp);
+                        case "delete" ->
+                            orderController.handleDelete(req, resp);
+                        default ->
+                            orderController.handleGetAll(req, resp);
+                    }
                 }
                 return;
             }
 
-            if (pathInfo.equals("/detail")) {
-                orderController.handleGetDetail(req, resp);
-            } else if (pathInfo.equals("/delete")) {
-                orderController.handleDelete(req, resp);
-            } else {
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+            switch (pathInfo) {
+                case "/detail" ->
+                    orderController.handleGetDetail(req, resp);
+                case "/delete" ->
+                    orderController.handleDelete(req, resp);
+                default ->
+                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("ERROR OrderServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
         }
     }
@@ -68,8 +75,8 @@ public class OrderServlet extends HttpServlet {
             } else {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("ERROR OrderServlet - doPost: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
         }
     }

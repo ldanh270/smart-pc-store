@@ -1,11 +1,9 @@
 package servlets;
 
+import java.io.IOException;
+
 import controllers.UserController;
-import dao.GenericDao;
-import dao.JPAUtil;
 import dao.UserDao;
-import entities.User;
-import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,11 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.UserService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 /**
  * UserServlet
- *
+ * <p>
  * Routes: - GET /users => list users - GET /users/{id} => detail - POST /users
  * => create - PUT /users/{id} => update - DELETE /users/{id} => delete
  */
@@ -60,19 +56,20 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        try (EntityManager em = JPAUtil.getEntityManager()) {
+        try {
             if (pathInfo != null && !"/".equals(pathInfo)) {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
                 return;
             }
             userController.handleCreate(req, resp);
-        } catch (Exception e) {
+        } catch (IOException e) {
+            System.err.println("ERROR UserServlet - doPost: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo(); // "/{id}"
         try {
             if (pathInfo == null || "/".equals(pathInfo)) {
@@ -84,12 +81,13 @@ public class UserServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid user id");
         } catch (IOException e) {
+            System.err.println("ERROR UserServlet - doPut: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo(); // "/{id}"
         try {
             if (pathInfo == null || "/".equals(pathInfo)) {
@@ -101,6 +99,7 @@ public class UserServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid user id");
         } catch (IOException e) {
+            System.err.println("ERROR UserServlet - doDelete: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

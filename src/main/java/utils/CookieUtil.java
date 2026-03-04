@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * Utility class for handling cookies.
  */
 public class CookieUtil {
+
     /**
      * Retrieves the value of a specific cookie from the request.
      *
@@ -78,4 +79,3 @@ public class CookieUtil {
         resp.addCookie(cookie);
     }
 }
-

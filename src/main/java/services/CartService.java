@@ -1,26 +1,26 @@
 package services;
 
+import java.util.List;
+
 import dao.CartDao;
 import dao.CartItemDao;
 import dao.GenericDao;
 import dao.UserDao;
 import dto.cart.CartItemResponseDto;
-import entities.*;
-
-import java.util.List;
+import entities.Cart;
+import entities.CartItem;
+import entities.Product;
+import entities.User;
 
 /**
  * CartService
- *
- * Responsibilities:
- * - Implement cart business logic
- * - Validate user/cart/cartItem ownership
- * - Validate stock rules (when adding/updating)
- * - Perform DB changes in transactions
- *
- * Important:
- * - This service uses JPAUtil-backed DAO transaction boundaries explicitly.
- * - Any exception inside transaction will rollback and rethrow.
+ * <p>
+ * Responsibilities: - Implement cart business logic - Validate
+ * user/cart/cartItem ownership - Validate stock rules (when adding/updating) -
+ * Perform DB changes in transactions
+ * <p>
+ * Important: - This service uses JPAUtil-backed DAO transaction boundaries
+ * explicitly. - Any exception inside transaction will rollback and rethrow.
  */
 public class CartService {
 
@@ -38,64 +38,63 @@ public class CartService {
 
     /**
      * Get cart items for current user.
-     *
-     * Current behavior:
-     * - If user has no cart => return empty list
-     * - Does NOT enforce stock conflicts on GET (it only returns stockQuantity for FE to show limits)
+     * <p>
+     * Current behavior: - If user has no cart => return empty list - Does NOT
+     * enforce stock conflicts on GET (it only returns stockQuantity for FE to
+     * show limits)
      */
     public List<CartItemResponseDto> getMyCart(Integer userId) {
         User user = userDao.findById(userId);
-        if (user == null)
+        if (user == null) {
             throw new RuntimeException("User not found");
+        }
 
         Cart cart = cartDao.findByUser(user);
-        if (cart == null)
+        if (cart == null) {
             return List.of();
+        }
 
         // Use JOIN FETCH to avoid LazyInitializationException when accessing product fields
         List<CartItem> items = cartItemDao.findByCartWithProduct(cart);
 
-        return items.stream()
-                .map(ci -> new CartItemResponseDto(
-                        ci.getId(),
-                        ci.getProduct().getId(),
-                        ci.getProduct().getProductName(),
-                        ci.getProduct().getCurrentPrice(), // use current price for display
-                        ci.getQuantity(),
-                        ci.getProduct().getQuantity() // stockQuantity for frontend constraints/UX
-                ))
-                .toList();
+        return items.stream().map(ci -> new CartItemResponseDto(
+                ci.getId(),
+                ci.getProduct().getId(),
+                ci.getProduct().getProductName(),
+                ci.getProduct().getCurrentPrice(), // use current price for display
+                ci.getQuantity(),
+                ci.getProduct().getQuantity() // stockQuantity for frontend constraints/UX
+        )).toList();
     }
 
     /**
      * Add product to cart.
-     *
-     * Validation:
-     * - productId must not be null
-     * - quantity must be > 0
-     * - user must exist
-     * - product must exist
-     * - if product quantity (stock) is tracked, requested qty must not exceed stock
-     *
-     * Behavior:
-     * - If cart not exists => create it
-     * - If item already exists => increase quantity
-     * - Else => create new item
+     * <p>
+     * Validation: - productId must not be null - quantity must be > 0 - user
+     * must exist - product must exist - if product quantity (stock) is tracked,
+     * requested qty must not exceed stock
+     * <p>
+     * Behavior: - If cart not exists => create it - If item already exists =>
+     * increase quantity - Else => create new item
      */
     public void addToCart(Integer userId, Integer productId, Integer quantity) {
         // Validate input early (avoid unnecessary DB calls)
-        if (productId == null)
+        if (productId == null) {
             throw new RuntimeException("Product ID is required");
-        if (quantity == null || quantity <= 0)
+        }
+        if (quantity == null || quantity <= 0) {
             throw new RuntimeException("Quantity must be > 0");
+        }
 
         User user = userDao.findById(userId);
         Product product = productDao.findById(productId);
 
-        if (user == null)
+        if (user == null) {
             throw new RuntimeException("User not found");
-        if (product == null)
+        }
+        if (product == null) {
             throw new RuntimeException("Product not found");
+        }
 
         // Stock validation (if stock is not null)
         if (product.getQuantity() != null && product.getQuantity() < quantity) {
@@ -135,7 +134,7 @@ public class CartService {
             }
 
             cartDao.getEntityManager().getTransaction().commit();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             // Rollback if something fails mid-transaction
             if (cartDao.getEntityManager().getTransaction().isActive()) {
                 cartDao.getEntityManager().getTransaction().rollback();
@@ -146,29 +145,28 @@ public class CartService {
 
     /**
      * Update quantity of a cart item.
-     *
-     * Validation:
-     * - quantity must not be null
-     * - user must exist
-     * - cart must exist
-     * - cartItem must exist AND must belong to current user's cart
-     * - if quantity > 0, it must not exceed product stock (when stock is tracked)
-     *
-     * Behavior:
-     * - quantity <= 0 => delete cart item
-     * - quantity > 0  => update cart item quantity
+     * <p>
+     * Validation: - quantity must not be null - user must exist - cart must
+     * exist - cartItem must exist AND must belong to current user's cart - if
+     * quantity > 0, it must not exceed product stock (when stock is tracked)
+     * <p>
+     * Behavior: - quantity <= 0 => delete cart item - quantity > 0 => update
+     * cart item quantity
      */
     public void updateQuantity(Integer userId, Integer cartItemId, Integer quantity) {
-        if (quantity == null)
+        if (quantity == null) {
             throw new RuntimeException("Quantity is required");
+        }
 
         User user = userDao.findById(userId);
-        if (user == null)
+        if (user == null) {
             throw new RuntimeException("User not found");
+        }
 
         Cart cart = cartDao.findByUser(user);
-        if (cart == null)
+        if (cart == null) {
             throw new RuntimeException("Cart not found");
+        }
 
         // Ensure cart item exists and belongs to this user's cart
         CartItem item = cartItemDao.findById(cartItemId);
@@ -203,33 +201,34 @@ public class CartService {
     }
 
     /**
-     * Remove a cart item (helper method).
-     * Internally it uses updateQuantity(quantity=0).
+     * Remove a cart item (helper method). Internally it uses
+     * updateQuantity(quantity=0).
      */
     public void removeItem(Integer userId, Integer cartItemId) {
         updateQuantity(userId, cartItemId, 0);
     }
 
     /**
-     * Clear the entire cart.
-     * Typically called after checkout is completed successfully.
-     *
-     * Behavior:
-     * - If user/cart does not exist => do nothing
-     * - Delete all items in cart (one by one)
+     * Clear the entire cart. Typically called after checkout is completed
+     * successfully.
+     * <p>
+     * Behavior: - If user/cart does not exist => do nothing - Delete all items
+     * in cart (one by one)
      */
     public void clearCart(Integer userId) {
         User user = userDao.findById(userId);
-        if (user == null)
+        if (user == null) {
             throw new RuntimeException("User not found");
+        }
 
         Cart cart = cartDao.findByUser(user);
-        if (cart == null)
+        if (cart == null) {
             return; // No cart => nothing to clear
-
+        }
         List<CartItem> items = cartItemDao.findByCartWithProduct(cart);
-        if (items.isEmpty())
+        if (items.isEmpty()) {
             return;
+        }
 
         try {
             cartDao.getEntityManager().getTransaction().begin();

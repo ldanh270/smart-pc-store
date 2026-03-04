@@ -26,7 +26,7 @@ public class OrderController {
     public void handleGetDetail(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String id = req.getParameter("id");
         String action = req.getParameter("action");
-        
+
         if ((id == null || id.isEmpty()) && "view".equals(action)) {
             id = req.getParameter("id"); // redundant but clear
         }
@@ -67,7 +67,11 @@ public class OrderController {
         } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot delete order: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Cannot delete order: " + e.getMessage()
+            );
         }
     }
 }

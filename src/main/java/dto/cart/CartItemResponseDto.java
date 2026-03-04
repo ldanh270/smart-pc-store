@@ -4,36 +4,39 @@ import java.math.BigDecimal;
 
 /**
  * Response DTO for cart items (GET /cart).
- *
- * Fields:
- * - cartItemId: id of CartItem row
- * - productId/productName/price: product info for UI
- * - quantity: quantity in cart
- * - subtotal: price * quantity (computed)
- * - stockQuantity: current stock (used by FE to limit and show warnings)
+ * <p>
+ * Fields: - cartItemId: id of CartItem row - productId/productName/price:
+ * product info for UI - quantity: quantity in cart - subtotal: price * quantity
+ * (computed) - stockQuantity: current stock (used by FE to limit and show
+ * warnings)
  */
 public class CartItemResponseDto {
 
-    private Integer cartItemId;
-    private Integer productId;
-    private String productName;
-    private BigDecimal price;
-    private Integer quantity;
+    private final Integer cartItemId;
+    private final Integer productId;
+    private final String productName;
+    private final BigDecimal price;
+    private final Integer quantity;
 
     /**
-     * Derived field: price * quantity
-     * Computed in constructor for convenience.
+     * Derived field: price * quantity Computed in constructor for convenience.
      */
-    private BigDecimal subtotal;
+    private final BigDecimal subtotal;
 
     /**
-     * Stock quantity at the time of response.
-     * FE can use this value to show max quantity / out-of-stock warning.
+     * Stock quantity at the time of response. FE can use this value to show max
+     * quantity / out-of-stock warning.
      */
-    private Integer stockQuantity;
+    private final Integer stockQuantity;
 
-    public CartItemResponseDto(Integer cartItemId, Integer productId, String productName,
-                               BigDecimal price, Integer quantity, Integer stockQuantity) {
+    public CartItemResponseDto(
+            Integer cartItemId,
+            Integer productId,
+            String productName,
+            BigDecimal price,
+            Integer quantity,
+            Integer stockQuantity
+    ) {
         this.cartItemId = cartItemId;
         this.productId = productId;
         this.productName = productName;
@@ -42,9 +45,7 @@ public class CartItemResponseDto {
         this.stockQuantity = stockQuantity;
 
         // Defensive null-check to avoid NullPointerException if price is missing
-        this.subtotal = (price != null)
-                ? price.multiply(BigDecimal.valueOf(quantity))
-                : BigDecimal.ZERO;
+        this.subtotal = (price != null) ? price.multiply(BigDecimal.valueOf(quantity)) : BigDecimal.ZERO;
     }
 
     public Integer getCartItemId() {

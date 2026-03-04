@@ -3,6 +3,7 @@ package dto.order;
 import java.util.List;
 
 public class OrderViewResponseDto {
+
     private OrderResponseDto order;
     private List<OrderDetailDto> items;
 

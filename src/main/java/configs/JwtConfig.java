@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
@@ -33,11 +34,7 @@ public class JwtConfig {
 
     public static Integer getUserIdFromToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            Claims claims = Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
             return claims.get("userId", Integer.class);
         } catch (JwtException e) {
             throw new RuntimeException("Invalid or expired token");

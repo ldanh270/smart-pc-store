@@ -1,5 +1,7 @@
 package servlets;
 
+import java.io.IOException;
+
 import controllers.SupplierAnalyticsController;
 import dao.JPAUtil;
 import dao.SupplierPriceHistoryDao;
@@ -11,13 +13,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.SupplierAnalyticsService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 /**
  * SupplierAnalyticsServlet handles supplier-analytics HTTP requests.
  */
 @WebServlet(name = "SupplierAnalyticsServlet", urlPatterns = {"/supplier-analytics/*"})
 public class SupplierAnalyticsServlet extends HttpServlet {
+
     private SupplierAnalyticsController buildController() {
         SupplierAnalyticsService supplierAnalyticsService = new SupplierAnalyticsService(new SupplierPriceHistoryDao());
         return new SupplierAnalyticsController(supplierAnalyticsService);
@@ -40,8 +41,13 @@ public class SupplierAnalyticsServlet extends HttpServlet {
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("ERROR SupplierAnalyticsServlet - doGet: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }

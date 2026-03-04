@@ -6,7 +6,7 @@ package dto.user;
  */
 public class UpdateUserRequestDto {
     private String username;
-    private String password; // optional: update password if provided
+    private String password;
     private String fullName;
     private String email;
     private String phone;

@@ -6,6 +6,7 @@ import entities.Order;
 import utils.NumberUtil;
 
 public class PaymentService {
+
     private final OrderDAO orderDao;
 
     public PaymentService(OrderDAO orderDao) {
@@ -13,18 +14,21 @@ public class PaymentService {
     }
 
     public PaymentResponseDto getQrInfo(String identifier) {
-        Order order = null;
+        Order order;
         if (NumberUtil.isNumeric(identifier)) {
-            order = orderDao.findById(Integer.parseInt(identifier));
+            order = orderDao.findById(Integer.valueOf(identifier));
         } else {
             order = orderDao.findSingleByOrderCode(identifier);
         }
 
-        if (order == null) return null;
+        if (order == null) {
+            return null;
+        }
 
         String qrUrl = String.format(
                 "https://qr.sepay.vn/img?acc=VQRQAELYF2308&bank=MBBank&amount=%.0f&des=%s",
-                order.getAmount(), order.getTransactionCode()
+                order.getAmount(),
+                order.getTransactionCode()
         );
 
         return new PaymentResponseDto(order.getAmount(), order.getTransactionCode(), qrUrl);

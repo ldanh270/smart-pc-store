@@ -1,19 +1,19 @@
 package services;
 
-import dao.SupplierPriceHistoryDao;
-import dto.supplieranalytics.PriceCompareDto;
-import dto.supplieranalytics.PriceTrendResponseDto;
-import entities.SupplierPriceHistory;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import dao.SupplierPriceHistoryDao;
+import dto.supplieranalytics.PriceCompareDto;
+import dto.supplieranalytics.PriceTrendResponseDto;
+import entities.SupplierPriceHistory;
+
 /**
- * Service class for supplier price analytics.
- * Provides latest-price comparison and trend analysis.
+ * Service class for supplier price analytics. Provides latest-price comparison
+ * and trend analysis.
  */
 public class SupplierAnalyticsService {
 
@@ -35,26 +35,32 @@ public class SupplierAnalyticsService {
      * @return Price comparison list sorted by ascending price.
      */
     public List<PriceCompareDto> compareLatestPrices(Integer productId) {
-        if (productId == null) throw new IllegalArgumentException("productId is required");
-        return supplierPriceHistoryDao.findLatestByProduct(productId)
-                .stream()
-                .map(this::toCompareDto)
-                .collect(Collectors.toList());
+        if (productId == null) {
+            throw new IllegalArgumentException("productId is required");
+        }
+        return supplierPriceHistoryDao.findLatestByProduct(productId).stream().map(this::toCompareDto).collect(
+                Collectors.toList());
     }
 
     /**
      * Analyze quotation trend for one supplier and one product.
      *
-     * @param productId Product ID.
+     * @param productId  Product ID.
      * @param supplierId Supplier ID.
      * @return Trend response DTO or null if no history exists.
      */
     public PriceTrendResponseDto getPriceTrend(Integer productId, Integer supplierId) {
-        if (productId == null) throw new IllegalArgumentException("productId is required");
-        if (supplierId == null) throw new IllegalArgumentException("supplierId is required");
+        if (productId == null) {
+            throw new IllegalArgumentException("productId is required");
+        }
+        if (supplierId == null) {
+            throw new IllegalArgumentException("supplierId is required");
+        }
 
         List<SupplierPriceHistory> points = supplierPriceHistoryDao.findByProductAndSupplier(productId, supplierId);
-        if (points.isEmpty()) return null;
+        if (points.isEmpty()) {
+            return null;
+        }
         if (points.stream().anyMatch(p -> p.getImportPrice() == null)) {
             throw new IllegalArgumentException("Price history data is incomplete");
         }
@@ -65,11 +71,14 @@ public class SupplierAnalyticsService {
         BigDecimal lastPrice = last.getImportPrice();
 
         BigDecimal percent;
-        if (firstPrice.compareTo(BigDecimal.ZERO) == 0) percent = BigDecimal.ZERO;
-        else {
-            percent = lastPrice.subtract(firstPrice)
-                    .multiply(BigDecimal.valueOf(100))
-                    .divide(firstPrice, 2, RoundingMode.HALF_UP);
+        if (firstPrice.compareTo(BigDecimal.ZERO) == 0) {
+            percent = BigDecimal.ZERO;
+        } else {
+            percent = lastPrice.subtract(firstPrice).multiply(BigDecimal.valueOf(100)).divide(
+                    firstPrice,
+                    2,
+                    RoundingMode.HALF_UP
+            );
         }
 
         PriceTrendResponseDto dto = new PriceTrendResponseDto();
@@ -104,8 +113,12 @@ public class SupplierAnalyticsService {
     }
 
     private String trendLabel(BigDecimal percent) {
-        if (percent.compareTo(BigDecimal.valueOf(3)) >= 0) return "UP";
-        if (percent.compareTo(BigDecimal.valueOf(-3)) <= 0) return "DOWN";
+        if (percent.compareTo(BigDecimal.valueOf(3)) >= 0) {
+            return "UP";
+        }
+        if (percent.compareTo(BigDecimal.valueOf(-3)) <= 0) {
+            return "DOWN";
+        }
         return "STABLE";
     }
 }

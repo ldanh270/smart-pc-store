@@ -1,5 +1,12 @@
 package services;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 import dao.OrderDAO;
 import dao.OrderDetailDao;
 import dao.ProductDao;
@@ -10,16 +17,10 @@ import dto.order.OrderViewResponseDto;
 import entities.Order;
 import entities.OrderDetail;
 import entities.Product;
-
-import java.math.BigDecimal;
-import java.time.Instant;
 import utils.NumberUtil;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 public class OrderService {
+
     private final OrderDAO orderDao;
     private final OrderDetailDao orderDetailDao;
     private final ProductDao productDao;
@@ -82,34 +83,34 @@ public class OrderService {
     }
 
     public List<OrderResponseDto> getAllOrders() {
-        return orderDao.findAllSorted().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return orderDao.findAllSorted().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public OrderViewResponseDto getOrderDetails(String identifier) {
-        Order order = null;
+        Order order;
         if (NumberUtil.isNumeric(identifier)) {
-            order = orderDao.findById(Integer.parseInt(identifier));
+            order = orderDao.findById(Integer.valueOf(identifier));
         } else {
             order = orderDao.findSingleByOrderCode(identifier);
         }
 
-        if (order == null) return null;
+        if (order == null) {
+            return null;
+        }
 
         OrderViewResponseDto response = new OrderViewResponseDto();
         response.setOrder(mapToResponse(order));
-        
+
         List<OrderDetail> details = orderDetailDao.findByOrderId(order.getId());
         response.setItems(details.stream().map(this::mapToDetailDto).collect(Collectors.toList()));
-        
+
         return response;
     }
 
     public void deleteOrder(String identifier) {
-        Order order = null;
+        Order order;
         if (utils.NumberUtil.isNumeric(identifier)) {
-            order = orderDao.findById(Integer.parseInt(identifier));
+            order = orderDao.findById(Integer.valueOf(identifier));
         } else {
             order = orderDao.findSingleByOrderCode(identifier);
         }

@@ -7,7 +7,7 @@ import java.time.Instant;
 
 /**
  * Cart entity
- *
+ * <p>
  * Table: Carts
  * - Each user may have one cart (business rule, not enforced here)
  * - Contains metadata such as createdAt

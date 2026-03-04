@@ -1,5 +1,7 @@
 package servlets;
 
+import java.io.IOException;
+
 import controllers.SupplierQuotationController;
 import dao.JPAUtil;
 import dao.SupplierPriceHistoryDao;
@@ -11,13 +13,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.SupplierQuotationService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 /**
  * SupplierQuotationServlet handles quotation history HTTP requests.
  */
 @WebServlet(name = "SupplierQuotationServlet", urlPatterns = {"/supplier-quotations/*"})
 public class SupplierQuotationServlet extends HttpServlet {
+
     private SupplierQuotationController buildController() {
         SupplierPriceHistoryDao priceHistoryDao = new SupplierPriceHistoryDao();
         SupplierQuotationService quotationService = new SupplierQuotationService(priceHistoryDao);
@@ -37,8 +38,13 @@ public class SupplierQuotationServlet extends HttpServlet {
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("ERROR SupplierQuotationServlet - doGet: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -63,8 +69,12 @@ public class SupplierQuotationServlet extends HttpServlet {
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }

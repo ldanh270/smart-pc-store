@@ -1,6 +1,7 @@
 package dto.payment;
 
 public class PaymentResponseDto {
+
     private Double amount;
     private String transactionCode;
     private String qrUrl;

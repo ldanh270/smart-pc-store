@@ -3,6 +3,7 @@ package dto.order;
 import java.math.BigDecimal;
 
 public class OrderDetailDto {
+
     private Integer id;
     private Integer productId;
     private String productName;

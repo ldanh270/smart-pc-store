@@ -1,7 +1,17 @@
 package servlets;
 
+import java.io.IOException;
+
 import controllers.PurchaseController;
-import dao.*;
+import dao.GoodsReceiptNoteDao;
+import dao.GoodsReceiptNoteItemDao;
+import dao.InventoryTransactionDao;
+import dao.JPAUtil;
+import dao.ProductDao;
+import dao.PurchaseOrderDao;
+import dao.PurchaseOrderItemDao;
+import dao.SupplierDao;
+import dao.SupplierPriceHistoryDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,13 +20,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.PurchaseService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 /**
  * PurchaseOrderServlet handles purchase-order and goods-receipt HTTP requests.
  */
 @WebServlet(name = "PurchaseOrderServlet", urlPatterns = {"/purchase-orders/*"})
 public class PurchaseOrderServlet extends HttpServlet {
+
     private PurchaseController buildController() {
         PurchaseService purchaseService = new PurchaseService(
                 new PurchaseOrderDao(),
@@ -49,8 +58,13 @@ public class PurchaseOrderServlet extends HttpServlet {
                 return;
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("ERROR PurchaseOrderServlet - doGet: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -82,8 +96,13 @@ public class PurchaseOrderServlet extends HttpServlet {
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (Exception e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("ERROR PurchaseOrderServlet - doPost: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
         } finally {
             JPAUtil.closeEntityManager();
         }

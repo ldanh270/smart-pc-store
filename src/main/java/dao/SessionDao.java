@@ -20,7 +20,8 @@ public class SessionDao extends GenericDao<Session> {
         try {
             return getEntityManager().createQuery(
                     "SELECT s FROM Session s WHERE s.refreshToken = :refreshToken",
-                    Session.class).setParameter("refreshToken", refreshToken).getSingleResult();
+                    Session.class
+            ).setParameter("refreshToken", refreshToken).getSingleResult();
         } catch (jakarta.persistence.NoResultException e) {
             return null;
         }
@@ -32,7 +33,8 @@ public class SessionDao extends GenericDao<Session> {
      * @param userId the user ID whose sessions should be deleted
      */
     public void deleteByUserId(Integer userId) {
-        getEntityManager().createQuery(
-                "DELETE FROM Session s WHERE s.user.id = :userId").setParameter("userId", userId).executeUpdate();
+        getEntityManager().createQuery("DELETE FROM Session s WHERE s.user.id = :userId")
+                .setParameter("userId", userId)
+                .executeUpdate();
     }
 }
