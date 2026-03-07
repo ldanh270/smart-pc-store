@@ -1,42 +1,38 @@
 package entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Nationalized;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.UUID;
 
-/**
- * GoodsReceiptNote entity.
- * Represents one receiving document linked to a purchase order.
- */
 @Entity
-@Table(name = "GoodsReceiptNotes")
+@Table(name = "\"GoodsReceiptNotes\"")
 public class GoodsReceiptNote {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PoId", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "\"poId\"", nullable = false)
     private PurchaseOrder po;
 
-    @Column(name = "ReceiptDate", nullable = false)
+    @ColumnDefault("CURRENT_DATE")
+    @Column(name = "\"receiptDate\"", nullable = false)
     private LocalDate receiptDate;
 
-    @Nationalized
-    @Column(name = "Note")
+    @Column(name = "note", length = Integer.MAX_VALUE)
     private String note;
-    @OneToMany(mappedBy = "grn")
-    private Set<GoodsReceiptNoteItem> goodsReceiptNoteItems = new LinkedHashSet<>();
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -64,11 +60,4 @@ public class GoodsReceiptNote {
         this.note = note;
     }
 
-    public Set<GoodsReceiptNoteItem> getGoodsReceiptNoteItems() {
-        return goodsReceiptNoteItems;
-    }
-
-    public void setGoodsReceiptNoteItems(Set<GoodsReceiptNoteItem> goodsReceiptNoteItems) {
-        this.goodsReceiptNoteItems = goodsReceiptNoteItems;
-    }
 }

@@ -2,38 +2,40 @@ package entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Nationalized;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "InventoryTransactions")
+@Table(name = "\"InventoryTransactions\"")
 public class InventoryTransaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "\"productId\"")
     private Product product;
 
-    @Column(name = "QuantityChange")
+    @Column(name = "\"quantityChange\"")
     private Integer quantityChange;
 
-    @Nationalized
-    @Column(name = "TransactionType")
+    @Column(name = "\"transactionType\"", length = Integer.MAX_VALUE)
     private String transactionType;
 
-    @ColumnDefault("getdate()")
-    @Column(name = "TransactionDate")
-    private Instant transactionDate;
+    @ColumnDefault("now()")
+    @Column(name = "\"transactionDate\"")
+    private OffsetDateTime transactionDate;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -61,11 +63,11 @@ public class InventoryTransaction {
         this.transactionType = transactionType;
     }
 
-    public Instant getTransactionDate() {
+    public OffsetDateTime getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(Instant transactionDate) {
+    public void setTransactionDate(OffsetDateTime transactionDate) {
         this.transactionDate = transactionDate;
     }
 

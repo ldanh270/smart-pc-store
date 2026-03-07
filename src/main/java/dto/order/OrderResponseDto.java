@@ -1,21 +1,22 @@
 package dto.order;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public class OrderResponseDto {
 
-    private Integer id;
+    private UUID id;
     private String orderCode;
     private Double amount;
     private String transactionCode;
     private String status;
     private Instant createdAt;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

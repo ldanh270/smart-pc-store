@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.UUID;
 
 /**
  * JwtConfig class to manage JWT token settings.
@@ -32,16 +33,17 @@ public class JwtConfig {
         ACCESS_TOKEN_SECRET = secret;
     }
 
-    public static Integer getUserIdFromToken(String token) {
+    public static UUID getUserIdFromToken(String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
-            return claims.get("userId", Integer.class);
-        } catch (JwtException e) {
+            String userIdStr = claims.get("userId", String.class);
+            return userIdStr != null ? UUID.fromString(userIdStr) : null;
+        } catch (JwtException | IllegalArgumentException e) {
             throw new RuntimeException("Invalid or expired token");
         }
     }
 
-    public static Integer getUserIdFromAuthorizationHeader(String authHeader) {
+    public static UUID getUserIdFromAuthorizationHeader(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Missing or invalid Authorization header");
         }

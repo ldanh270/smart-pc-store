@@ -18,7 +18,7 @@ public class OrderDAO extends GenericDao<Order> {
     /**
      * Find orders by order code
      *
-     * @param orderCode
+     * @param orderCode Order code to search for
      * @return List of orders with the given order code
      */
     public List<Order> findByOrderCode(String orderCode) {

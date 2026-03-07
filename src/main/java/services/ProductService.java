@@ -2,6 +2,7 @@ package services;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import dao.JPAUtil;
 import dao.ProductDao;
@@ -36,7 +37,7 @@ public class ProductService {
      * @param id The product ID.
      * @return The product if found, otherwise null.
      */
-    public Product getById(Integer id) {
+    public Product getById(UUID id) {
         return productDao.findById(id);
     }
 
@@ -55,11 +56,23 @@ public class ProductService {
             throw new IllegalArgumentException("Product name is required");
         }
 
-        if (dto.currentPrice == null || dto.currentPrice.compareTo(BigDecimal.ZERO) <= 0) {
+        if (productDao.existsByName(dto.productName)) {
+            throw new IllegalArgumentException("Product name already exists");
+        }
+
+        if (dto.currentPrice == null) {
+            throw new IllegalArgumentException("Current price is required");
+        }
+
+        if (dto.currentPrice.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Price must be greater than 0");
         }
 
-        if (dto.quantity == null || dto.quantity < 0) {
+        if (dto.quantity == null) {
+            throw new IllegalArgumentException("Quantity is required");
+        }
+
+        if (dto.quantity < 0) {
             throw new IllegalArgumentException("Quantity must be >= 0");
         }
 
@@ -160,7 +173,7 @@ public class ProductService {
      * @return A list of filtered ProductResponseDto objects.
      */
     public List<ProductResponseDto> searchWithFilters(
-            Integer categoryId,
+            UUID categoryId,
             Boolean status,
             java.math.BigDecimal minPrice,
             java.math.BigDecimal maxPrice,
@@ -187,7 +200,7 @@ public class ProductService {
      * @param id The product ID.
      * @return The ProductResponseDto if found, otherwise null.
      */
-    public ProductResponseDto getByIdDto(Integer id) {
+    public ProductResponseDto getByIdDto(UUID id) {
         Product p = getById(id);
         return p == null ? null : toDto(p);
     }
@@ -251,6 +264,7 @@ public class ProductService {
             return merged;
         } catch (Exception e) {
             JPAUtil.getEntityManager().getTransaction().rollback();
+            System.err.println("ERROR ProductService - update: " + e.getMessage());
             throw e;
         }
     }
@@ -261,7 +275,7 @@ public class ProductService {
      * @param id The product ID.
      * @throws IllegalArgumentException if product ID is null.
      */
-    public void delete(Integer id) {
+    public void delete(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("Product id is required");
         }
@@ -273,7 +287,7 @@ public class ProductService {
 
         try {
             JPAUtil.getEntityManager().getTransaction().begin();
-            existing.setStatus(false); // SOFT DELETE
+            existing.setStatus(false);
             productDao.update(existing);
             JPAUtil.getEntityManager().getTransaction().commit();
         } catch (Exception e) {

@@ -1,56 +1,39 @@
 package entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Nationalized;
+import org.hibernate.annotations.ColumnDefault;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Suppliers")
+@Table(name = "\"Suppliers\"")
 public class Supplier {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
-    @Nationalized
-    @Column(name = "SupplierName")
+    @Column(name = "\"supplierName\"", length = Integer.MAX_VALUE)
     private String supplierName;
 
-    @Nationalized
-    @Column(name = "ContactInfo")
+    @Column(name = "\"contactInfo\"", length = Integer.MAX_VALUE)
     private String contactInfo;
 
-    @Nationalized
-    @Column(name = "ComponentTypes")
-    private String componentTypes;
-
-    @Column(name = "LeadTimeDays")
+    @Column(name = "\"leadTimeDays\"")
     private Integer leadTimeDays;
 
-    @Column(name = "Status", nullable = false)
-    private Boolean status = true;
-    @OneToMany(mappedBy = "supplier")
-    private Set<Product> products = new LinkedHashSet<>();
-    @OneToMany(mappedBy = "supplier")
-    private Set<PurchaseOrder> purchaseOrders = new LinkedHashSet<>();
-    @OneToMany(mappedBy = "supplier")
-    private Set<SupplierPriceHistory> supplierPriceHistories = new LinkedHashSet<>();
+    @Column(name = "\"componentTypes\"", length = Integer.MAX_VALUE)
+    private String componentTypes;
 
-    /**
-     * Ensure default active status for new records.
-     */
-    @PrePersist
-    public void prePersist() {
-        if (status == null) status = true;
-    }
+    @ColumnDefault("true")
+    @Column(name = "status", nullable = false)
+    private Boolean status;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -92,30 +75,6 @@ public class Supplier {
 
     public void setStatus(Boolean status) {
         this.status = status;
-    }
-
-    public Set<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<Product> products) {
-        this.products = products;
-    }
-
-    public Set<PurchaseOrder> getPurchaseOrders() {
-        return purchaseOrders;
-    }
-
-    public void setPurchaseOrders(Set<PurchaseOrder> purchaseOrders) {
-        this.purchaseOrders = purchaseOrders;
-    }
-
-    public Set<SupplierPriceHistory> getSupplierPriceHistories() {
-        return supplierPriceHistories;
-    }
-
-    public void setSupplierPriceHistories(Set<SupplierPriceHistory> supplierPriceHistories) {
-        this.supplierPriceHistories = supplierPriceHistories;
     }
 
 }

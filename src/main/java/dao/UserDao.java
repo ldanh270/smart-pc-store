@@ -2,6 +2,7 @@ package dao;
 
 import entities.User;
 import jakarta.persistence.TypedQuery;
+import java.util.UUID;
 
 /**
  * Data Access Object for User entity
@@ -58,7 +59,7 @@ public class UserDao extends GenericDao<User> {
      * @param excludeId current user id to exclude
      * @return true if another user already uses this username
      */
-    public boolean existsByUsernameExceptId(String username, Integer excludeId) {
+    public boolean existsByUsernameExceptId(String username, UUID excludeId) {
         String jpql = "SELECT COUNT(u) FROM User u WHERE u.username = :username AND u.id <> :excludeId";
         TypedQuery<Long> query = getEntityManager().createQuery(jpql, Long.class);
         query.setParameter("username", username);
@@ -73,7 +74,7 @@ public class UserDao extends GenericDao<User> {
      * @param excludeId current user id to exclude
      * @return true if another user already uses this email
      */
-    public boolean existsByEmailExceptId(String email, Integer excludeId) {
+    public boolean existsByEmailExceptId(String email, UUID excludeId) {
         String jpql = "SELECT COUNT(u) FROM User u WHERE u.email = :email AND u.id <> :excludeId";
         TypedQuery<Long> query = getEntityManager().createQuery(jpql, Long.class);
         query.setParameter("email", email);

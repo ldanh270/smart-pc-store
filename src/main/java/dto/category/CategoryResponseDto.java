@@ -1,6 +1,7 @@
 package dto.category;
 
 import java.util.List;
+import java.util.UUID;
 
 import dto.product.ProductResponseDto;
 
@@ -10,11 +11,11 @@ import dto.product.ProductResponseDto;
  */
 public class CategoryResponseDto {
 
-    public Integer id;
+    public UUID id;
     public String categoryName;
     public String description;
     public String imageUrl;
     public Boolean status;
-    public Integer parentId;
+    public UUID parentId;
     public List<ProductResponseDto> products;
 }

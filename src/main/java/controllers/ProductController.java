@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import dto.ApiResponse;
 import dto.product.ProductRequestDto;
@@ -44,7 +45,7 @@ public class ProductController {
             String pageStr = req.getParameter("page");
             String sizeStr = req.getParameter("size");
 
-            Integer categoryId = (cat == null || cat.isBlank()) ? null : Integer.valueOf(cat);
+            UUID categoryId = (cat == null || cat.isBlank()) ? null : UUID.fromString(cat);
             Boolean status;
             if (st == null || st.isBlank()) {
                 status = null;
@@ -58,8 +59,12 @@ public class ProductController {
             Integer page = (pageStr == null || pageStr.isBlank()) ? null : Integer.valueOf(pageStr);
             Integer size = (sizeStr == null || sizeStr.isBlank()) ? null : Integer.valueOf(sizeStr);
 
-            if ((page == null) != (size == null)) {
-                throw new IllegalArgumentException("Both page and size must be provided together");
+            if (page == null && size != null) {
+                page = 0; // Default to first page if size is provided without page
+            }
+
+            if (page != null && size == null) {
+                size = 5; // Default page size if page is provided without size
             }
             if (page != null && page < 0) {
                 throw new IllegalArgumentException("page must be >= 0");
@@ -95,7 +100,7 @@ public class ProductController {
      */
     public void handleGetById(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.valueOf(idStr);
+            UUID id = UUID.fromString(idStr);
             ProductResponseDto product = productService.getByIdDto(id);
 
             if (product == null) {
@@ -105,6 +110,7 @@ public class ProductController {
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, product);
         } catch (NumberFormatException e) {
+            System.err.println("ERROR ProductController - handleGetById: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid product id");
         }
     }
@@ -119,7 +125,7 @@ public class ProductController {
      */
     public void handleCreate(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            ProductRequestDto dto = HttpUtil.jsonToClass(req.getReader(), ProductRequestDto.class);
+                              ProductRequestDto dto = HttpUtil.jsonToClass(req.getReader(), ProductRequestDto.class);
 
             Product product = productService.create(dto);
 
@@ -130,7 +136,7 @@ public class ProductController {
             );
 
         } catch (IllegalArgumentException e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, new ApiResponse<>(false, e.getMessage(), null));
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 
         } catch (IOException e) {
             HttpUtil.sendJson(
@@ -153,7 +159,7 @@ public class ProductController {
      */
     public void handleUpdate(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.valueOf(idStr);
+            UUID id = UUID.fromString(idStr);
             Product product = HttpUtil.jsonToClass(req.getReader(), Product.class);
             product.setId(id);
 
@@ -161,11 +167,14 @@ public class ProductController {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, productService.toDto(updated));
 
         } catch (NumberFormatException e) {
+            System.err.println("ERROR ProductController - handleUpdate: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid product id");
         } catch (IllegalArgumentException e) {
             int status = "Product not found".equals(e.getMessage()) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
+            System.err.println("ERROR ProductController - handleUpdate: " + e.getMessage());
             HttpUtil.sendJson(resp, status, e.getMessage());
         } catch (IOException e) {
+            System.err.println("ERROR ProductController - handleUpdate: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
@@ -180,7 +189,7 @@ public class ProductController {
      */
     public void handleDelete(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.valueOf(idStr);
+            UUID id = UUID.fromString(idStr);
             productService.delete(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Product deleted successfully");
         } catch (NumberFormatException e) {

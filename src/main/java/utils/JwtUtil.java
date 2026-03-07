@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HexFormat;
 import java.util.Locale;
+import java.util.UUID;
 
 import configs.JwtConfig;
 import io.jsonwebtoken.Claims;
@@ -24,14 +25,14 @@ public class JwtUtil {
     /**
      * Generate JWT access token with default USER role.
      */
-    public static String generateAccessToken(int userId) {
+    public static String generateAccessToken(UUID userId) {
         return generateAccessToken(userId, null, "USER");
     }
 
     /**
      * Generate JWT access token with explicit username and role claims.
      */
-    public static String generateAccessToken(int userId, String username, String role) {
+    public static String generateAccessToken(UUID userId, String username, String role) {
         String normalizedRole = role == null || role.isBlank() ? "USER" : role.toUpperCase(Locale.ROOT);
         return Jwts.builder()
                 .claim("userId", userId)
@@ -67,10 +68,11 @@ public class JwtUtil {
     /**
      * Extract userId from access token.
      */
-    public static Integer getUserIdFromToken(String token) {
+    public static UUID getUserIdFromToken(String token) {
         try {
             Claims claims = extractAllClaims(token);
-            return claims.get("userId", Integer.class);
+            String userIdStr = claims.get("userId", String.class);
+            return userIdStr != null ? UUID.fromString(userIdStr) : null;
         } catch (JwtException | IllegalArgumentException ex) {
             return null;
         }
@@ -91,12 +93,13 @@ public class JwtUtil {
      * Parse JWT from Authorization header and return userId. Header format:
      * "Bearer <token>"
      */
-    public static Integer getUserIdFromAuthorizationHeader(String header) {
+    public static UUID getUserIdFromAuthorizationHeader(String header) {
         String token = extractBearerToken(header);
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
-            return ((Number) claims.get("userId")).intValue();
-        } catch (JwtException e) {
+            String userIdStr = claims.get("userId", String.class);
+            return userIdStr != null ? UUID.fromString(userIdStr) : null;
+        } catch (JwtException | IllegalArgumentException e) {
             throw new RuntimeException("Invalid or expired token: " + e.getMessage());
         }
     }

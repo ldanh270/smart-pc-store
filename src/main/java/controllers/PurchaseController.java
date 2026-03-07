@@ -11,6 +11,7 @@ import services.PurchaseService;
 import utils.HttpUtil;
 
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * Controller class for purchasing endpoints (PO and GRN).
@@ -58,7 +59,7 @@ public class PurchaseController {
      */
     public void handleGetPoById(HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.parseInt(idStr);
+            UUID id = UUID.fromString(idStr);
             PurchaseOrderResponseDto dto = purchaseService.getPurchaseOrder(id);
             if (dto == null) {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Purchase order not found");
@@ -77,7 +78,7 @@ public class PurchaseController {
      */
     public void handleReceiveGoods(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer poId = Integer.parseInt(idStr);
+            UUID poId = UUID.fromString(idStr);
             GoodsReceiptRequestDto dto = HttpUtil.jsonToClass(req.getReader(), GoodsReceiptRequestDto.class);
             GoodsReceiptResponseDto received = purchaseService.receiveGoods(poId, dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, new ApiResponse<>(true, "Goods received", received));

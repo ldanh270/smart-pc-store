@@ -2,6 +2,8 @@ package dao;
 
 import entities.GoodsReceiptNoteItem;
 
+import java.util.UUID;
+
 /**
  * Data Access Object (DAO) for GoodsReceiptNoteItem entity. Supports aggregate
  * queries for received quantities.
@@ -19,7 +21,7 @@ public class GoodsReceiptNoteItemDao extends GenericDao<GoodsReceiptNoteItem> {
      * @param productId Product ID.
      * @return Total received quantity.
      */
-    public int sumReceivedQuantityByPoAndProduct(Integer poId, Integer productId) {
+    public int sumReceivedQuantityByPoAndProduct(UUID poId, UUID productId) {
         String jpql = "SELECT COALESCE(SUM(i.quantityReceived), 0) " + "FROM GoodsReceiptNoteItem i " + "WHERE i.grn.po.id = :poId AND i.product.id = :productId";
         Long value = JPAUtil.getEntityManager().createQuery(jpql, Long.class).setParameter("poId", poId).setParameter("productId",
                                                                                                                       productId

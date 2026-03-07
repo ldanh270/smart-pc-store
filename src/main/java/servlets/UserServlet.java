@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import controllers.UserController;
 import dao.UserDao;
@@ -42,10 +43,10 @@ public class UserServlet extends HttpServlet {
             }
 
             // GET /users/{id}
-            Integer id = Integer.valueOf(pathInfo.substring(1));
+            UUID id = UUID.fromString(pathInfo.substring(1));
             userController.handleGetById(req, resp, id);
 
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid user id");
         } catch (IOException e) {
             System.err.println("ERROR UserServlet - doGet: " + e.getMessage());
@@ -76,9 +77,9 @@ public class UserServlet extends HttpServlet {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing user id");
                 return;
             }
-            Integer id = Integer.valueOf(pathInfo.substring(1));
+            UUID id = UUID.fromString(pathInfo.substring(1));
             userController.handleUpdate(req, resp, id);
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid user id");
         } catch (IOException e) {
             System.err.println("ERROR UserServlet - doPut: " + e.getMessage());
@@ -94,9 +95,9 @@ public class UserServlet extends HttpServlet {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing user id");
                 return;
             }
-            Integer id = Integer.valueOf(pathInfo.substring(1));
+            UUID id = UUID.fromString(pathInfo.substring(1));
             userController.handleDelete(req, resp, id);
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid user id");
         } catch (IOException e) {
             System.err.println("ERROR UserServlet - doDelete: " + e.getMessage());

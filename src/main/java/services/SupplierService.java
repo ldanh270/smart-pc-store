@@ -1,6 +1,7 @@
 package services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import dao.JPAUtil;
@@ -48,7 +49,7 @@ public class SupplierService {
      * @param id Supplier ID.
      * @return Supplier DTO or null if not found.
      */
-    public SupplierResponseDto getByIdDto(Integer id) {
+    public SupplierResponseDto getByIdDto(UUID id) {
         Supplier supplier = supplierDao.findById(id);
         return supplier == null ? null : toDto(supplier);
     }
@@ -84,7 +85,7 @@ public class SupplierService {
      * @param dto Supplier update request.
      * @return Updated supplier DTO.
      */
-    public SupplierResponseDto update(Integer id, SupplierRequestDto dto) {
+    public SupplierResponseDto update(UUID id, SupplierRequestDto dto) {
         validate(dto);
         Supplier existing = supplierDao.findById(id);
         if (existing == null) {
@@ -110,7 +111,7 @@ public class SupplierService {
      *
      * @param id Supplier ID.
      */
-    public void delete(Integer id) {
+    public void delete(UUID id) {
         Supplier existing = supplierDao.findById(id);
         if (existing == null) {
             throw new IllegalArgumentException("Supplier not found");

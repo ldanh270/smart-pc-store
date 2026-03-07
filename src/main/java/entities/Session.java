@@ -1,32 +1,36 @@
 package entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Sessions")
+@Table(name = "\"Sessions\"")
 public class Session {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "\"userId\"")
     private User user;
 
-    @Column(name = "RefreshToken", length = 64)
+    @Column(name = "\"refreshToken\"", length = 64)
     private String refreshToken;
 
-    @Column(name = "ExpiredAt")
-    private Instant expiredAt;
+    @Column(name = "\"expiredAt\"")
+    private OffsetDateTime expiredAt;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -46,11 +50,11 @@ public class Session {
         this.refreshToken = refreshToken;
     }
 
-    public Instant getExpiredAt() {
+    public OffsetDateTime getExpiredAt() {
         return expiredAt;
     }
 
-    public void setExpiredAt(Instant expiredAt) {
+    public void setExpiredAt(OffsetDateTime expiredAt) {
         this.expiredAt = expiredAt;
     }
 

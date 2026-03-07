@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import entities.Product;
 import jakarta.persistence.TypedQuery;
@@ -21,11 +22,25 @@ public class ProductDao extends GenericDao<Product> {
      * @param categoryId The category ID.
      * @return A list of products in the specified category.
      */
-    public List<Product> findByCategoryId(Integer categoryId) {
-        String jpql = "SELECT p FROM Product p WHERE p.category.id = :categoryId";
+    public List<Product> findByCategoryId(UUID categoryId) {
+        String jpql = "SELECT p FROM Product p WHERE p.category.id = :categoryId OR p.category.parent.id = :categoryId";
         TypedQuery<Product> query = JPAUtil.getEntityManager().createQuery(jpql, Product.class);
         query.setParameter("categoryId", categoryId);
         return query.getResultList();
+    }
+
+    /**
+     * Check if a product with the given name already exists (case-insensitive).
+     *
+     * @param productName The product name to check.
+     * @return True if a product with the name exists, false otherwise.
+     */
+    public boolean existsByName(String productName) {
+        String jpql = "SELECT COUNT(p) FROM Product p WHERE LOWER(p.productName) = LOWER(:productName)";
+        Long count = JPAUtil.getEntityManager().createQuery(jpql, Long.class)
+                .setParameter("productName", productName)
+                .getSingleResult();
+        return count > 0;
     }
 
     /**
@@ -34,7 +49,7 @@ public class ProductDao extends GenericDao<Product> {
      * @param supplierId The supplier ID.
      * @return A list of products supplied by the specified supplier.
      */
-    public List<Product> findBySupplierId(Integer supplierId) {
+    public List<Product> findBySupplierId(UUID supplierId) {
         String jpql = "SELECT p FROM Product p WHERE p.supplier.id = :supplierId";
         TypedQuery<Product> query = JPAUtil.getEntityManager().createQuery(jpql, Product.class);
         query.setParameter("supplierId", supplierId);
@@ -99,7 +114,7 @@ public class ProductDao extends GenericDao<Product> {
      * @return A filtered and paginated list of products.
      */
     public List<Product> filterSearch(
-            Integer categoryId,
+            UUID categoryId,
             Boolean status,
             java.math.BigDecimal minPrice,
             java.math.BigDecimal maxPrice,
@@ -110,7 +125,7 @@ public class ProductDao extends GenericDao<Product> {
         StringBuilder jpql = new StringBuilder("SELECT p FROM Product p WHERE 1=1");
 
         if (categoryId != null) {
-            jpql.append(" AND p.category.id = :categoryId");
+            jpql.append(" AND (p.category.id = :categoryId OR p.category.parent.id = :categoryId)");
         }
         if (status != null) {
             jpql.append(" AND p.status = :status");

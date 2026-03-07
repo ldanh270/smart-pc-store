@@ -1,6 +1,7 @@
 package dto.order;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Data Transfer Object for order creation requests.
@@ -19,14 +20,14 @@ public class CreateOrderRequestDto {
 
     public static class OrderItemRequestDto {
 
-        private Integer productId;
+        private UUID productId;
         private Integer quantity;
 
-        public Integer getProductId() {
+        public UUID getProductId() {
             return productId;
         }
 
-        public void setProductId(Integer productId) {
+        public void setProductId(UUID productId) {
             this.productId = productId;
         }
 

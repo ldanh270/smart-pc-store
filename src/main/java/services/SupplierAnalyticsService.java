@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import dao.SupplierPriceHistoryDao;
@@ -34,7 +35,7 @@ public class SupplierAnalyticsService {
      * @param productId Product ID.
      * @return Price comparison list sorted by ascending price.
      */
-    public List<PriceCompareDto> compareLatestPrices(Integer productId) {
+    public List<PriceCompareDto> compareLatestPrices(UUID productId) {
         if (productId == null) {
             throw new IllegalArgumentException("productId is required");
         }
@@ -49,7 +50,7 @@ public class SupplierAnalyticsService {
      * @param supplierId Supplier ID.
      * @return Trend response DTO or null if no history exists.
      */
-    public PriceTrendResponseDto getPriceTrend(Integer productId, Integer supplierId) {
+    public PriceTrendResponseDto getPriceTrend(UUID productId, UUID supplierId) {
         if (productId == null) {
             throw new IllegalArgumentException("productId is required");
         }

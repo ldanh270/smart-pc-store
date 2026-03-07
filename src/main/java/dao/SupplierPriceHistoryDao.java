@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import entities.SupplierPriceHistory;
 import jakarta.persistence.TypedQuery;
@@ -22,7 +23,7 @@ public class SupplierPriceHistoryDao extends GenericDao<SupplierPriceHistory> {
      * @param supplierId Supplier ID.
      * @return Ordered quotation history by effective date ascending.
      */
-    public List<SupplierPriceHistory> findByProductAndSupplier(Integer productId, Integer supplierId) {
+    public List<SupplierPriceHistory> findByProductAndSupplier(UUID productId, UUID supplierId) {
         String jpql = "SELECT h FROM SupplierPriceHistory h " + "WHERE h.product.id = :productId AND h.supplier.id = :supplierId " + "ORDER BY h.effectiveDate ASC";
         return JPAUtil.getEntityManager().createQuery(jpql, SupplierPriceHistory.class).setParameter(
                 "productId",
@@ -37,7 +38,7 @@ public class SupplierPriceHistoryDao extends GenericDao<SupplierPriceHistory> {
      * @param supplierId Supplier ID.
      * @return Latest quotation or null if none exists.
      */
-    public SupplierPriceHistory findLatest(Integer productId, Integer supplierId) {
+    public SupplierPriceHistory findLatest(UUID productId, UUID supplierId) {
         String jpql = "SELECT h FROM SupplierPriceHistory h " + "WHERE h.product.id = :productId AND h.supplier.id = :supplierId " + "ORDER BY h.effectiveDate DESC, h.id DESC";
         List<SupplierPriceHistory> list = JPAUtil.getEntityManager()
                 .createQuery(jpql, SupplierPriceHistory.class)
@@ -54,7 +55,7 @@ public class SupplierPriceHistoryDao extends GenericDao<SupplierPriceHistory> {
      * @param productId Product ID.
      * @return Latest quotation records sorted by import price ascending.
      */
-    public List<SupplierPriceHistory> findLatestByProduct(Integer productId) {
+    public List<SupplierPriceHistory> findLatestByProduct(UUID productId) {
         String jpql = "SELECT h FROM SupplierPriceHistory h " + "WHERE h.product.id = :productId " + "AND h.effectiveDate = (" + "  SELECT MAX(h2.effectiveDate) FROM SupplierPriceHistory h2 " + "  WHERE h2.product.id = :productId AND h2.supplier.id = h.supplier.id" + ") " + "ORDER BY h.importPrice ASC";
         TypedQuery<SupplierPriceHistory> query = JPAUtil.getEntityManager().createQuery(
                 jpql,

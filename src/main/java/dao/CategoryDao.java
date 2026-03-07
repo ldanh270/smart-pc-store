@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import entities.Category;
 import jakarta.persistence.TypedQuery;
@@ -76,7 +77,7 @@ public class CategoryDao extends GenericDao<Category> {
      *                  null.
      * @return true if a duplicate exists.
      */
-    public boolean existsByName(String name, Integer excludeId) {
+    public boolean existsByName(String name, UUID excludeId) {
         String jpql = "SELECT COUNT(c) FROM Category c WHERE LOWER(c.categoryName) = LOWER(:name) AND c.status = true";
         if (excludeId != null) {
             jpql += " AND c.id <> :excludeId";

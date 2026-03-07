@@ -1,6 +1,7 @@
 package dto.product;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * Data Transfer Object for product creation/update requests. Contains all
@@ -14,7 +15,7 @@ public class ProductRequestDto {
     public String imageUrl;
     public BigDecimal currentPrice;
     public Integer quantity;
-    public Integer supplierId;
-    public Integer categoryId;
+    public UUID supplierId;
+    public UUID categoryId;
     public Boolean status;
 }

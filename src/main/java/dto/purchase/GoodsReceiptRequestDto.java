@@ -2,6 +2,7 @@ package dto.purchase;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Request DTO for receiving goods against a purchase order.
@@ -16,7 +17,7 @@ public class GoodsReceiptRequestDto {
      */
     public static class Item {
 
-        public Integer productId;
+        public UUID productId;
         public Integer quantityReceived;
         public BigDecimal unitCost;
     }

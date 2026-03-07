@@ -1,6 +1,7 @@
 package dto.product;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * Data Transfer Object for product response data. Includes product details,
@@ -9,17 +10,17 @@ import java.math.BigDecimal;
  */
 public class ProductResponseDto {
 
-    public Integer id;
+    public UUID id;
     public String productName;
     public String description;
     public String imageUrl;
     public BigDecimal currentPrice;
     public Integer quantity;
 
-    public Integer supplierId;
+    public UUID supplierId;
     public String supplierName;
 
-    public Integer categoryId;
+    public UUID categoryId;
     public String categoryName;
 
     public Boolean status;

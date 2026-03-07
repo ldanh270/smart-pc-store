@@ -1,6 +1,7 @@
 package services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import dao.CategoryDao;
@@ -33,7 +34,7 @@ public class CategoryService {
     /**
      * Retrieve a category by its ID.
      */
-    public Category getById(Integer id) {
+    public Category getById(UUID id) {
         return categoryDao.findById(id);
     }
 
@@ -82,7 +83,7 @@ public class CategoryService {
         dto.description = category.getDescription();
         dto.imageUrl = category.getImageUrl();
         dto.status = category.getStatus();
-        dto.parentId = category.getParentId();
+        dto.parentId = category.getParent() != null ? category.getParent().getId() : null;
         return dto;
     }
 
@@ -111,7 +112,7 @@ public class CategoryService {
     /**
      * Retrieve a category by ID as a response DTO.
      */
-    public CategoryResponseDto getByIdDto(Integer id) {
+    public CategoryResponseDto getByIdDto(UUID id) {
         Category c = getById(id);
         if (c == null) {
             return null;
@@ -126,12 +127,12 @@ public class CategoryService {
      * description, imageUrl). Validates category name and checks for
      * duplicates.
      *
-     * @param id The category ID.
+     * @param id  The category ID.
      * @param dto The category request DTO with updates.
      * @return The updated category entity.
      * @throws IllegalArgumentException if validation fails.
      */
-    public Category update(Integer id, CategoryRequestDto dto) {
+    public Category update(UUID id, CategoryRequestDto dto) {
         if (id == null) {
             throw new IllegalArgumentException("Category id is required for update");
         }
@@ -178,7 +179,7 @@ public class CategoryService {
      * @param id The category ID.
      * @throws IllegalArgumentException if category not found or ID is null.
      */
-    public void delete(Integer id) {
+    public void delete(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("Category id is required");
         }

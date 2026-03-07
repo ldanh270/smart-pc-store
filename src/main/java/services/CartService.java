@@ -1,6 +1,8 @@
 package services;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.UUID;
 
 import dao.CartDao;
 import dao.CartItemDao;
@@ -43,7 +45,7 @@ public class CartService {
      * enforce stock conflicts on GET (it only returns stockQuantity for FE to
      * show limits)
      */
-    public List<CartItemResponseDto> getMyCart(Integer userId) {
+    public List<CartItemResponseDto> getMyCart(UUID userId) {
         User user = userDao.findById(userId);
         if (user == null) {
             throw new RuntimeException("User not found");
@@ -77,7 +79,7 @@ public class CartService {
      * Behavior: - If cart not exists => create it - If item already exists =>
      * increase quantity - Else => create new item
      */
-    public void addToCart(Integer userId, Integer productId, Integer quantity) {
+    public void addToCart(UUID userId, UUID productId, Integer quantity) {
         // Validate input early (avoid unnecessary DB calls)
         if (productId == null) {
             throw new RuntimeException("Product ID is required");
@@ -153,7 +155,7 @@ public class CartService {
      * Behavior: - quantity <= 0 => delete cart item - quantity > 0 => update
      * cart item quantity
      */
-    public void updateQuantity(Integer userId, Integer cartItemId, Integer quantity) {
+    public void updateQuantity(UUID userId, UUID cartItemId, Integer quantity) {
         if (quantity == null) {
             throw new RuntimeException("Quantity is required");
         }
@@ -204,7 +206,7 @@ public class CartService {
      * Remove a cart item (helper method). Internally it uses
      * updateQuantity(quantity=0).
      */
-    public void removeItem(Integer userId, Integer cartItemId) {
+    public void removeItem(UUID userId, UUID cartItemId) {
         updateQuantity(userId, cartItemId, 0);
     }
 
@@ -215,7 +217,7 @@ public class CartService {
      * Behavior: - If user/cart does not exist => do nothing - Delete all items
      * in cart (one by one)
      */
-    public void clearCart(Integer userId) {
+    public void clearCart(UUID userId) {
         User user = userDao.findById(userId);
         if (user == null) {
             throw new RuntimeException("User not found");

@@ -1,10 +1,12 @@
 package dto.user;
 
+import java.util.UUID;
+
 /**
  * Data Transfer Object for User information.
  */
 public class UserDto {
-    private int id;
+    private UUID id;
     private String username;
     private String displayName;
     private String email;
@@ -25,7 +27,7 @@ public class UserDto {
      * @param status      the account status
      */
     public UserDto(
-            int id,
+            UUID id,
             String username,
             String displayName,
             String email,
@@ -43,7 +45,7 @@ public class UserDto {
     }
 
     public UserDto(
-            int id,
+            UUID id,
             String username,
             String displayName,
             String email,
@@ -62,11 +64,11 @@ public class UserDto {
         this.role = role;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import dao.JPAUtil;
@@ -74,9 +75,9 @@ public class SupplierQuotationService {
      * @param supplierId Supplier ID.
      * @return Quotation history DTO list.
      */
-    public List<SupplierQuotationResponseDto> getHistory(Integer productId, Integer supplierId) {
+    public List<SupplierQuotationResponseDto> getHistory(UUID productId, UUID supplierId) {
         if (productId == null || supplierId == null) {
-            throw new IllegalArgumentException("productId and supplierId are required");
+            throw new IllegalArgumentException("ProductId and supplierId are required");
         }
         return priceHistoryDao.findByProductAndSupplier(productId, supplierId).stream().map(this::toDto).collect(
                 Collectors.toList());

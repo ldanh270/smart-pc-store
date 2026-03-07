@@ -2,6 +2,7 @@ package filters;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.UUID;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -47,7 +48,7 @@ public class RoleAuthorizationFilter implements Filter {
         }
 
         try {
-            Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
+            UUID userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
             String role = JwtUtil.getRoleFromAuthorizationHeader(req.getHeader("Authorization"))
                     .toUpperCase(Locale.ROOT);
 
@@ -81,8 +82,7 @@ public class RoleAuthorizationFilter implements Filter {
     }
 
     private boolean isUserFeatureEndpoint(String path) {
-        return path.startsWith("/cart") || path.startsWith("/orders") || path.startsWith("/payments/checkout") || path.startsWith(
-                "/auth/logout") || path.startsWith("/profile");
+        return path.startsWith("/cart") || path.startsWith("/orders") || path.startsWith("/payments/checkout") || path.startsWith("/profile");
     }
 
     private boolean isAdminOnlyEndpoint(String path, String method) {

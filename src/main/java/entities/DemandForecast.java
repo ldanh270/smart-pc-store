@@ -1,32 +1,36 @@
 package entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
-@Table(name = "DemandForecasts")
+@Table(name = "\"DemandForecasts\"")
 public class DemandForecast {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "\"productId\"")
     private Product product;
 
-    @Column(name = "ForecastDate")
+    @Column(name = "\"forecastDate\"")
     private LocalDate forecastDate;
 
-    @Column(name = "PredictedQuantity")
+    @Column(name = "\"predictedQuantity\"")
     private Integer predictedQuantity;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

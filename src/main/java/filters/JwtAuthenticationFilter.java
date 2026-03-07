@@ -1,6 +1,7 @@
 package filters;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -20,7 +21,6 @@ import utils.JwtUtil;
  * If the token is missing or invalid, it responds with a 401 Unauthorized
  * status and an error message.
  */
-@WebFilter(urlPatterns = {"/cart/*", "/payments/checkout"})
 public class JwtAuthenticationFilter implements Filter {
 
     @Override
@@ -31,7 +31,7 @@ public class JwtAuthenticationFilter implements Filter {
 
         try {
             // Extract userId from JWT token in Authorization header
-            Integer userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
+            UUID userId = JwtUtil.getUserIdFromAuthorizationHeader(req.getHeader("Authorization"));
 
             // If token is valid, set userId as a request attribute for downstream use
             req.setAttribute("userId", userId);

@@ -1,5 +1,7 @@
 package dao;
 
+import java.util.UUID;
+
 import entities.Session;
 
 /**
@@ -32,7 +34,7 @@ public class SessionDao extends GenericDao<Session> {
      *
      * @param userId the user ID whose sessions should be deleted
      */
-    public void deleteByUserId(Integer userId) {
+    public void deleteByUserId(UUID userId) {
         getEntityManager().createQuery("DELETE FROM Session s WHERE s.user.id = :userId")
                 .setParameter("userId", userId)
                 .executeUpdate();

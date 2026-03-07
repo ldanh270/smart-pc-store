@@ -2,15 +2,16 @@ package dto.purchase;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Response DTO for purchase order details.
  */
 public class PurchaseOrderResponseDto {
 
-    public Integer id;
+    public UUID id;
     public String poCode;
-    public Integer supplierId;
+    public UUID supplierId;
     public String supplierName;
     public String orderDate;
     public String expectedDeliveryDate;
@@ -23,8 +24,8 @@ public class PurchaseOrderResponseDto {
      */
     public static class Item {
 
-        public Integer id;
-        public Integer productId;
+        public UUID id;
+        public UUID productId;
         public String productName;
         public Integer quantity;
         public BigDecimal unitPrice;

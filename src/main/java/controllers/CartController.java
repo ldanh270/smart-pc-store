@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import dto.cart.AddToCartRequestDto;
 import dto.cart.CartItemResponseDto;
@@ -36,7 +37,7 @@ public class CartController {
      */
     public void handleGetCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            Integer userId = (Integer) req.getAttribute("userId");
+            UUID userId = (UUID) req.getAttribute("userId");
             List<CartItemResponseDto> items = cartService.getMyCart(userId);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, items);
         } catch (IOException e) {
@@ -50,7 +51,7 @@ public class CartController {
      */
     public void handleAddToCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            Integer userId = (Integer) req.getAttribute("userId");
+            UUID userId = (UUID) req.getAttribute("userId");
             AddToCartRequestDto dto = HttpUtil.jsonToClass(req.getReader(), AddToCartRequestDto.class);
 
             cartService.addToCart(userId, dto.getProductId(), dto.getQuantity());
@@ -68,10 +69,10 @@ public class CartController {
     public void handleUpdateQuantity(
             HttpServletRequest req,
             HttpServletResponse resp,
-            Integer cartItemId
+            UUID cartItemId
     ) throws IOException {
         try {
-            Integer userId = (Integer) req.getAttribute("userId");
+            UUID userId = (UUID) req.getAttribute("userId");
             UpdateCartItemRequestDto dto = HttpUtil.jsonToClass(req.getReader(), UpdateCartItemRequestDto.class);
 
             cartService.updateQuantity(userId, cartItemId, dto.getQuantity());
@@ -88,10 +89,10 @@ public class CartController {
     public void handleRemoveItem(
             HttpServletRequest req,
             HttpServletResponse resp,
-            Integer cartItemId
+            UUID cartItemId
     ) throws IOException {
         try {
-            Integer userId = (Integer) req.getAttribute("userId");
+            UUID userId = (UUID) req.getAttribute("userId");
             cartService.removeItem(userId, cartItemId);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Cart item removed successfully");
         } catch (IOException e) {
@@ -105,7 +106,7 @@ public class CartController {
      */
     public void handleClearCart(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            Integer userId = (Integer) req.getAttribute("userId");
+            UUID userId = (UUID) req.getAttribute("userId");
             cartService.clearCart(userId);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Cart cleared successfully");
         } catch (IOException e) {

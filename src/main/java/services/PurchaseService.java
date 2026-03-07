@@ -3,10 +3,12 @@ package services;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import dao.GoodsReceiptNoteDao;
@@ -136,7 +138,7 @@ public class PurchaseService {
      * @param poId Purchase order ID.
      * @return Purchase order response or null if not found.
      */
-    public PurchaseOrderResponseDto getPurchaseOrder(Integer poId) {
+    public PurchaseOrderResponseDto getPurchaseOrder(UUID poId) {
         PurchaseOrder po = purchaseOrderDao.findById(poId);
         if (po == null) {
             return null;
@@ -153,7 +155,7 @@ public class PurchaseService {
      * @param dto  Goods receipt request.
      * @return Goods receipt response.
      */
-    public GoodsReceiptResponseDto receiveGoods(Integer poId, GoodsReceiptRequestDto dto) {
+    public GoodsReceiptResponseDto receiveGoods(UUID poId, GoodsReceiptRequestDto dto) {
         if (dto == null || dto.items == null || dto.items.isEmpty()) {
             throw new IllegalArgumentException("At least one received item is required");
         }
@@ -170,7 +172,7 @@ public class PurchaseService {
         }
 
         List<PurchaseOrderItem> poItems = purchaseOrderItemDao.findByPoId(poId);
-        Map<Integer, PurchaseOrderItem> poItemByProduct = poItems.stream().collect(Collectors.toMap(
+        Map<UUID, PurchaseOrderItem> poItemByProduct = poItems.stream().collect(Collectors.toMap(
                 i -> i.getProduct()
                         .getId(), i -> i
         ));
@@ -220,7 +222,7 @@ public class PurchaseService {
                 tx.setProduct(product);
                 tx.setQuantityChange(itemDto.quantityReceived);
                 tx.setTransactionType("IMPORT");
-                tx.setTransactionDate(Instant.now());
+                tx.setTransactionDate(OffsetDateTime.from(Instant.now()));
                 inventoryTransactionDao.create(tx);
             }
 
@@ -237,7 +239,7 @@ public class PurchaseService {
         }
     }
 
-    private String resolvePoStatus(Integer poId, List<PurchaseOrderItem> poItems) {
+    private String resolvePoStatus(UUID poId, List<PurchaseOrderItem> poItems) {
         boolean allReceived = true;
         for (PurchaseOrderItem item : poItems) {
             int received = goodsReceiptNoteItemDao.sumReceivedQuantityByPoAndProduct(poId, item.getProduct().getId());
@@ -249,7 +251,7 @@ public class PurchaseService {
         return allReceived ? STATUS_RECEIVED : STATUS_PARTIAL_RECEIVED;
     }
 
-    private BigDecimal resolveUnitPrice(Integer supplierId, PurchaseOrderCreateRequestDto.Item itemDto) {
+    private BigDecimal resolveUnitPrice(UUID supplierId, PurchaseOrderCreateRequestDto.Item itemDto) {
         if (itemDto.unitPrice != null && itemDto.unitPrice.compareTo(BigDecimal.ZERO) > 0) {
             return itemDto.unitPrice;
         }

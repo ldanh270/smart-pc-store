@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import dto.ApiResponse;
 import dto.supplierquotation.SupplierQuotationRequestDto;
@@ -57,20 +58,13 @@ public class SupplierQuotationController {
      */
     public void handleGetHistory(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            Integer productId = Integer.valueOf(req.getParameter("productId"));
-            Integer supplierId = Integer.valueOf(req.getParameter("supplierId"));
+            UUID productId = UUID.fromString(req.getParameter("productId"));
+            UUID supplierId = UUID.fromString(req.getParameter("supplierId"));
             List<SupplierQuotationResponseDto> history = supplierQuotationService.getHistory(productId, supplierId);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, history);
-        } catch (NumberFormatException e) {
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "productId and supplierId must be valid integers"
-            );
+
         } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-        } catch (IOException e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 }

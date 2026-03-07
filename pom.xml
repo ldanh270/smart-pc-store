@@ -48,11 +48,11 @@
             <version>6.4.4.Final</version>
         </dependency>
 
-        <!-- JDBC Driver (SQL Server) -->
+        <!-- JDBC Driver (Postgres) -->
         <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <version>13.2.1.jre11</version>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.2</version>
         </dependency>
 
         <!-- Google Gson (JSON Parser) -->

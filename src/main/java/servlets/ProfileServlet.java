@@ -11,6 +11,7 @@ import services.UserService;
 import utils.HttpUtil;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @WebServlet(name = "ProfileServlet", urlPatterns = {"/profile"})
 public class ProfileServlet extends HttpServlet {
@@ -29,7 +30,7 @@ public class ProfileServlet extends HttpServlet {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
-        Integer userId = (Integer) request.getAttribute("userId");
+        UUID userId = (UUID) request.getAttribute("userId");
         if (userId == null) {
             HttpUtil.sendJson(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
             return;
@@ -39,7 +40,7 @@ public class ProfileServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Integer userId = (Integer) request.getAttribute("userId");
+        UUID userId = (UUID) request.getAttribute("userId");
         if (userId == null) {
             HttpUtil.sendJson(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
             return;

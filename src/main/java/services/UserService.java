@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * UserService
@@ -30,7 +31,7 @@ public class UserService {
         return new UserDto(
                 u.getId(),
                 u.getUsername(),
-                u.getFullName(),
+                u.getDisplayName(),
                 u.getEmail(),
                 u.getPhone(),
                 u.getAddress(),
@@ -43,7 +44,7 @@ public class UserService {
         return userDao.findAll().stream().map(this::toDto).toList();
     }
 
-    public UserDto getById(Integer id) {
+    public UserDto getById(UUID id) {
         User u = userDao.findById(id);
         if (u == null) throw new RuntimeException("User not found");
         return toDto(u);
@@ -67,7 +68,7 @@ public class UserService {
             User u = new User();
             u.setUsername(dto.getUsername());
             u.setPasswordHash(passwordHash);
-            u.setFullName(dto.getFullName());
+            u.setDisplayName(dto.getDisplayName());
             u.setEmail(dto.getEmail());
             u.setPhone(dto.getPhone());
             u.setAddress(dto.getAddress());
@@ -85,7 +86,7 @@ public class UserService {
         }
     }
 
-    public UserDto update(Integer id, UpdateUserRequestDto dto) {
+    public UserDto update(UUID id, UpdateUserRequestDto dto) {
         User u = userDao.findById(id);
         if (u == null) throw new RuntimeException("User not found");
 
@@ -105,7 +106,7 @@ public class UserService {
 
             if (dto.getUsername() != null && !dto.getUsername().isBlank()) u.setUsername(dto.getUsername());
 
-            if (dto.getFullName() != null) u.setFullName(dto.getFullName());
+            if (dto.getDisplayName() != null) u.setDisplayName(dto.getDisplayName());
 
             if (dto.getEmail() != null && !dto.getEmail().isBlank()) u.setEmail(dto.getEmail());
 
@@ -135,7 +136,7 @@ public class UserService {
         }
     }
 
-    public void delete(Integer id) {
+    public void delete(UUID id) {
         User u = userDao.findById(id);
         if (u == null) throw new RuntimeException("User not found");
 
@@ -143,28 +144,23 @@ public class UserService {
             EntityManager em = userDao.getEntityManager();
             em.getTransaction().begin();
 
-            // 1. Delete Payments associated with the user's Orders
+            // Delete Payments associated with the user's Orders
             em.createQuery("DELETE FROM Payment p WHERE p.order.id IN " + "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
                     .setParameter("userId", id)
                     .executeUpdate();
-
-            // 2. Delete OrderItems associated with the user's Orders
-            em.createQuery("DELETE FROM OrderItem oi WHERE oi.order.id IN " + "(SELECT o.id FROM Order o WHERE o.user.id = :userId)")
-                    .setParameter("userId", id)
-                    .executeUpdate();
-
-            // 3. Delete Orders of user
+            
+            // Delete Orders of user
             em.createQuery("DELETE FROM Order o WHERE o.user.id = :userId").setParameter("userId", id).executeUpdate();
 
-            // 4. Delete CartItems associated with the user's Carts
+            //  Delete CartItems associated with the user's Carts
             em.createQuery("DELETE FROM CartItem ci WHERE ci.cart.id IN " + "(SELECT c.id FROM Cart c WHERE c.user.id = :userId)")
                     .setParameter("userId", id)
                     .executeUpdate();
 
-            // 5. Delete Carts of user
+            //  Delete Carts of user
             em.createQuery("DELETE FROM Cart c WHERE c.user.id = :userId").setParameter("userId", id).executeUpdate();
 
-            // 6. Delete Sessions of user
+            //  Delete Sessions of user
             em.createQuery("DELETE FROM Session s WHERE s.user.id = :userId")
                     .setParameter("userId", id)
                     .executeUpdate();

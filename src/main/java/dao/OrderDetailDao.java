@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import entities.OrderDetail;
 import jakarta.persistence.TypedQuery;
@@ -17,10 +18,10 @@ public class OrderDetailDao extends GenericDao<OrderDetail> {
     /**
      * Find order details by order ID
      *
-     * @param orderId
+     * @param orderId ID of the order to find details for
      * @return List of order details with the given order ID
      */
-    public List<OrderDetail> findByOrderId(Integer orderId) {
+    public List<OrderDetail> findByOrderId(UUID orderId) {
         String jpql = "SELECT od FROM OrderDetail od WHERE od.order.id = :orderId";
         TypedQuery<OrderDetail> query = getEntityManager().createQuery(jpql, OrderDetail.class);
         query.setParameter("orderId", orderId);

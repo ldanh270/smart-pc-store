@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import dto.user.CreateUserRequestDto;
 import dto.user.UpdateUserRequestDto;
@@ -38,7 +39,7 @@ public class UserController {
         }
     }
 
-    public void handleGetById(HttpServletRequest req, HttpServletResponse resp, Integer id) throws IOException {
+    public void handleGetById(HttpServletRequest req, HttpServletResponse resp, UUID id) throws IOException {
         try {
             UserDto user = userService.getById(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, user);
@@ -57,7 +58,7 @@ public class UserController {
         }
     }
 
-    public void handleUpdate(HttpServletRequest req, HttpServletResponse resp, Integer id) throws IOException {
+    public void handleUpdate(HttpServletRequest req, HttpServletResponse resp, UUID id) throws IOException {
         try {
             UpdateUserRequestDto dto = HttpUtil.jsonToClass(req.getReader(), UpdateUserRequestDto.class);
             UserDto updated = userService.update(id, dto);
@@ -67,7 +68,7 @@ public class UserController {
         }
     }
 
-    public void handleDelete(HttpServletRequest req, HttpServletResponse resp, Integer id) throws IOException {
+    public void handleDelete(HttpServletRequest req, HttpServletResponse resp, UUID id) throws IOException {
         try {
             userService.delete(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "User deleted successfully");

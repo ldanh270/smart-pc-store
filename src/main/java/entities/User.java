@@ -2,56 +2,46 @@ package entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Nationalized;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "\"Users\"")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
-    @Nationalized
-    @Column(name = "Username")
+    @Column(name = "username", length = Integer.MAX_VALUE)
     private String username;
 
-    @Nationalized
-    @Column(name = "PasswordHash")
+    @Column(name = "\"passwordHash\"", length = Integer.MAX_VALUE)
     private String passwordHash;
 
-    @Nationalized
-    @Column(name = "DisplayName")
+    @Column(name = "\"displayName\"", length = Integer.MAX_VALUE)
     private String displayName;
 
-    @Nationalized
-    @Column(name = "Email")
+    @Column(name = "email", length = Integer.MAX_VALUE)
     private String email;
 
-    @Nationalized
-    @Column(name = "Phone")
+    @Column(name = "phone", length = Integer.MAX_VALUE)
     private String phone;
 
-    @Nationalized
-    @Column(name = "Address")
+    @Column(name = "address", length = Integer.MAX_VALUE)
     private String address;
 
-    @Nationalized
-    @Column(name = "Status", length = 30)
+    @Column(name = "status", length = Integer.MAX_VALUE)
     private String status;
 
-    @Nationalized
-    @Column(name = "Role", length = 30)
+    @Column(name = "role", length = Integer.MAX_VALUE)
     private String role;
 
-    @ColumnDefault("getdate()")
-    @Column(name = "CreatedAt")
-    private Instant createdAt;
+    @ColumnDefault("now()")
+    @Column(name = "\"createdAt\"")
+    private OffsetDateTime createdAt;
 
-    public User() {
-    }
 
     public User(String username, String passwordHash, String displayName, String email) {
         this.username = username;
@@ -60,11 +50,33 @@ public class User {
         this.email = email;
     }
 
-    public Integer getId() {
+    public User(
+            String username,
+            String passwordHash,
+            String displayName,
+            String email,
+            String phone,
+            String address,
+            String status
+    ) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.displayName = displayName;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.status = status;
+    }
+
+    public User() {
+
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -132,21 +144,12 @@ public class User {
         this.role = role;
     }
 
-    public Instant getCreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    // Alias for displayName — used by DTOs
-    public void setFullName(String fullName) {
-        this.displayName = fullName;
-    }
-
-    public String getFullName() {
-        return this.displayName;
     }
 
 }

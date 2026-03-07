@@ -1,5 +1,7 @@
 package dto.cart;
 
+import java.util.UUID;
+
 /**
  * Request body for POST /cart/add
  */
@@ -8,18 +10,18 @@ public class AddToCartRequestDto {
     /**
      * Product id to add to cart
      */
-    private Integer productId;
+    private UUID productId;
 
     /**
      * Quantity to add (must be > 0)
      */
     private Integer quantity;
 
-    public Integer getProductId() {
+    public UUID getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(UUID productId) {
         this.productId = productId;
     }
 

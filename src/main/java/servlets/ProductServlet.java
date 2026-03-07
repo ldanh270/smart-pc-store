@@ -50,6 +50,7 @@ public class ProductServlet extends HttpServlet {
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
+            System.err.println("ERROR ProductServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -66,20 +67,23 @@ public class ProductServlet extends HttpServlet {
 
         // Keep create route explicit to avoid conflicts with future POST actions.
         if (pathInfo == null || pathInfo.equals("/")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_NOT_FOUND,
+                    "Endpoint not found. To create a product, POST to /products/create"
+            );
             return;
         }
 
         try {
             // Routing
-            switch (pathInfo) {
-                case "/create":
-                    productController.handleCreate(req, resp);
-                    break;
-                default:
-                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+            if (pathInfo.equals("/create")) {
+                productController.handleCreate(req, resp);
+            } else {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (Exception e) {
+            System.err.println("ERROR ProductServlet - doPost: " + e.getMessage());
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -115,6 +119,7 @@ public class ProductServlet extends HttpServlet {
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
+            System.err.println("ERROR ProductServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -144,6 +149,7 @@ public class ProductServlet extends HttpServlet {
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
+            System.err.println("ERROR ProductServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,

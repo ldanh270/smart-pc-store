@@ -1,47 +1,42 @@
 package entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Nationalized;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.UUID;
 
 @Entity
-@Table(name = "PurchaseOrders")
+@Table(name = "\"PurchaseOrders\"")
 public class PurchaseOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SupplierId")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "\"supplierId\"")
     private Supplier supplier;
 
-    @Column(name = "OrderDate")
+    @Column(name = "\"orderDate\"")
     private LocalDate orderDate;
 
-    @Column(name = "ExpectedDeliveryDate")
-    private LocalDate expectedDeliveryDate;
-
-    @Nationalized
-    @Column(name = "Status")
+    @Column(name = "status", length = Integer.MAX_VALUE)
     private String status;
 
-    @Nationalized
-    @Column(name = "PoCode")
-    private String poCode;
-    @OneToMany(mappedBy = "po")
-    private Set<GoodsReceiptNote> goodsReceiptNotes = new LinkedHashSet<>();
-    @OneToMany(mappedBy = "po")
-    private Set<PurchaseOrderItem> purchaseOrderItems = new LinkedHashSet<>();
+    @Column(name = "\"expectedDeliveryDate\"")
+    private LocalDate expectedDeliveryDate;
 
-    public Integer getId() {
+    @Column(name = "\"poCode\"", length = Integer.MAX_VALUE)
+    private String poCode;
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -83,22 +78,6 @@ public class PurchaseOrder {
 
     public void setPoCode(String poCode) {
         this.poCode = poCode;
-    }
-
-    public Set<GoodsReceiptNote> getGoodsReceiptNotes() {
-        return goodsReceiptNotes;
-    }
-
-    public void setGoodsReceiptNotes(Set<GoodsReceiptNote> goodsReceiptNotes) {
-        this.goodsReceiptNotes = goodsReceiptNotes;
-    }
-
-    public Set<PurchaseOrderItem> getPurchaseOrderItems() {
-        return purchaseOrderItems;
-    }
-
-    public void setPurchaseOrderItems(Set<PurchaseOrderItem> purchaseOrderItems) {
-        this.purchaseOrderItems = purchaseOrderItems;
     }
 
 }

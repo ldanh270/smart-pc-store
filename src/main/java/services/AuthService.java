@@ -1,6 +1,9 @@
 package services;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -117,7 +120,8 @@ public class AuthService {
                 session.setRefreshToken(refreshToken);
 
                 // Set expiration date for refresh token (e.g., 7 days)
-                session.setExpiredAt(Instant.now().plusMillis(JwtConfig.REFRESH_TOKEN_TTL));
+                session.setExpiredAt(OffsetDateTime.now(ZoneOffset.UTC)
+                                             .plus(JwtConfig.REFRESH_TOKEN_TTL, ChronoUnit.MILLIS));
 
                 sessionDao.create(session);
                 sessionDao.getEntityManager().getTransaction().commit();
@@ -159,7 +163,7 @@ public class AuthService {
         Session session = sessionDao.findByRefreshToken(refreshToken);
 
         // Validate session and expiration
-        if (session == null || session.getExpiredAt().isBefore(Instant.now())) {
+        if (session == null || session.getExpiredAt().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
             return new AccessTokenResponseDto(false, null, "Invalid or expired refresh token");
         }
 

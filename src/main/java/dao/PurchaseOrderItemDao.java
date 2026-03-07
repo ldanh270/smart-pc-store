@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import entities.PurchaseOrderItem;
 
@@ -19,7 +20,7 @@ public class PurchaseOrderItemDao extends GenericDao<PurchaseOrderItem> {
      * @param poId Purchase order ID.
      * @return Item list of the purchase order.
      */
-    public List<PurchaseOrderItem> findByPoId(Integer poId) {
+    public List<PurchaseOrderItem> findByPoId(UUID poId) {
         String jpql = "SELECT i FROM PurchaseOrderItem i WHERE i.po.id = :poId";
         return JPAUtil.getEntityManager()
                 .createQuery(jpql, PurchaseOrderItem.class)

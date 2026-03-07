@@ -10,6 +10,7 @@ import utils.HttpUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller class for supplier management endpoints.
@@ -42,7 +43,7 @@ public class SupplierController {
      */
     public void handleGetById(HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.parseInt(idStr);
+            UUID id = UUID.fromString(idStr);
             SupplierResponseDto dto = supplierService.getByIdDto(id);
             if (dto == null) {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Supplier not found");
@@ -82,7 +83,7 @@ public class SupplierController {
      */
     public void handleUpdate(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.parseInt(idStr);
+            UUID id = UUID.fromString(idStr);
             SupplierRequestDto dto = HttpUtil.jsonToClass(req.getReader(), SupplierRequestDto.class);
             SupplierResponseDto updated = supplierService.update(id, dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, new ApiResponse<>(true, "Supplier updated", updated));
@@ -109,7 +110,7 @@ public class SupplierController {
      */
     public void handleDelete(HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.parseInt(idStr);
+            UUID id = UUID.fromString(idStr);
             supplierService.delete(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, new ApiResponse<>(true, "Supplier deactivated", null));
         } catch (NumberFormatException e) {

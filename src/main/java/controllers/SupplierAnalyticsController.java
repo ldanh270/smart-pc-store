@@ -9,6 +9,7 @@ import utils.HttpUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller class for supplier analytics endpoints.
@@ -32,7 +33,7 @@ public class SupplierAnalyticsController {
      */
     public void handlePriceCompare(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            Integer productId = Integer.parseInt(req.getParameter("productId"));
+            UUID productId = UUID.fromString(req.getParameter("productId"));
             List<PriceCompareDto> result = supplierAnalyticsService.compareLatestPrices(productId);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, result);
         } catch (NumberFormatException e) {
@@ -49,8 +50,8 @@ public class SupplierAnalyticsController {
      */
     public void handlePriceTrend(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            Integer productId = Integer.parseInt(req.getParameter("productId"));
-            Integer supplierId = Integer.parseInt(req.getParameter("supplierId"));
+            UUID productId = UUID.fromString(req.getParameter("productId"));
+            UUID supplierId = UUID.fromString(req.getParameter("supplierId"));
             PriceTrendResponseDto result = supplierAnalyticsService.getPriceTrend(productId, supplierId);
             if (result == null) {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "No price history found");

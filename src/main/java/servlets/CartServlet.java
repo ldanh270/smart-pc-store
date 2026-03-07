@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import controllers.CartController;
 import dao.CartDao;
@@ -69,10 +70,8 @@ public class CartServlet extends HttpServlet {
 
         try {
             switch (pathInfo) {
-                case "/add" ->
-                    cartController.handleAddToCart(req, resp);
-                default ->
-                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                case "/add" -> cartController.handleAddToCart(req, resp);
+                default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (IOException e) {
             System.err.println("ERROR CartServlet - doPost: " + e.getMessage());
@@ -87,7 +86,7 @@ public class CartServlet extends HttpServlet {
         String pathInfo = req.getPathInfo(); // expected: /items/{id}
         try {
             if (pathInfo != null && pathInfo.startsWith("/items/")) {
-                Integer cartItemId = Integer.valueOf(pathInfo.substring("/items/".length()));
+                UUID cartItemId = UUID.fromString(pathInfo.substring("/items/".length()));
                 cartController.handleUpdateQuantity(req, resp, cartItemId);
                 return;
             }
@@ -101,7 +100,7 @@ public class CartServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
         try {
             // DELETE /cart/ => clear entire cart (typically after checkout)
@@ -112,7 +111,7 @@ public class CartServlet extends HttpServlet {
 
             // DELETE /cart/items/{id} => remove one item
             if (pathInfo.startsWith("/items/")) {
-                Integer cartItemId = Integer.valueOf(pathInfo.substring("/items/".length()));
+                UUID cartItemId = UUID.fromString(pathInfo.substring("/items/".length()));
                 cartController.handleRemoveItem(req, resp, cartItemId);
                 return;
             }

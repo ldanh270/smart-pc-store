@@ -52,7 +52,7 @@ public class CategoryServlet extends HttpServlet {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (IOException e) {
             System.err.println("ERROR CategoryServlet - doGet: " + e.getMessage());
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
         }

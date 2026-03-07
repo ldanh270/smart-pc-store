@@ -2,6 +2,7 @@ package services;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -62,7 +63,7 @@ public class OrderService {
         order.setAmount(totalAmount);
         order.setTransactionCode(generateRandomString(8));
         order.setStatus("PENDING");
-        order.setCreatedAt(Instant.now());
+        order.setCreatedAt(OffsetDateTime.from(Instant.now()));
 
         try {
             orderDao.getEntityManager().getTransaction().begin();
@@ -145,7 +146,7 @@ public class OrderService {
         dto.setAmount(order.getAmount());
         dto.setTransactionCode(order.getTransactionCode());
         dto.setStatus(order.getStatus());
-        dto.setCreatedAt(order.getCreatedAt());
+        dto.setCreatedAt(order.getCreatedAt().toInstant());
         return dto;
     }
 

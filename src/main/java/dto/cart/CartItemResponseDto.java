@@ -1,6 +1,7 @@
 package dto.cart;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * Response DTO for cart items (GET /cart).
@@ -12,8 +13,8 @@ import java.math.BigDecimal;
  */
 public class CartItemResponseDto {
 
-    private final Integer cartItemId;
-    private final Integer productId;
+    private final UUID cartItemId;
+    private final UUID productId;
     private final String productName;
     private final BigDecimal price;
     private final Integer quantity;
@@ -30,8 +31,8 @@ public class CartItemResponseDto {
     private final Integer stockQuantity;
 
     public CartItemResponseDto(
-            Integer cartItemId,
-            Integer productId,
+            UUID cartItemId,
+            UUID productId,
             String productName,
             BigDecimal price,
             Integer quantity,
@@ -48,11 +49,11 @@ public class CartItemResponseDto {
         this.subtotal = (price != null) ? price.multiply(BigDecimal.valueOf(quantity)) : BigDecimal.ZERO;
     }
 
-    public Integer getCartItemId() {
+    public UUID getCartItemId() {
         return cartItemId;
     }
 
-    public Integer getProductId() {
+    public UUID getProductId() {
         return productId;
     }
 
