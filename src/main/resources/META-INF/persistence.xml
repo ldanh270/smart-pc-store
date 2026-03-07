@@ -3,9 +3,8 @@
              xmlns="https://jakarta.ee/xml/ns/persistence"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
     <persistence-unit name="smart-pc-store" transaction-type="RESOURCE_LOCAL">
-        <!-- Provider -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <!-- Entities -->
+
         <class>entities.OrderDetail</class>
         <class>entities.Cart</class>
         <class>entities.InventoryTransaction</class>
@@ -23,15 +22,14 @@
         <class>entities.User</class>
         <class>entities.Session</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <!-- Properties -->
+
         <properties>
-            <!-- JDBC -->
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:postgresql://db.lomuwmmxddcxdjfjjbtn.supabase.co:5432/postgres"/>
-            <property name="jakarta.persistence.jdbc.user" value="postgres"/>
+                      value="jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require"/>
+            <property name="jakarta.persistence.jdbc.user" value="postgres.lomuwmmxddcxdjfjjbtn"/>
             <property name="jakarta.persistence.jdbc.password" value="smart-pc-store"/>
-            <!-- Hibernate -->
+
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="true"/>
