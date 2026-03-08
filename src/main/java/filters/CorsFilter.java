@@ -18,17 +18,26 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebFilter(filterName = "CorsFilter", urlPatterns = "/*")
 public class CorsFilter implements Filter {
 
+    // List of allowed origins for CORS requests. You can modify this list to include your frontend domains.
+    private static final java.util.List<String> ALLOWED_ORIGINS = java.util.Arrays.asList(
+            "http://localhost:3000",
+            "https://smartpcstore.vercel.app",
+            "http://smartpcstore.id.vn",
+            "https://smartglass.id.vn/"
+    );
+
     @Override
-    public void doFilter(
-            ServletRequest request,
-            ServletResponse response,
-            FilterChain chain
-    ) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        String origin = req.getHeader("Origin");
+
+        if (origin != null && ALLOWED_ORIGINS.contains(origin)) {
+            res.setHeader("Access-Control-Allow-Origin", origin);
+        }
+
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
         res.setHeader("Access-Control-Max-Age", "3600");
