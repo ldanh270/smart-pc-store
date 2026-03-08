@@ -39,7 +39,7 @@ target/
 out/
 
 # Personal
-TODO.md
+TODO.*
 
 .smarttomcat/
 
