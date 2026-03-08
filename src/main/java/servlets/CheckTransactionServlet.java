@@ -1,111 +1,74 @@
 package servlets;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.UUID;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
+import dao.CartDao;
+import dao.CartItemDao;
+import dao.JPAUtil;
 import dao.OrderDAO;
+import dao.OrderDetailDao;
+import dao.ProductDao;
+import dao.UserDao;
+import dto.payment.PurchaseCheckResponseDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import services.PaymentService;
+import services.PurchaseCheckoutService;
 import utils.HttpUtil;
 
 @WebServlet(name = "CheckTransactionServlet", urlPatterns = {"/check-transaction"})
 public class CheckTransactionServlet extends HttpServlet {
 
-    private static final String API_TOKEN = "Bearer E7EQFSUFXWLBW1NMNQ6HPUBJF8WTYMY0RDXYJONAT72IIBSPO52ZOHM1QCRO9WQZ";
-    private static final String SEPAY_API_URL = "https://my.sepay.vn/userapi/transactions/list";
-
-    private PaymentService paymentService;
+    private PurchaseCheckoutService purchaseCheckoutService;
 
     @Override
     public void init() {
-        OrderDAO orderDao = new OrderDAO();
-        this.paymentService = new PaymentService(orderDao);
+        purchaseCheckoutService = new PurchaseCheckoutService(
+                new OrderDAO(),
+                new OrderDetailDao(),
+                new ProductDao(),
+                new UserDao(),
+                new CartDao(),
+                new CartItemDao()
+        );
     }
 
     @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
-
-        String currentCode = request.getParameter("txnCode");
-        if (currentCode == null || currentCode.isEmpty()) {
-            HttpSession session = request.getSession();
-            currentCode = (String) session.getAttribute("currentTransactionCode");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        UUID userId = (UUID) request.getAttribute("userId");
+        if (userId == null) {
+            HttpUtil.sendJson(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            return;
         }
+        String userRole = (String) request.getAttribute("userRole");
 
-        if (currentCode == null || currentCode.isEmpty()) {
+        String transactionCode = request.getParameter("txnCode");
+        if (transactionCode == null || transactionCode.isBlank()) {
+            transactionCode = request.getParameter("transactionCode");
+        }
+        if (transactionCode == null || transactionCode.isBlank()) {
             HttpUtil.sendJson(response, HttpServletResponse.SC_BAD_REQUEST, "No transaction code provided");
             return;
         }
 
-        final String finalCode = currentCode;
-
         try {
-            String jsonResponse = callSePayApi();
-            JsonObject root = JsonParser.parseString(jsonResponse).getAsJsonObject();
-            JsonArray transactions = root.getAsJsonArray("transactions");
-
-            boolean found = false;
-            String message = "Chưa tìm thấy giao dịch";
-
-            if (transactions != null) {
-                for (JsonElement element : transactions) {
-                    JsonObject txn = element.getAsJsonObject();
-                    double amountIn = txn.get("amount_in").getAsDouble();
-                    String content = txn.get("transaction_content").getAsString();
-
-                    if (amountIn > 0 && content != null && content.contains(finalCode)) {
-                        paymentService.updateStatus(finalCode, "PAID");
-                        found = true;
-                        message = "đã phát hiện giao dịch mã " + finalCode + ". đơn hàng đã được thanh toán";
-                        break;
-                    }
-                }
-            }
-
-            java.util.Map<String, Object> result = new java.util.HashMap<>();
-            result.put("found", found);
-            result.put("message", message);
+            PurchaseCheckResponseDto result = purchaseCheckoutService.getOrderCheckStatus(
+                    transactionCode,
+                    userId,
+                    userRole
+            );
             HttpUtil.sendJson(response, HttpServletResponse.SC_OK, result);
-
+        } catch (SecurityException e) {
+            HttpUtil.sendJson(response, HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             HttpUtil.sendJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error: " + e.getMessage());
-        }
-    }
-
-    private String callSePayApi() throws IOException {
-        URL url = new URL(SEPAY_API_URL);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Authorization", API_TOKEN);
-        conn.setRequestProperty("Content-Type", "application/json");
-
-        int responseCode = conn.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-            return response.toString();
-        } else {
-            throw new IOException("SePay API returned HTTP code: " + responseCode);
+        } finally {
+            JPAUtil.closeEntityManager();
         }
     }
 }

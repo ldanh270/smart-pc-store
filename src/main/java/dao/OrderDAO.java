@@ -62,4 +62,14 @@ public class OrderDAO extends GenericDao<Order> {
         List<Order> list = query.getResultList();
         return list.isEmpty() ? null : list.get(0);
     }
+
+    public List<Order> findByStatus(String status, int limit) {
+        String jpql = "SELECT o FROM Order o WHERE o.status = :status ORDER BY o.createdAt ASC";
+        TypedQuery<Order> query = getEntityManager().createQuery(jpql, Order.class);
+        query.setParameter("status", status);
+        if (limit > 0) {
+            query.setMaxResults(limit);
+        }
+        return query.getResultList();
+    }
 }

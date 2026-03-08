@@ -82,7 +82,12 @@ public class RoleAuthorizationFilter implements Filter {
     }
 
     private boolean isUserFeatureEndpoint(String path) {
-        return path.startsWith("/cart") || path.startsWith("/orders") || path.startsWith("/payments/checkout") || path.startsWith("/profile");
+        return path.startsWith("/cart")
+                || path.startsWith("/orders")
+                || path.startsWith("/payments/checkout")
+                || path.startsWith("/purchase")
+                || path.startsWith("/check-transaction")
+                || path.startsWith("/profile");
     }
 
     private boolean isAdminOnlyEndpoint(String path, String method) {
