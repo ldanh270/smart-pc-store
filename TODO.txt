@@ -1,2 +1,0 @@
-- Mới test được mỗi auth sau khi migrate xong, chưa test được phần user, product, order
-- Sửa lại phần supplier quota: mỗi product chỉ đến từ 1 supplier

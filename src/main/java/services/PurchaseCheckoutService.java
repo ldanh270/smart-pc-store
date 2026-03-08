@@ -121,7 +121,7 @@ public class PurchaseCheckoutService {
         order.setTransactionCode(generateUniqueTransactionCode(10));
         order.setAmount(totalAmount);
         order.setStatus(ORDER_STATUS_PENDING);
-        order.setCreatedAt(OffsetDateTime.from(Instant.now()));
+        order.setCreatedAt(OffsetDateTime.now());
         order.setUser(user);
 
         EntityTransaction tx = orderDao.getEntityManager().getTransaction();

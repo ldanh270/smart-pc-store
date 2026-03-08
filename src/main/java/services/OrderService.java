@@ -63,7 +63,7 @@ public class OrderService {
         order.setAmount(totalAmount);
         order.setTransactionCode(generateRandomString(8));
         order.setStatus("PENDING");
-        order.setCreatedAt(OffsetDateTime.from(Instant.now()));
+        order.setCreatedAt(OffsetDateTime.now());
 
         try {
             orderDao.getEntityManager().getTransaction().begin();

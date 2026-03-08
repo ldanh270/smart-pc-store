@@ -222,7 +222,7 @@ public class PurchaseService {
                 tx.setProduct(product);
                 tx.setQuantityChange(itemDto.quantityReceived);
                 tx.setTransactionType("IMPORT");
-                tx.setTransactionDate(OffsetDateTime.from(Instant.now()));
+                tx.setTransactionDate(OffsetDateTime.now());
                 inventoryTransactionDao.create(tx);
             }
 
