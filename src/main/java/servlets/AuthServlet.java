@@ -1,8 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package servlets;
+
+import java.io.IOException;
 
 import controllers.AuthController;
 import dao.JPAUtil;
@@ -16,15 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.AuthService;
 import utils.HttpUtil;
 
-import java.io.IOException;
-
 /**
  * AuthServlet handles authentication-related HTTP requests.
- * Endpoints:
- * - POST /auth/login: User login
- * - POST /auth/signup: User registration
- * - POST /auth/refresh: Refresh access token
- * - POST /auth/logout: User logout
  */
 @WebServlet(name = "AuthServlet", urlPatterns = {"/auth/*"})
 public class AuthServlet extends HttpServlet {
@@ -68,8 +59,13 @@ public class AuthServlet extends HttpServlet {
                     HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (Exception e) {
-            System.out.println("ERROR AuthServlet - doPost: " + e.getMessage());
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
+        } finally {
+            JPAUtil.closeEntityManager();
         }
     }
 }

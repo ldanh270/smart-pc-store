@@ -2,56 +2,72 @@ package entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Nationalized;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Orders")
+@Table(name = "\"Orders\"")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserId")
-    private User user;
+    @Column(name = "\"orderCode\"", nullable = false, length = 50)
+    private String orderCode;
 
-    @ColumnDefault("getdate()")
-    @Column(name = "OrderDate")
-    private Instant orderDate;
+    @Column(name = "amount", nullable = false)
+    private Double amount;
 
-    @Nationalized
-    @Column(name = "Status")
+    @Column(name = "\"transactionCode\"", nullable = false, length = 10)
+    private String transactionCode;
+
+    @ColumnDefault("'PENDING'")
+    @Column(name = "status", length = 20)
     private String status;
 
-    @Column(name = "TotalAmount", precision = 18, scale = 2)
-    private BigDecimal totalAmount;
+    @ColumnDefault("now()")
+    @Column(name = "\"createdAt\"")
+    private OffsetDateTime createdAt;
 
-    public Integer getId() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "\"userId\"")
+    private User user;
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public String getOrderCode() {
+        return orderCode;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setOrderCode(String orderCode) {
+        this.orderCode = orderCode;
     }
 
-    public Instant getOrderDate() {
-        return orderDate;
+    public Double getAmount() {
+        return amount;
     }
 
-    public void setOrderDate(Instant orderDate) {
-        this.orderDate = orderDate;
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public String getTransactionCode() {
+        return transactionCode;
+    }
+
+    public void setTransactionCode(String transactionCode) {
+        this.transactionCode = transactionCode;
     }
 
     public String getStatus() {
@@ -62,12 +78,20 @@ public class Order {
         this.status = status;
     }
 
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

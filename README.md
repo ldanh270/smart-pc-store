@@ -1,645 +1,445 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17"/>
-  <img src="https://img.shields.io/badge/Jakarta%20EE-6.0-1572B6?style=for-the-badge&logo=jakarta&logoColor=white" alt="Jakarta EE"/>
-  <img src="https://img.shields.io/badge/Hibernate-6.4.4-59666C?style=for-the-badge&logo=hibernate&logoColor=white" alt="Hibernate"/>
-  <img src="https://img.shields.io/badge/SQL%20Server-2019+-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" alt="SQL Server"/>
-  <img src="https://img.shields.io/badge/Maven-3.x-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" alt="Maven"/>
-</p>
+<div align="center">
 
-# 🖥️ Smart PC Store
+# Smart PC Store
 
-> A modern, full-featured e-commerce web application for PC components and computer systems built
-> with Java Servlet, Jakarta EE, and JPA/Hibernate.
+**Enterprise-grade E-commerce Backend System**
 
----
+[![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat&logo=openjdk&logoColor=white)](https://adoptium.net/)
+[![Jakarta EE](https://img.shields.io/badge/Jakarta%20EE-6.0-1572B6?style=flat&logo=jakarta&logoColor=white)](https://jakarta.ee/)
+[![Hibernate](https://img.shields.io/badge/Hibernate-6.4.4-59666C?style=flat&logo=hibernate&logoColor=white)](https://hibernate.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Maven](https://img.shields.io/badge/Maven-3.x-C71A36?style=flat&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](LICENSE)
 
-## 📖 Table of Contents
+**A comprehensive RESTful API backend for PC component e-commerce platform built with Jakarta EE, Hibernate ORM, and PostgreSQL**
 
-- [Overview](#-overview)
-- [Features](#-features)
-- [Technology Stack](#-technology-stack)
-- [Architecture](#-architecture)
-- [Project Structure](#-project-structure)
-- [Database Schema](#-database-schema)
-- [Getting Started](#-getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Configuration](#configuration)
-    - [Database Setup](#database-setup)
-    - [Build & Deploy](#build--deploy)
-- [API Reference](#-api-reference)
-- [Security](#-security)
-- [Testing](#-testing)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Team](#-team)
+[Features](#features) • [Quick Start](#quick-start) • [Documentation](#documentation) • [Architecture](#architecture) • [Contributing](#contributing)
+
+</div>
 
 ---
 
-## 🎯 Overview
+## Overview
 
-**Smart PC Store** is a comprehensive e-commerce platform designed for buying and selling PC
-components and computer systems. The application provides a robust backend infrastructure built on
-Jakarta EE standards with a clean, layered architecture following industry best practices.
+Smart PC Store is a production-ready backend API for PC components e-commerce platform. Built with enterprise Java technologies, it provides comprehensive features for product management, order processing, inventory control, and B2B supplier operations.
 
 ### Key Highlights
 
-- 🔐 **Secure Authentication** — JWT-based access tokens with refresh token rotation
-- 🗄️ **Robust Data Layer** — JPA/Hibernate ORM with Microsoft SQL Server
-- 📦 **Inventory Management** — Real-time stock tracking with transaction history
-- 📊 **Analytics Ready** — Built-in revenue tracking and demand/price forecasting models
-- 🛒 **Complete E-commerce Flow** — From cart management to order processing and payments
+**Robust Security**
+- JWT authentication with refresh token rotation
+- BCrypt password hashing with adaptive work factor
+- Role-based access control (RBAC)
+- SQL injection prevention through JPA/Hibernate
+
+**Scalable Architecture**
+- N-Tier layered architecture (Presentation, Business Logic, Data Access, Persistence)
+- DAO pattern with generic base class
+- DTO pattern for API versioning and security
+- Transaction management with ACID compliance
+
+**Complete E-commerce Features**
+- Product catalog with categories and search
+- Shopping cart with persistent storage
+- Order management with status tracking
+- Payment processing (multiple methods supported)
+- Supplier management and purchase orders
+- Inventory transaction logging
+
+**Production Ready**
+- Docker containerization support
+- Comprehensive error handling
+- Logging and monitoring ready
+- Database migrations support
+- API documentation included
 
 ---
 
-## ✨ Features
+## Features
 
-### 🔐 Authentication & Authorization
+### Core Functionality
 
-- User registration with input validation
-- Secure login with JWT access tokens
-- Refresh token mechanism for session persistence
-- Password hashing using BCrypt
+- **User Authentication & Authorization**
+  - JWT-based authentication with access and refresh tokens
+  - BCrypt password encryption
+  - Role-based access control (Admin, Staff, Customer)
+  - Session management with automatic cleanup
 
-### 🛍️ Product Management
+- **Product Management**
+  - CRUD operations for products and categories
+  - Hierarchical category structure
+  - Product search and filtering
+  - Stock management
+  - Supplier association
 
-- Product catalog with categories
-- Supplier management with price history tracking
-- Inventory tracking with transaction logs
+- **Shopping & Orders**
+  - Persistent shopping cart per user
+  - Order processing with status tracking
+  - Multiple payment methods (COD, Bank Transfer, E-Wallet)
+  - Order history and details
 
-### 🛒 Shopping Experience
+- **B2B Operations**
+  - Supplier management
+  - Purchase order creation and tracking
+  - Inventory transaction logging
+  - Stock replenishment automation
 
-- Shopping cart functionality
-- Order placement and management
-- Multiple payment method support
-- Order status tracking
-
-### 📈 Analytics & Forecasting
-
-- Daily revenue aggregation
-- Price forecasting models
-- Demand prediction capabilities
-
-### 👥 User Management
-
-- User profile management
-- Address and contact information
-- Order history
-
----
-
-## 🛠️ Technology Stack
-
-| Category               | Technology              | Version     |
-|------------------------|-------------------------|-------------|
-| **Language**           | Java                    | 17          |
-| **Framework**          | Jakarta Servlet API     | 6.0.0       |
-| **ORM**                | Hibernate Core          | 6.4.4.Final |
-| **Persistence**        | Jakarta Persistence API | 3.1.0       |
-| **Database**           | Microsoft SQL Server    | 2019+       |
-| **Build Tool**         | Apache Maven            | 3.x         |
-| **Authentication**     | JJWT (JSON Web Token)   | 0.11.5      |
-| **Password Hashing**   | jBCrypt                 | 0.4         |
-| **JSON Processing**    | Google Gson             | 2.10.1      |
-| **Environment Config** | dotenv-java             | 3.0.0       |
-| **Testing**            | JUnit                   | 4.13.1      |
-| **Server**             | Apache Tomcat           | 10.x+       |
+- **Additional Features**
+  - Web crawler for product data collection
+  - Revenue analytics (daily aggregation)
+  - Automated session cleanup
+  - CORS support for frontend integration
 
 ---
 
-## 🏗️ Architecture
+## Technology Stack
 
-The application follows a **layered architecture** pattern ensuring separation of concerns and
-maintainability:
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    CLIENT (Browser/API)                 │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                  PRESENTATION LAYER                     │
-│  ┌───────────────┐    ┌───────────────┐                 │
-│  │   Servlets    │◄──►│  Controllers  │                 │
-│  │ (URL Routing) │    │ (Request      │                 │
-│  │               │    │  Handling)    │                 │
-│  └───────────────┘    └───────────────┘                 │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                   SERVICE LAYER                         │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │               Business Logic                      │  │
-│  │     • AuthService • ProductService • etc.         │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                DATA ACCESS LAYER (DAO)                  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────┐  │
-│  │ GenericDao  │  │  UserDao    │  │  SessionDao     │  │
-│  │  (Base)     │  │             │  │                 │  │
-│  └─────────────┘  └─────────────┘  └─────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│              PERSISTENCE LAYER (JPA/Hibernate)          │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │             Entity Manager + Entities             │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                    DATABASE LAYER                       │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │              Microsoft SQL Server                 │  │
-│  └───────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────┘
-```
-
-### Design Patterns Used
-
-- **DAO Pattern** — Abstracts data access logic from business logic
-- **DTO Pattern** — Data Transfer Objects for clean API contracts
-- **Service Layer Pattern** — Encapsulates business logic
-- **MVC Pattern** — Separation of Model, View, and Controller
+| Category | Technology | Purpose |
+|----------|------------|---------|
+| **Language** | Java 17 LTS | Modern Java features, long-term support |
+| **Framework** | Jakarta EE 6.0 | Servlet API, enterprise standards |
+| **ORM** | Hibernate 6.4.4 | Object-relational mapping, JPA implementation |
+| **Database** | PostgreSQL 15+ | Relational database, ACID compliance |
+| **Build Tool** | Maven 3.x | Dependency management, build automation |
+| **Server** | Apache Tomcat 10.1 | Servlet container |
+| **Security** | JJWT 0.11.5 + BCrypt | JWT authentication, password hashing |
+| **JSON** | Google Gson 2.10.1 | JSON serialization/deserialization |
+| **Container** | Docker | Containerization, deployment |
 
 ---
 
-## 📁 Project Structure
-
-```
-smart-pc-store/
-├── 📂 src/
-│   ├── 📂 main/
-│   │   ├── 📂 java/
-│   │   │   ├── 📂 configs/              # Application configurations
-│   │   │   │   ├── DatabaseConfig.java  # Database connection settings
-│   │   │   │   ├── JwtConfig.java       # JWT token configuration
-│   │   │   │   ├── Regex.java           # Validation patterns
-│   │   │   │   └── UrlConfig.java       # URL routing configuration
-│   │   │   │
-│   │   │   ├── 📂 controllers/          # Request handlers
-│   │   │   │   └── AuthController.java  # Authentication controller
-│   │   │   │
-│   │   │   ├── 📂 dao/                  # Data Access Objects
-│   │   │   │   ├── GenericDao.java      # Base DAO with CRUD operations
-│   │   │   │   ├── JPAUtil.java         # JPA EntityManager utility
-│   │   │   │   ├── SessionDao.java      # Session data access
-│   │   │   │   └── UserDao.java         # User data access
-│   │   │   │
-│   │   │   ├── 📂 dto/                  # Data Transfer Objects
-│   │   │   │   ├── 📂 auth/
-│   │   │   │   │   ├── AuthResponse.java
-│   │   │   │   │   ├── LoginDto.java
-│   │   │   │   │   └── RegisterDto.java
-│   │   │   │   ├── 📂 product/
-│   │   │   │   └── 📂 user/
-│   │   │   │       └── UserDto.java
-│   │   │   │
-│   │   │   ├── 📂 entities/             # JPA Entity classes
-│   │   │   │   ├── Cart.java
-│   │   │   │   ├── CartItem.java
-│   │   │   │   ├── Category.java
-│   │   │   │   ├── DemandForecast.java
-│   │   │   │   ├── InventoryTransaction.java
-│   │   │   │   ├── Order.java
-│   │   │   │   ├── OrderItem.java
-│   │   │   │   ├── Payment.java
-│   │   │   │   ├── PriceForecast.java
-│   │   │   │   ├── Product.java
-│   │   │   │   ├── PurchaseOrder.java
-│   │   │   │   ├── PurchaseOrderItem.java
-│   │   │   │   ├── RevenueDaily.java
-│   │   │   │   ├── Session.java
-│   │   │   │   ├── Supplier.java
-│   │   │   │   ├── SupplierPriceHistory.java
-│   │   │   │   └── User.java
-│   │   │   │
-│   │   │   ├── 📂 filters/              # Servlet filters
-│   │   │   │
-│   │   │   ├── 📂 services/             # Business logic layer
-│   │   │   │   └── AuthService.java
-│   │   │   │
-│   │   │   ├── 📂 servlets/             # HTTP endpoint handlers
-│   │   │   │   ├── AuthServlet.java     # /auth/* endpoints
-│   │   │   │   └── DefaultServlet.java  # Default routes
-│   │   │   │
-│   │   │   └── 📂 utils/                # Utility classes
-│   │   │       ├── EnvHelper.java       # Environment variable helper
-│   │   │       ├── HttpUtil.java        # HTTP request/response utilities
-│   │   │       ├── JwtUtil.java         # JWT token utilities
-│   │   │       └── 📂 validate/
-│   │   │           └── AuthValidate.java
-│   │   │
-│   │   ├── 📂 resources/
-│   │   │   └── 📂 META-INF/
-│   │   │       └── persistence.xml      # JPA configuration
-│   │   │
-│   │   └── 📂 webapp/
-│   │       ├── 📂 META-INF/
-│   │       ├── 📂 WEB-INF/
-│   │       └── index.jsp
-│   │
-│   └── 📂 test/                         # Unit tests
-│
-├── 📂 plan/                             # Project planning files
-│   ├── schema.sql                       # Database schema
-│   ├── data.sql                         # Sample data
-│   └── TasksList.drawio                 # Task diagram
-│
-├── .env                                 # Environment variables
-├── .gitignore                           # Git ignore rules
-├── pom.xml                              # Maven configuration
-└── README.md                            # This file
-```
-
----
-
-## 🗄️ Database Schema
-
-The application uses a comprehensive relational database schema designed for e-commerce operations:
-
-### Entity Relationship Diagram
-
-```
-┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-│    Users     │───┬───│   Sessions   │       │  Categories  │
-└──────────────┘   │   └──────────────┘       └──────────────┘
-       │           │                                 │
-       │           │                                 │
-       ▼           │                                 ▼
-┌──────────────┐   │   ┌──────────────┐       ┌──────────────┐
-│    Carts     │   │   │   Suppliers  │───────│   Products   │
-└──────────────┘   │   └──────────────┘       └──────────────┘
-       │           │          │                      │
-       ▼           │          ▼                      │
-┌──────────────┐   │   ┌────────────────────┐        │
-│  CartItems   │   │   │SupplierPriceHistory│        │
-└──────────────┘   │   └────────────────────┘        │
-                   │                                 │
-       ┌───────────┘                                 │
-       │                                             │
-       ▼                                             ▼
-┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-│    Orders    │───────│  OrderItems  │───────│ InventoryTxn │
-└──────────────┘       └──────────────┘       └──────────────┘
-       │
-       ▼
-┌──────────────┐       ┌──────────────┐       ┌──────────────┐
-│   Payments   │       │ RevenueDaily │       │  Forecasts   │
-└──────────────┘       └──────────────┘       └──────────────┘
-```
-
-### Core Tables
-
-| Table                    | Description                                   |
-|--------------------------|-----------------------------------------------|
-| `Users`                  | User accounts with authentication credentials |
-| `Sessions`               | Active user sessions with refresh tokens      |
-| `Categories`             | Product categorization                        |
-| `Products`               | Product catalog with pricing and inventory    |
-| `Suppliers`              | Vendor information and lead times             |
-| `SupplierPriceHistories` | Historical import pricing data                |
-| `Carts`                  | User shopping carts                           |
-| `CartItems`              | Items in shopping carts                       |
-| `Orders`                 | Customer orders                               |
-| `OrderItems`             | Line items in orders                          |
-| `Payments`               | Payment transactions                          |
-| `InventoryTransactions`  | Stock movement history                        |
-| `PurchaseOrders`         | Supplier purchase orders                      |
-| `PurchaseOrderItems`     | Items in purchase orders                      |
-| `RevenueDaily`           | Daily revenue aggregations                    |
-| `DemandForecasts`        | Product demand predictions                    |
-| `PriceForecasts`         | Product price predictions                     |
-
----
-
-## 🚀 Getting Started
+## Quick Start
 
 ### Prerequisites
 
-Ensure you have the following installed on your system:
-
-| Software                 | Version      | Download                                              |
-|--------------------------|--------------|-------------------------------------------------------|
-| **Java JDK**             | 17 or higher | [Download](https://adoptium.net/)                     |
-| **Apache Maven**         | 3.8+         | [Download](https://maven.apache.org/download.cgi)     |
-| **Microsoft SQL Server** | 2019+        | [Download](https://www.microsoft.com/sql-server)      |
-| **Apache Tomcat**        | 10.1+        | [Download](https://tomcat.apache.org/download-10.cgi) |
+- Java JDK 17+
+- Apache Maven 3.8+
+- PostgreSQL 13+
+- Apache Tomcat 10.1+
 
 ### Installation
 
-1. **Clone the Repository**
+```bash
+# Clone repository
+git clone https://github.com/ldanh270/smart-pc-store.git
+cd smart-pc-store
 
-   ```bash
-   git clone https://github.com/ldanh270/smart-pc-store.git
-   cd smart-pc-store
-   ```
+# Configure database
+createdb smart_pc_store
+psql -d smart_pc_store -f plan/schema.sql
 
-2. **Install Dependencies**
+# Configure environment
+cp .env.example .env
+# Edit .env with your JWT secret and database credentials
 
-   ```bash
-   mvn clean install
-   ```
+# Build project
+mvn clean package
 
-### Configuration
+# Deploy to Tomcat
+cp target/smart-pc-store.war $TOMCAT_HOME/webapps/
 
-1. **Environment Variables**
+# Start server
+$TOMCAT_HOME/bin/startup.sh
+```
 
-   Create a `.env` file in the project root:
+### Docker Deployment
 
-   ```env
-   # Authentication
-   ACCESS_TOKEN_SECRET=your_secure_256_bit_hex_secret_key_here
+```bash
+# Using Docker Compose
+docker-compose up -d
 
-   # Optional: Override default database settings
-   # DB_URL=jdbc:sqlserver://localhost:1433;databaseName=SMART_PC_STORE
-   # DB_USER=sa
-   # DB_PASSWORD=your_password
-   ```
+# Or build and run manually
+docker build -t smart-pc-store .
+docker run -p 8080:8080 smart-pc-store
+```
 
-   > ⚠️ **Important:** Generate a secure secret key for production. Use a 256-bit (64 hex
-   > characters) random string.
+### Verify Installation
 
-2. **JPA Configuration**
+```bash
+curl http://localhost:8080/smart-pc-store/
+```
 
-   Update `src/main/resources/META-INF/persistence.xml` with your database credentials:
-
-   ```xml
-   <property name="jakarta.persistence.jdbc.url"
-             value="jdbc:sqlserver://localhost:1433;databaseName=SMART_PC_STORE;encrypt=true;trustServerCertificate=true"/>
-   <property name="jakarta.persistence.jdbc.user" value="your_username"/>
-   <property name="jakarta.persistence.jdbc.password" value="your_password"/>
-   ```
-
-### Database Setup
-
-1. **Connect to SQL Server** using your preferred client (SSMS, Azure Data Studio, etc.)
-
-2. **Execute the Schema Script**
-
-   Run the SQL script located at `plan/schema.sql` to create the database and all tables:
-
-   ```sql
-   -- This script creates the SMART_PC_STORE database and all required tables
-   -- See plan/schema.sql for the complete script
-   ```
-
-3. **(Optional) Load Sample Data**
-
-   ```sql
-   -- Execute plan/data.sql for sample data
-   ```
-
-### Build & Deploy
-
-1. **Build the WAR File**
-
-   ```bash
-   mvn clean package
-   ```
-
-   The WAR file will be generated at: `target/smart-pc-store.war`
-
-2. **Deploy to Tomcat**
-    - Copy `smart-pc-store.war` to your Tomcat's `webapps/` directory
-    - Or use your IDE's server integration
-
-3. **Access the Application**
-
-   ```
-   http://localhost:8080/smart-pc-store
-   ```
+For detailed installation instructions, see [Installation Guide](docs/INSTALLATION.md).
 
 ---
 
-## 📡 API Reference
+## Documentation
 
-### Base URL
+Comprehensive documentation is available in the `docs/` directory:
 
-```
-http://localhost:8080/smart-pc-store
-```
-
-### Authentication Endpoints
-
-| Method | Endpoint        | Description                      |
-|--------|-----------------|----------------------------------|
-| `POST` | `/auth/signup`  | Register a new user              |
-| `POST` | `/auth/login`   | Authenticate user and get tokens |
-| `POST` | `/auth/refresh` | Refresh access token (WIP)       |
-
-#### Register User
-
-```http
-POST /auth/signup
-Content-Type: application/json
-
-{
-  "username": "johndoe",
-  "password": "SecurePass123!",
-  "fullName": "John Doe",
-  "email": "john.doe@example.com"
-}
-```
-
-**Response (201 Created):**
-
-```json
-{
-  "message": "Register successfully"
-}
-```
-
-#### Login
-
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "username": "johndoe",
-  "password": "SecurePass123!"
-}
-```
-
-**Response (200 OK):**
-
-```json
-{
-  "success": true,
-  "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
-  "refreshToken": "550e8400-e29b-41d4-a716-446655440000",
-  "user": {
-    "id": 1,
-    "username": "johndoe",
-    "fullName": "John Doe",
-    "email": "john.doe@example.com",
-    "phone": null,
-    "address": null,
-    "status": "active"
-  }
-}
-```
-
-### Error Responses
-
-| Status Code | Description                                |
-|-------------|--------------------------------------------|
-| `400`       | Bad Request - Invalid input or JSON format |
-| `401`       | Unauthorized - Invalid credentials         |
-| `404`       | Not Found - Endpoint not found             |
-| `409`       | Conflict - User already exists             |
-| `500`       | Internal Server Error                      |
+- **[Installation Guide](docs/INSTALLATION.md)** - Detailed setup instructions for development and production
+- **[API Documentation](docs/API_DOCUMENTATION.md)** - Complete REST API reference with examples
+- **[Architecture Guide](docs/ARCHITECTURE.md)** - System architecture, design patterns, and best practices
+- **[Database Schema](docs/DATABASE.md)** - Database design, relationships, and migrations
+- **[Security Guide](docs/SECURITY.md)** - Security measures, authentication, and best practices
+- **[Contributing Guide](docs/CONTRIBUTING.md)** - Guidelines for contributing to the project
 
 ---
 
-## 🔐 Security
+## Architecture
 
-### Authentication Flow
+The system follows **N-Tier Architecture** with clear separation of concerns:
 
 ```
-┌────────────┐     ┌─────────────┐     ┌──────────────┐
-│   Client   │────►│   Server    │────►│   Database   │
-└────────────┘     └─────────────┘     └──────────────┘
-      │                   │                    │
-      │  1. POST /login   │                    │
-      │───────────────────►                    │
-      │                   │  2. Validate user  │
-      │                   │────────────────────►
-      │                   │                    │
-      │                   │◄────────────────────
-      │                   │  3. Create tokens  │
-      │                   │                    │
-      │◄───────────────────                    │
-      │  4. Return tokens │                    │
-      │                   │                    │
-      │  5. API Request   │                    │
-      │  + Bearer Token   │                    │
-      │───────────────────►                    │
-      │                   │  6. Validate JWT   │
-      │                   │────────────────────►
-      │                   │                    │
-      │◄───────────────────                    │
-      │  7. Response      │                    │
+Client Layer (React/Angular/Mobile)
+         ↓
+Presentation Layer (Servlets, Controllers, Filters)
+         ↓
+Business Logic Layer (Services, DTOs)
+         ↓
+Data Access Layer (DAOs, GenericDao)
+         ↓
+Persistence Layer (JPA/Hibernate, Entities)
+         ↓
+Database Layer (PostgreSQL)
 ```
 
-### Security Features
+### Design Patterns
 
-- **Password Hashing** — BCrypt with automatic salt generation
-- **JWT Tokens** — HS256 signed access tokens with configurable expiration
-- **Refresh Tokens** — UUID-based tokens stored in database with expiration
-- **Input Validation** — Server-side validation for all user inputs
-- **SQL Injection Prevention** — JPA/Hibernate parameterized queries
+- **MVC Pattern**: Model-View-Controller for request handling
+- **DAO Pattern**: Generic data access with reusable CRUD operations
+- **DTO Pattern**: Data transfer objects for API versioning and security
+- **Singleton Pattern**: EntityManagerFactory management
+- **Factory Pattern**: Object creation encapsulation
+- **Filter Chain Pattern**: Cross-cutting concerns (CORS, Auth, RBAC)
+- **Service Layer Pattern**: Business logic and transaction management
+
+For detailed architecture information, see [Architecture Guide](docs/ARCHITECTURE.md).
+
+---
+
+## Project Structure
+
+```
+smart-pc-store/
+├── docs/                          # Documentation
+│   ├── INSTALLATION.md
+│   ├── API_DOCUMENTATION.md
+│   ├── ARCHITECTURE.md
+│   ├── DATABASE.md
+│   ├── SECURITY.md
+│   └── CONTRIBUTING.md
+├── plan/                          # Database schema and planning
+│   ├── schema.sql
+│   └── data.sql
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   ├── configs/          # Configuration classes
+│   │   │   ├── controllers/      # Request handlers
+│   │   │   ├── crawler/          # Web crawler for data collection
+│   │   │   ├── dao/              # Data access objects
+│   │   │   ├── dto/              # Data transfer objects
+│   │   │   ├── entities/         # JPA entities
+│   │   │   ├── filters/          # Servlet filters
+│   │   │   ├── listeners/        # Application listeners
+│   │   │   ├── services/         # Business logic
+│   │   │   ├── servlets/         # HTTP endpoints
+│   │   │   └── utils/            # Utility classes
+│   │   ├── resources/
+│   │   │   └── META-INF/
+│   │   │       └── persistence.xml
+│   │   └── webapp/
+│   │       └── WEB-INF/
+│   └── test/                     # Unit and integration tests
+├── Dockerfile
+├── docker-compose.yml
+├── pom.xml
+└── README.md
+```
+
+---
+
+## API Endpoints
+
+### Authentication
+- `POST /auth/signup` - Register new user
+- `POST /auth/login` - User login
+- `POST /auth/refresh` - Refresh access token
+- `POST /auth/logout` - User logout
+
+### Products
+- `GET /products` - List products (with pagination, search, filters)
+- `GET /products/{id}` - Get product details
+- `POST /products` - Create product (Admin/Staff)
+- `PUT /products/{id}` - Update product (Admin/Staff)
+- `DELETE /products/{id}` - Delete product (Admin)
+
+### Shopping Cart
+- `GET /cart` - View cart
+- `POST /cart/add` - Add item to cart
+- `PUT /cart/items/{id}` - Update cart item quantity
+- `DELETE /cart/items/{id}` - Remove item from cart
+- `DELETE /cart/clear` - Clear cart
+
+### Orders
+- `POST /orders/checkout` - Create order from cart
+- `GET /orders/my-orders` - Get user's orders
+- `GET /orders/{id}` - Get order details
+- `PUT /orders/{id}/status` - Update order status (Admin/Staff)
+- `PUT /orders/{id}/cancel` - Cancel order
+
+### Categories
+- `GET /categories` - List all categories
+- `POST /categories` - Create category (Admin)
+
+### Suppliers
+- `GET /suppliers` - List suppliers (Admin/Staff)
+- `POST /suppliers` - Create supplier (Admin)
+
+### Purchase Orders
+- `POST /purchase-orders` - Create purchase order (Admin/Staff)
+- `GET /purchase-orders` - List purchase orders (Admin/Staff)
+
+For complete API documentation with request/response examples, see [API Documentation](docs/API_DOCUMENTATION.md).
+
+---
+
+## Security
+
+### Authentication
+- JWT-based authentication with HS256 algorithm
+- Dual-token approach: Access Token (15 min) + Refresh Token (7 days)
+- Automatic token rotation to prevent reuse attacks
+- HTTP-only cookies for refresh tokens
+
+### Authorization
+- Role-Based Access Control (RBAC)
+- Three roles: ADMIN, STAFF, CUSTOMER
+- Endpoint-level permission checks
+- Resource ownership validation
+
+### Data Protection
+- BCrypt password hashing with work factor 12
+- SQL injection prevention via JPA parameterized queries
+- Input validation on all endpoints
+- XSS prevention through output encoding
+- CORS configuration for trusted origins
 
 ### Best Practices
+- HTTPS enforcement (production)
+- Security headers (HSTS, CSP, X-Frame-Options)
+- Session management with automatic cleanup
+- Comprehensive security logging
+- Regular dependency vulnerability scanning
 
-- Store `ACCESS_TOKEN_SECRET` securely (environment variable)
-- Use HTTPS in production
-- Rotate refresh tokens on each use
-- Set appropriate CORS policies
-- Implement rate limiting for authentication endpoints
+For detailed security information, see [Security Guide](docs/SECURITY.md).
 
 ---
 
-## 🧪 Testing
-
-### Running Tests
+## Testing
 
 ```bash
 # Run all tests
-mvn test
+mvn clean test
 
-# Run specific test class
-mvn test -Dtest=AuthServiceTest
+# Run tests with coverage
+mvn clean test jacoco:report
 
-# Generate test coverage report
-mvn test jacoco:report
+# View coverage report
+open target/site/jacoco/index.html
+
+# Build without tests
+mvn clean package -DskipTests
 ```
 
 ### Test Structure
 
-```
-src/test/
-├── java/
-│   ├── dao/
-│   │   └── UserDaoTest.java
-│   ├── services/
-│   │   └── AuthServiceTest.java
-│   └── utils/
-│       └── JwtUtilTest.java
-```
+- **Unit Tests**: Service and DAO layer testing
+- **Integration Tests**: Database integration testing
+- **API Tests**: HTTP endpoint testing (Postman/cURL)
+- **Coverage Goal**: 80%+ for critical business logic
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Please follow these steps:
+We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.md) for details on:
 
-1. **Fork the Repository**
+- Code of Conduct
+- Development workflow
+- Coding standards
+- Commit message conventions
+- Pull request process
+- Testing requirements
 
-2. **Create a Feature Branch**
+### Quick Contribution Steps
 
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-
-3. **Commit Your Changes**
-
-   ```bash
-   git commit -m 'Add amazing feature'
-   ```
-
-4. **Push to the Branch**
-
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-
-5. **Open a Pull Request**
-
-### Code Style Guidelines
-
-- Follow Java naming conventions
-- Write meaningful commit messages
-- Include JavaDoc for public methods
-- Write unit tests for new features
-- Keep methods focused and small
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Make your changes and add tests
+4. Commit using conventional commits (`git commit -m "feat: add feature"`)
+5. Push to your fork (`git push origin feature/your-feature`)
+6. Open a Pull Request
 
 ---
 
-## 📄 License
+## License
 
-This project is developed for **educational purposes**. All rights reserved.
+This project is created for **educational and portfolio purposes**.
 
----
+### Usage Terms
 
-## 👥 Team
+**Allowed:**
+- Study and learn from the code
+- Use for personal/educational projects
+- Fork for your own development
 
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/ldanh270">
-        <img src="https://github.com/ldanh270.png" width="100px;" alt="ldanh270"/><br />
-        <sub><b>ldanh270</b></sub>
-      </a><br />
-      <sub>Developer</sub>
-    </td>
-  </tr>
-</table>
+**Not Allowed:**
+- Commercial use without permission
+- Redistribute as your own work
+- Remove copyright notices
 
 ---
 
-<p align="center">
-  <b>⭐ If you find this project useful, please give it a star! ⭐</b>
-</p>
+## Authors
 
-<p align="center">
-  Made with ❤️ using Java & Jakarta EE
-</p>
+**Lê Đức Anh**
+- Role: Lead Developer, Project Manager, Code Reviewer
+- Email: ducanhle.dn@gmail.com
+- GitHub: [@ldanh270](https://github.com/ldanh270)
+
+**Dương Duy Vinh**
+- Role: AI Engineer, Co-Developer
+- Email: ducanhle.dn@gmail.com
+- GitHub: [@cybervinh2077](https://github.com/cybervinh2077)
+
+**Tạ Thị Bích Loan**
+- Role: Designer, Co-Developer
+- Email: ducanhle.dn@gmail.com
+- GitHub: [@bloan-7105](https://github.com/bloan-7105)
+
+**Nguyễn Ánh Tuyết**
+- Role: Database Administrator, Co-Developer
+- Email: ducanhle.dn@gmail.com
+- GitHub: [@Nguyen-Anh-Tuyet](https://github.com/Nguyen-Anh-Tuyet)
+---
+
+## Acknowledgments
+
+Built with:
+- [Jakarta EE](https://jakarta.ee/) - Enterprise Java platform
+- [Hibernate ORM](https://hibernate.org/) - Object-relational mapping
+- [PostgreSQL](https://www.postgresql.org/) - Open source database
+- [Apache Tomcat](https://tomcat.apache.org/) - Servlet container
+- [Maven](https://maven.apache.org/) - Build automation
+
+---
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/ldanh270/smart-pc-store/issues)
+- **Documentation**: See `docs/` directory
+- **Email**: [Contact via GitHub]
+
+---
+
+<div align="center">
+
+**If this project helped you, please give it a star ⭐**
+
+Made with Java, Jakarta EE, Hibernate & PostgreSQL
+
+© 2026 Smart PC Store. All rights reserved.
+
+</div>

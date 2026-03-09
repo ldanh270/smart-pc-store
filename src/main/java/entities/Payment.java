@@ -2,39 +2,40 @@ package entities;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.Nationalized;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Payments")
+@Table(name = "\"Payments\"")
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OrderId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "\"orderId\"")
     private Order order;
 
-    @Nationalized
-    @Column(name = "PaymentMethod")
+    @Column(name = "\"paymentMethod\"", length = Integer.MAX_VALUE)
     private String paymentMethod;
 
-    @Nationalized
-    @Column(name = "PaymentStatus")
+    @Column(name = "\"paymentStatus\"", length = Integer.MAX_VALUE)
     private String paymentStatus;
 
-    @ColumnDefault("getdate()")
-    @Column(name = "PaymentDate")
-    private Instant paymentDate;
+    @ColumnDefault("now()")
+    @Column(name = "\"paymentDate\"")
+    private OffsetDateTime paymentDate;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -62,11 +63,11 @@ public class Payment {
         this.paymentStatus = paymentStatus;
     }
 
-    public Instant getPaymentDate() {
+    public OffsetDateTime getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Instant paymentDate) {
+    public void setPaymentDate(OffsetDateTime paymentDate) {
         this.paymentDate = paymentDate;
     }
 

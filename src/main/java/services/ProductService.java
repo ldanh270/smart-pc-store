@@ -1,22 +1,18 @@
 package services;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
 import dao.JPAUtil;
 import dao.ProductDao;
 import dto.product.ProductRequestDto;
 import dto.product.ProductResponseDto;
-// import dao.SupplierDao;
-// import dao.CategoryDao;
 import entities.Product;
-// import entities.Supplier;
-// import entities.Category;
-import jakarta.persistence.EntityManager;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 /**
- * Service class for handling product management operations.
- * Manages CRUD operations, search/filter, stock adjustments, and DTO conversions.
+ * Service class for handling product management operations. Manages CRUD
+ * operations, search/filter, stock adjustments, and DTO conversions.
  */
 public class ProductService {
 
@@ -41,45 +37,74 @@ public class ProductService {
      * @param id The product ID.
      * @return The product if found, otherwise null.
      */
-    public Product getById(Integer id) {
+    public Product getById(UUID id) {
         return productDao.findById(id);
     }
 
     /**
-     * Create a new product with validation.
-     * Validates product name, price, quantity, and references (supplier, category).
+     * Create a new product with validation. Validates product name, price,
+     * quantity, and references (supplier, category).
      *
      * @param dto The product request DTO containing product details.
      * @return The created product entity.
-     * @throws IllegalArgumentException if validation fails or references are invalid.
+     * @throws IllegalArgumentException if validation fails or references are
+     *                                  invalid.
      */
     public Product create(ProductRequestDto dto) {
 
-        if (dto.productName == null || dto.productName.isBlank()) throw new IllegalArgumentException(
-                "Product name is required");
+        if (dto.productName == null || dto.productName.isBlank()) {
+            throw new IllegalArgumentException("Product name is required");
+        }
 
-        if (dto.currentPrice == null || dto.currentPrice.compareTo(BigDecimal.ZERO) <= 0)
+        if (productDao.existsByName(dto.productName)) {
+            throw new IllegalArgumentException("Product name already exists");
+        }
+
+        if (dto.currentPrice == null) {
+            throw new IllegalArgumentException("Current price is required");
+        }
+
+        if (dto.currentPrice.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Price must be greater than 0");
+        }
 
-        if (dto.quantity == null || dto.quantity < 0) throw new IllegalArgumentException("Quantity must be >= 0");
+        if (dto.quantity == null) {
+            throw new IllegalArgumentException("Quantity is required");
+        }
 
-        if (dto.supplierId == null) throw new IllegalArgumentException("Supplier is required");
+        if (dto.quantity < 0) {
+            throw new IllegalArgumentException("Quantity must be >= 0");
+        }
 
-        if (dto.categoryId == null) throw new IllegalArgumentException("Category is required");
+        if (dto.supplierId == null) {
+            throw new IllegalArgumentException("Supplier is required");
+        }
+
+        if (dto.categoryId == null) {
+            throw new IllegalArgumentException("Category is required");
+        }
 
         var supplier = JPAUtil.getEntityManager().find(entities.Supplier.class, dto.supplierId);
-        if (supplier == null) throw new IllegalArgumentException("Supplier not found");
+        if (supplier == null) {
+            throw new IllegalArgumentException("Supplier not found");
+        }
 
         var category = JPAUtil.getEntityManager().find(entities.Category.class, dto.categoryId);
-        if (category == null) throw new IllegalArgumentException("Category not found");
+        if (category == null) {
+            throw new IllegalArgumentException("Category not found");
+        }
 
         Product product = new Product();
         product.setProductName(dto.productName);
         product.setDescription(dto.description);
-        if (dto.imageUrl != null) product.setImageUrl(dto.imageUrl);
+        if (dto.imageUrl != null) {
+            product.setImageUrl(dto.imageUrl);
+        }
         product.setCurrentPrice(dto.currentPrice);
         product.setQuantity(dto.quantity);
-        if (dto.status != null) product.setStatus(dto.status);
+        if (dto.status != null) {
+            product.setStatus(dto.status);
+        }
         product.setSupplier(supplier);
         product.setCategory(category);
 
@@ -106,10 +131,15 @@ public class ProductService {
 
         dto.status = p.getStatus();
         // Determine stock status based on quantity
-        int qty = p.getQuantity() == null ? 0 : p.getQuantity();
-        if (qty <= 0) dto.stockStatus = "Out of stock";
-        else if (qty <= 5) dto.stockStatus = "Low stock";
-        else dto.stockStatus = "In stock";
+        Integer productQty = p.getQuantity();
+        int qty = productQty == null ? 0 : productQty;
+        if (qty <= 0) {
+            dto.stockStatus = "Out of stock";
+        } else if (qty <= 5) {
+            dto.stockStatus = "Low stock";
+        } else {
+            dto.stockStatus = "In stock";
+        }
 
         dto.supplierId = p.getSupplier().getId();
         dto.supplierName = p.getSupplier().getSupplierName();
@@ -143,7 +173,7 @@ public class ProductService {
      * @return A list of filtered ProductResponseDto objects.
      */
     public List<ProductResponseDto> searchWithFilters(
-            Integer categoryId,
+            UUID categoryId,
             Boolean status,
             java.math.BigDecimal minPrice,
             java.math.BigDecimal maxPrice,
@@ -170,19 +200,20 @@ public class ProductService {
      * @param id The product ID.
      * @return The ProductResponseDto if found, otherwise null.
      */
-    public ProductResponseDto getByIdDto(Integer id) {
+    public ProductResponseDto getByIdDto(UUID id) {
         Product p = getById(id);
         return p == null ? null : toDto(p);
     }
 
     /**
-     * Update an existing product with field-level validation.
-     * Only updates allowed fields (name, description, image, price, quantity, status).
-     * Does not modify supplier or category references.
+     * Update an existing product with field-level validation. Only updates
+     * allowed fields (name, description, image, price, quantity, status). Does
+     * not modify supplier or category references.
      *
      * @param product The product entity with updates.
      * @return The updated product entity.
-     * @throws IllegalArgumentException if product not found or validation fails.
+     * @throws IllegalArgumentException if product not found or validation
+     *                                  fails.
      */
     public Product update(Product product) {
         if (product == null || product.getId() == null) {
@@ -195,25 +226,36 @@ public class ProductService {
         }
         // Merge allowed fields only (do not change supplier/category here)
         if (product.getProductName() != null) {
-            if (product.getProductName().isBlank()) throw new IllegalArgumentException("Product name is required");
+            if (product.getProductName().isBlank()) {
+                throw new IllegalArgumentException("Product name is required");
+            }
             existing.setProductName(product.getProductName());
         }
 
-        if (product.getDescription() != null) existing.setDescription(product.getDescription());
-        if (product.getImageUrl() != null) existing.setImageUrl(product.getImageUrl());
+        if (product.getDescription() != null) {
+            existing.setDescription(product.getDescription());
+        }
+        if (product.getImageUrl() != null) {
+            existing.setImageUrl(product.getImageUrl());
+        }
 
         if (product.getCurrentPrice() != null) {
-            if (product.getCurrentPrice().compareTo(java.math.BigDecimal.ZERO) <= 0) throw new IllegalArgumentException(
-                    "Price must be greater than 0");
+            if (product.getCurrentPrice().compareTo(java.math.BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Price must be greater than 0");
+            }
             existing.setCurrentPrice(product.getCurrentPrice());
         }
 
         if (product.getQuantity() != null) {
-            if (product.getQuantity() < 0) throw new IllegalArgumentException("Quantity must be >= 0");
+            if (product.getQuantity() < 0) {
+                throw new IllegalArgumentException("Quantity must be >= 0");
+            }
             existing.setQuantity(product.getQuantity());
         }
 
-        if (product.getStatus() != null) existing.setStatus(product.getStatus());
+        if (product.getStatus() != null) {
+            existing.setStatus(product.getStatus());
+        }
 
         try {
             JPAUtil.getEntityManager().getTransaction().begin();
@@ -222,6 +264,7 @@ public class ProductService {
             return merged;
         } catch (Exception e) {
             JPAUtil.getEntityManager().getTransaction().rollback();
+            System.err.println("ERROR ProductService - update: " + e.getMessage());
             throw e;
         }
     }
@@ -232,15 +275,19 @@ public class ProductService {
      * @param id The product ID.
      * @throws IllegalArgumentException if product ID is null.
      */
-    public void delete(Integer id) {
-        if (id == null) throw new IllegalArgumentException("Product id is required");
+    public void delete(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("Product id is required");
+        }
 
         Product existing = productDao.findById(id);
-        if (existing == null) throw new IllegalArgumentException("Product not found");
+        if (existing == null) {
+            throw new IllegalArgumentException("Product not found");
+        }
 
         try {
             JPAUtil.getEntityManager().getTransaction().begin();
-            existing.setStatus(false); // SOFT DELETE
+            existing.setStatus(false);
             productDao.update(existing);
             JPAUtil.getEntityManager().getTransaction().commit();
         } catch (Exception e) {
@@ -252,22 +299,30 @@ public class ProductService {
     }
 
     /**
-     * Adjust product stock by a delta quantity (positive to increase, negative to decrease).
-     * Validates that resulting quantity is not negative.
+     * Adjust product stock by a delta quantity (positive to increase, negative
+     * to decrease). Validates that resulting quantity is not negative.
      *
      * @param id    The product ID.
      * @param delta The quantity change (can be positive or negative).
      * @return The updated ProductResponseDto with new stock status.
-     * @throws IllegalArgumentException if product not found, resulting quantity is negative, or ID is null.
+     * @throws IllegalArgumentException if product not found, resulting quantity
+     *                                  is negative, or ID is null.
      */
     public ProductResponseDto adjustStock(Integer id, int delta) {
-        if (id == null) throw new IllegalArgumentException("Product id is required");
+        if (id == null) {
+            throw new IllegalArgumentException("Product id is required");
+        }
         Product existing = productDao.findById(id);
-        if (existing == null) throw new IllegalArgumentException("Product not found");
+        if (existing == null) {
+            throw new IllegalArgumentException("Product not found");
+        }
 
-        int current = existing.getQuantity() == null ? 0 : existing.getQuantity();
+        Integer existingQty = existing.getQuantity();
+        int current = existingQty == null ? 0 : existingQty;
         int updated = current + delta;
-        if (updated < 0) throw new IllegalArgumentException("Resulting quantity cannot be negative");
+        if (updated < 0) {
+            throw new IllegalArgumentException("Resulting quantity cannot be negative");
+        }
 
         existing.setQuantity(updated);
 

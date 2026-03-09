@@ -1,17 +1,16 @@
 package dao;
 
+import java.util.List;
+
 import entities.Cart;
 import entities.CartItem;
 import entities.Product;
-import jakarta.persistence.EntityManager;
-
-import java.util.List;
 
 /**
- * CartItemDao
- * - Provides DB queries specific to CartItem entity
+ * CartItemDao - Provides DB queries specific to CartItem entity
  */
 public class CartItemDao extends GenericDao<CartItem> {
+
     public CartItemDao() {
         super(CartItem.class);
     }
@@ -35,13 +34,16 @@ public class CartItemDao extends GenericDao<CartItem> {
     }
 
     /**
-     * Get all cart items by cart and fetch product eagerly.
-     * Using JOIN FETCH avoids LazyInitializationException outside transaction.
+     * Get all cart items by cart and fetch product eagerly. Using JOIN FETCH
+     * avoids LazyInitializationException outside transaction.
      */
     public List<CartItem> findByCartWithProduct(Cart cart) {
         return getEntityManager().createQuery(
                 "SELECT ci FROM CartItem ci JOIN FETCH ci.product WHERE ci.cart = :cart",
                 CartItem.class
-        ).setParameter("cart", cart).getResultList();
+        ).setParameter(
+                "cart",
+                cart
+        ).getResultList();
     }
 }

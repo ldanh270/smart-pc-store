@@ -2,7 +2,6 @@ package dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import utils.JwtUtil;
 
 import java.util.List;
 
@@ -24,9 +23,9 @@ public class GenericDao<T> {
     }
 
     /**
-     * Get the EntityManager
+     * Get the current thread-bound EntityManager from JPAUtil.
      *
-     * @return the entity manager
+     * @return active entity manager
      */
     public EntityManager getEntityManager() {
         return JPAUtil.getEntityManager();
@@ -41,7 +40,6 @@ public class GenericDao<T> {
     public T findById(Object id) {
         return getEntityManager().find(entityClass, id);
     }
-
 
     /**
      * Find all entities

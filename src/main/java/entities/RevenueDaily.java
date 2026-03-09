@@ -9,16 +9,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "RevenueDaily")
+@Table(name = "\"RevenueDaily\"")
 public class RevenueDaily {
     @Id
-    @Column(name = "RevenueDate", nullable = false)
+    @Column(name = "\"revenueDate\"", nullable = false)
     private LocalDate id;
 
-    @Column(name = "TotalRevenue", precision = 18, scale = 2)
+    @Column(name = "\"totalRevenue\"", precision = 18, scale = 2)
     private BigDecimal totalRevenue;
 
-    @Column(name = "TotalOrders")
+    @Column(name = "\"totalOrders\"")
     private Integer totalOrders;
 
     public LocalDate getId() {

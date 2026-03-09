@@ -1,8 +1,13 @@
 package controllers;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Stream;
+
 import com.google.gson.JsonSyntaxException;
-import dto.auth.login.LoginResponseDto;
+
 import dto.auth.login.LoginRequestDto;
+import dto.auth.login.LoginResponseDto;
 import dto.auth.refresh.AccessTokenResponseDto;
 import dto.auth.signup.SignupRequestDto;
 import dto.auth.signup.SignupResponseDto;
@@ -11,19 +16,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.AuthService;
 import utils.CookieUtil;
-import utils.HttpUtil;
-import utils.validate.AuthValidate;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Stream;
 
 import static utils.CookieUtil.createNewCookie;
+
+import utils.HttpUtil;
+import utils.validate.AuthValidate;
 
 /**
  * Controller class for handling authentication-related HTTP requests.
  */
 public class AuthController {
+
     private final AuthService authService;
 
     public AuthController(AuthService authService) {
@@ -97,6 +100,8 @@ public class AuthController {
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        } catch (IOException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 
@@ -138,6 +143,8 @@ public class AuthController {
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        } catch (IOException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 
@@ -162,6 +169,8 @@ public class AuthController {
         } catch (JsonSyntaxException e) {
             // Handle syntax errors in JSON (missing commas, brackets, etc.)
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON format");
+        } catch (IOException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
 }

@@ -1,57 +1,43 @@
 package entities;
 
-import org.hibernate.annotations.Nationalized;
+import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Categories")
+@Table(name = "\"Categories\"")
 public class Category {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
-    @Nationalized
-    @Column(name = "CategoryName")
+    @Column(name = "\"categoryName\"", length = Integer.MAX_VALUE)
     private String categoryName;
 
-    @Nationalized
-    @Column(name = "Description")
+    @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-    @Column(name = "ImageUrl")
+    @Column(name = "\"imageUrl\"", length = Integer.MAX_VALUE)
     private String imageUrl;
 
-    @Column(name = "Status", nullable = false)
-    private Boolean status = true;
-    @Column(name = "ParentId")
-    private Integer parentId;
+    @ColumnDefault("true")
+    @Column(name = "status", nullable = false)
+    private Boolean status;
 
-    @OneToMany(mappedBy = "category")
-    private List<Product> products;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "\"parentId\"")
+    private Category parent;
 
-    @PrePersist
-    public void prePersist() {
-        if (status == null) {
-            status = true;
-        }
-    }
-
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -87,19 +73,12 @@ public class Category {
         this.status = status;
     }
 
-    public Integer getParentId() {
-        return parentId;
+    public Category getParent() {
+        return parent;
     }
 
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
+    public void setParent(Category parent) {
+        this.parent = parent;
     }
 
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
 }

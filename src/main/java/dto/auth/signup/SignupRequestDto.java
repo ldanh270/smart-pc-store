@@ -4,6 +4,7 @@ package dto.auth.signup;
  * Data Transfer Object for user registration.
  */
 public class SignupRequestDto {
+
     private String username;
     private String password;
     private String displayName;

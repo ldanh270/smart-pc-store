@@ -4,6 +4,7 @@ package dto.auth.refresh;
  * Data Transfer Object for Access Token Response.
  */
 public class AccessTokenResponseDto {
+
     private boolean success;
     private String accessToken;
     private String message;

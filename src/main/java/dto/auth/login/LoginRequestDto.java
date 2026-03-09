@@ -4,6 +4,7 @@ package dto.auth.login;
  * Data Transfer Object for user login credentials.
  */
 public class LoginRequestDto {
+
     private String username;
     private String password;
 

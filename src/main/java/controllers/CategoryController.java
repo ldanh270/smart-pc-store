@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import dto.ApiResponse;
 import dto.category.CategoryRequestDto;
@@ -42,7 +43,7 @@ public class CategoryController {
      */
     public void handleGetById(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.parseInt(idStr);
+            UUID id = UUID.fromString(idStr);
             CategoryResponseDto category = categoryService.getByIdDto(id);
 
             if (category == null) {
@@ -96,7 +97,7 @@ public class CategoryController {
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                new ApiResponse<>(false, "Internal server error", e.getMessage())
+                    new ApiResponse<>(false, "Internal server error", e.getMessage())
             );
         }
     }
@@ -106,22 +107,12 @@ public class CategoryController {
      */
     public void handleUpdate(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.parseInt(idStr);
+            UUID id = UUID.fromString(idStr);
             CategoryRequestDto dto = HttpUtil.jsonToClass(req.getReader(), CategoryRequestDto.class);
 
             var updated = categoryService.update(id, dto);
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_OK,
-                    new ApiResponse<>(true, "Category updated successfully", categoryService.toDto(updated))
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Category updated successfully");
 
-        } catch (NumberFormatException e) {
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    new ApiResponse<>(false, "Invalid category id", null)
-            );
         } catch (IllegalArgumentException e) {
             int status = "Category not found".equals(e.getMessage()) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
             HttpUtil.sendJson(resp, status, new ApiResponse<>(false, e.getMessage(), null));
@@ -139,22 +130,14 @@ public class CategoryController {
      */
     public void handleDelete(HttpServletRequest req, HttpServletResponse resp, String idStr) throws IOException {
         try {
-            Integer id = Integer.parseInt(idStr);
+            UUID id = UUID.fromString(idStr);
             categoryService.delete(id);
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_OK,
-                    new ApiResponse<>(true, "Category deleted successfully", null)
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Category deleted successfully");
         } catch (NumberFormatException e) {
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    new ApiResponse<>(false, "Invalid category id", null)
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid category id");
         } catch (IllegalArgumentException e) {
             int status = "Category not found".equals(e.getMessage()) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
-            HttpUtil.sendJson(resp, status, new ApiResponse<>(false, e.getMessage(), null));
+            HttpUtil.sendJson(resp, status, e.getMessage());
         } catch (Exception e) {
             HttpUtil.sendJson(
                     resp,

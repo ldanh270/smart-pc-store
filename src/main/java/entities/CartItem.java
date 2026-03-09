@@ -1,48 +1,37 @@
 package entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-/**
- * CartItem entity
- *
- * Table: CartItems
- * - Represents one product line in a cart
- * - Quantity is the number of units of the product in cart
- */
+import java.util.UUID;
+
 @Entity
-@Table(name = "CartItems")
+@Table(name = "\"CartItems\"")
 public class CartItem {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
-    /**
-     * Owning cart of this item.
-     */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CartId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "\"cartId\"")
     private Cart cart;
 
-    /**
-     * Product being added into cart.
-     */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "\"productId\"")
     private Product product;
 
-    /**
-     * Quantity of this product in the cart.
-     */
-    @Column(name = "Quantity")
+    @Column(name = "quantity")
     private Integer quantity;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -69,4 +58,5 @@ public class CartItem {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
 }

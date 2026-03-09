@@ -1,0 +1,171 @@
+package services;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import dao.JPAUtil;
+import dao.SupplierDao;
+import dto.supplier.SupplierRequestDto;
+import dto.supplier.SupplierResponseDto;
+import entities.Supplier;
+
+/**
+ * Service class for supplier management. Handles supplier CRUD operations,
+ * validation, and DTO mapping.
+ */
+public class SupplierService {
+
+    private final SupplierDao supplierDao;
+
+    /**
+     * Constructor.
+     *
+     * @param supplierDao Supplier DAO.
+     */
+    public SupplierService(SupplierDao supplierDao) {
+        this.supplierDao = supplierDao;
+    }
+
+    /**
+     * Retrieve suppliers as DTO list with optional name filter.
+     *
+     * @param q Optional keyword filter.
+     * @return Supplier DTO list.
+     */
+    public List<SupplierResponseDto> getAllDtos(String q) {
+        List<Supplier> suppliers;
+        if (q == null || q.isBlank()) {
+            suppliers = supplierDao.findAllActive();
+        } else {
+            suppliers = supplierDao.searchByName(q);
+        }
+        return suppliers.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve supplier by id as DTO.
+     *
+     * @param id Supplier ID.
+     * @return Supplier DTO or null if not found.
+     */
+    public SupplierResponseDto getByIdDto(UUID id) {
+        Supplier supplier = supplierDao.findById(id);
+        return supplier == null ? null : toDto(supplier);
+    }
+
+    /**
+     * Create a supplier after validating request data.
+     *
+     * @param dto Supplier creation request.
+     * @return Created supplier DTO.
+     */
+    public SupplierResponseDto create(SupplierRequestDto dto) {
+        validate(dto);
+        Supplier supplier = new Supplier();
+        apply(dto, supplier);
+
+        try {
+            JPAUtil.getEntityManager().getTransaction().begin();
+            supplierDao.create(supplier);
+            JPAUtil.getEntityManager().getTransaction().commit();
+            return toDto(supplier);
+        } catch (Exception e) {
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Update supplier information by id.
+     *
+     * @param id  Supplier ID.
+     * @param dto Supplier update request.
+     * @return Updated supplier DTO.
+     */
+    public SupplierResponseDto update(UUID id, SupplierRequestDto dto) {
+        validate(dto);
+        Supplier existing = supplierDao.findById(id);
+        if (existing == null) {
+            throw new IllegalArgumentException("Supplier not found");
+        }
+        apply(dto, existing);
+
+        try {
+            JPAUtil.getEntityManager().getTransaction().begin();
+            Supplier merged = supplierDao.update(existing);
+            JPAUtil.getEntityManager().getTransaction().commit();
+            return toDto(merged);
+        } catch (Exception e) {
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Soft-delete a supplier by setting status to false.
+     *
+     * @param id Supplier ID.
+     */
+    public void delete(UUID id) {
+        Supplier existing = supplierDao.findById(id);
+        if (existing == null) {
+            throw new IllegalArgumentException("Supplier not found");
+        }
+
+        try {
+            JPAUtil.getEntityManager().getTransaction().begin();
+            existing.setStatus(false);
+            supplierDao.update(existing);
+            JPAUtil.getEntityManager().getTransaction().commit();
+        } catch (Exception e) {
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Convert Supplier entity to SupplierResponseDto.
+     *
+     * @param supplier Supplier entity.
+     * @return Mapped DTO object.
+     */
+    public SupplierResponseDto toDto(Supplier supplier) {
+        SupplierResponseDto dto = new SupplierResponseDto();
+        dto.id = supplier.getId();
+        dto.supplierName = supplier.getSupplierName();
+        dto.contactInfo = supplier.getContactInfo();
+        dto.componentTypes = supplier.getComponentTypes();
+        dto.leadTimeDays = supplier.getLeadTimeDays();
+        dto.status = supplier.getStatus();
+        return dto;
+    }
+
+    private void apply(SupplierRequestDto dto, Supplier supplier) {
+        supplier.setSupplierName(dto.supplierName);
+        supplier.setContactInfo(dto.contactInfo);
+        supplier.setComponentTypes(dto.componentTypes);
+        supplier.setLeadTimeDays(dto.leadTimeDays);
+        if (dto.status != null) {
+            supplier.setStatus(dto.status);
+        }
+    }
+
+    private void validate(SupplierRequestDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Request body is required");
+        }
+        if (dto.supplierName == null || dto.supplierName.isBlank()) {
+            throw new IllegalArgumentException("Supplier name is required");
+        }
+        if (dto.leadTimeDays == null || dto.leadTimeDays < 0) {
+            throw new IllegalArgumentException("Lead time must be >= 0");
+        }
+    }
+}

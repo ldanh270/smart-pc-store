@@ -1,12 +1,15 @@
 package filters;
 
-import jakarta.servlet.*;
+import java.io.IOException;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import utils.HttpUtil;
-
-import java.io.IOException;
 
 /**
  * Filter to handle Cross-Origin Resource Sharing (CORS) for the application.
@@ -15,14 +18,26 @@ import java.io.IOException;
 @WebFilter(filterName = "CorsFilter", urlPatterns = "/*")
 public class CorsFilter implements Filter {
 
+    // List of allowed origins for CORS requests. You can modify this list to include your frontend domains.
+    private static final java.util.List<String> ALLOWED_ORIGINS = java.util.Arrays.asList(
+            "http://localhost:3000",
+            "https://smartpcstore.vercel.app",
+            "http://smartpcstore.id.vn",
+            "https://smartglass.id.vn/"
+    );
+
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        String origin = req.getHeader("Origin");
+
+        if (origin != null && ALLOWED_ORIGINS.contains(origin)) {
+            res.setHeader("Access-Control-Allow-Origin", origin);
+        }
+
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
         res.setHeader("Access-Control-Max-Age", "3600");
@@ -35,7 +50,7 @@ public class CorsFilter implements Filter {
 
         try {
             chain.doFilter(request, response);
-        } catch (Exception e) {
+        } catch (ServletException | IOException e) {
             System.err.println("ERROR CorsFilter: " + e.getMessage());
             if (!res.isCommitted()) {
                 res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");

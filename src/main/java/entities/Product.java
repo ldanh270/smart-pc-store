@@ -1,57 +1,55 @@
 package entities;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Nationalized;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Products")
+@Table(name = "\"Products\"")
 public class Product {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id")
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private UUID id;
 
-    @Nationalized
-    @Column(name = "ProductName", nullable = false)
+    @Column(name = "\"productName\"", length = Integer.MAX_VALUE)
     private String productName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SupplierId", nullable = false)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "\"supplierId\"")
     private Supplier supplier;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CategoryId", nullable = false)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
+    @JoinColumn(name = "\"categoryId\"")
     private Category category;
 
-    @Nationalized
-    @Column(name = "Description")
+    @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
 
-    @Column(name = "ImageUrl")
+    @Column(name = "\"imageUrl\"", length = Integer.MAX_VALUE)
     private String imageUrl;
 
-    @Column(name = "CurrentPrice", nullable = false, precision = 18, scale = 2)
+    @Column(name = "\"currentPrice\"", precision = 18, scale = 2)
     private BigDecimal currentPrice;
 
-    @Column(name = "Quantity", nullable = false)
+    @ColumnDefault("true")
+    @Column(name = "status", nullable = false)
+    private Boolean status;
+
+    @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "Status", nullable = false)
-    private Boolean status = true;
-
-    @PrePersist
-    public void prePersist() {
-        if (status == null) status = true;
-    }
-
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -103,6 +101,14 @@ public class Product {
         this.currentPrice = currentPrice;
     }
 
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
+
     public Integer getQuantity() {
         return quantity;
     }
@@ -111,11 +117,4 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
 }

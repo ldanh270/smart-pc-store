@@ -1,21 +1,25 @@
 package services;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import configs.JwtConfig;
 import dao.SessionDao;
 import dao.UserDao;
-import dto.auth.login.LoginResponseDto;
 import dto.auth.login.LoginRequestDto;
+import dto.auth.login.LoginResponseDto;
 import dto.auth.refresh.AccessTokenResponseDto;
 import dto.auth.signup.SignupRequestDto;
 import dto.auth.signup.SignupResponseDto;
 import dto.user.UserDto;
 import entities.Session;
 import entities.User;
-import org.mindrot.jbcrypt.BCrypt;
 import utils.JwtUtil;
-
-import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Service class for handling authentication-related operations.
@@ -34,7 +38,8 @@ public class AuthService {
      * Signup a new user.
      *
      * @param dto The signup data transfer object containing user details.
-     * @return A SignupResponseDto indicating the success or failure of the registration.
+     * @return A SignupResponseDto indicating the success or failure of the
+     * registration.
      */
     public SignupResponseDto signup(SignupRequestDto dto) {
         // Check if username already exists
@@ -55,7 +60,14 @@ public class AuthService {
             String passwordHash = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
 
             // Create new user
-            userDao.create(new User(dto.getUsername(), passwordHash, dto.getDisplayName(), dto.getEmail()));
+            User newUser = new User();
+            newUser.setUsername(dto.getUsername());
+            newUser.setPasswordHash(passwordHash);
+            newUser.setDisplayName(dto.getDisplayName());
+            newUser.setEmail(dto.getEmail());
+            newUser.setRole("USER");
+            newUser.setStatus("ACTIVE");
+            userDao.create(newUser);
 
             // Commit transaction
             userDao.getEntityManager().getTransaction().commit();
@@ -79,60 +91,72 @@ public class AuthService {
     /**
      * Login a user.
      *
-     * @param dto The login data transfer object containing username and password.
-     * @return An LoginResponseDto containing user details upon successful login.
+     * @param dto The login data transfer object containing username and
+     *            password.
+     * @return An LoginResponseDto containing user details upon successful
+     * login.
      */
     public LoginResponseDto login(LoginRequestDto dto) {
-        // Check if user exists
-        User user = userDao.findByUsername(dto.getUsername());
-
-        // Check if correct password
-        if (user == null || !BCrypt.checkpw(dto.getPassword(), user.getPasswordHash())) {
-            return new LoginResponseDto("Invalid username or password");
+        if (dto == null || dto.getUsername() == null || dto.getUsername()
+                .isBlank() || dto.getPassword() == null || dto.getPassword().isBlank()) {
+            return new LoginResponseDto("Username and password are required");
         }
 
         try {
-            // Create access token (JWT)
-            String accessToken = JwtUtil.generateAccessToken(user.getId());
-
-            // // Create refresh token (UUID)
-            String refreshToken = UUID.randomUUID().toString();
-
-            // Create session in DB
-            sessionDao.getEntityManager().getTransaction().begin();
-
-            Session session = new Session();
-
-            session.setUser(user);
-
-            session.setRefreshToken(refreshToken);
-
-            // Set expiration date for refresh token (e.g., 7 days)
-            session.setExpiredAt(Instant.now().plusMillis(JwtConfig.REFRESH_TOKEN_TTL));
-
-            sessionDao.create(session);
-            sessionDao.getEntityManager().getTransaction().commit();
-
-            // Respond with access token, refresh token and user info
-            return new LoginResponseDto(
-                    accessToken, refreshToken, new UserDto(
-                    user.getId(),
-                    user.getUsername(),
-                    user.getDisplayName(),
-                    user.getEmail(),
-                    user.getPhone(),
-                    user.getAddress(),
-                    user.getStatus()
-            )
-            );
-
-        } catch (Exception e) {
-            if (sessionDao.getEntityManager().getTransaction().isActive()) {
-                sessionDao.getEntityManager().getTransaction().rollback();
+            // Check if user exists
+            User user = userDao.findByUsername(dto.getUsername());
+            // Check if correct password
+            if (user == null || !BCrypt.checkpw(dto.getPassword(), user.getPasswordHash())) {
+                return new LoginResponseDto("Wrong username or password");
             }
-            System.err.println("AuthService - login ERROR: " + e.getMessage());
-            return new LoginResponseDto("Internal server error");
+
+            try {
+                // Create access token (JWT)
+                String accessToken = JwtUtil.generateAccessToken(user.getId(), user.getUsername(), user.getRole());
+
+                // // Create refresh token (UUID)
+                String refreshToken = UUID.randomUUID().toString();
+
+                // Create session in DB
+                sessionDao.getEntityManager().getTransaction().begin();
+
+                Session session = new Session();
+
+                session.setUser(user);
+
+                session.setRefreshToken(refreshToken);
+
+                // Set expiration date for refresh token (e.g., 7 days)
+                session.setExpiredAt(OffsetDateTime.now(ZoneOffset.UTC)
+                                             .plus(JwtConfig.REFRESH_TOKEN_TTL, ChronoUnit.MILLIS));
+
+                sessionDao.create(session);
+                sessionDao.getEntityManager().getTransaction().commit();
+
+                // Respond with access token, refresh token and user info
+                return new LoginResponseDto(
+                        accessToken, refreshToken, new UserDto(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getDisplayName(),
+                        user.getEmail(),
+                        user.getPhone(),
+                        user.getAddress(),
+                        user.getStatus(),
+                        user.getRole()
+                )
+                );
+
+            } catch (Exception e) {
+                if (sessionDao.getEntityManager().getTransaction().isActive()) {
+                    sessionDao.getEntityManager().getTransaction().rollback();
+                }
+                System.err.println("AuthService - login ERROR: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            return new LoginResponseDto("Wrong username or password");
         }
+        return null;
     }
 
     /**
@@ -146,13 +170,17 @@ public class AuthService {
         Session session = sessionDao.findByRefreshToken(refreshToken);
 
         // Validate session and expiration
-        if (session == null || session.getExpiredAt().isBefore(Instant.now())) {
+        if (session == null || session.getExpiredAt().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
             return new AccessTokenResponseDto(false, null, "Invalid or expired refresh token");
         }
 
         try {
             // Generate new access token
-            String newAccessToken = JwtUtil.generateAccessToken(session.getUser().getId());
+            String newAccessToken = JwtUtil.generateAccessToken(
+                    session.getUser().getId(),
+                    session.getUser().getUsername(),
+                    session.getUser().getRole()
+            );
 
             // Return new access token
             return new AccessTokenResponseDto(true, newAccessToken, "Access token refreshed successfully");

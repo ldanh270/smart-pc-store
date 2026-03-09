@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.List;
+import java.util.UUID;
 
 import entities.Category;
 import jakarta.persistence.TypedQuery;
@@ -20,7 +21,7 @@ public class CategoryDao extends GenericDao<Category> {
      * returns active categories by default.
      *
      * @param keyword The search keyword (null or blank returns all active
-     * categories).
+     *                categories).
      * @return A list of active categories matching the keyword.
      */
     public List<Category> search(String keyword) {
@@ -54,10 +55,8 @@ public class CategoryDao extends GenericDao<Category> {
      */
     public List<Category> findWithPagination(int page, int size) {
         String jpql = "SELECT c FROM Category c WHERE c.status = true";
-        return JPAUtil.getEntityManager().createQuery(jpql, Category.class)
-                .setFirstResult(page * size)
-                .setMaxResults(size)
-                .getResultList();
+        return JPAUtil.getEntityManager().createQuery(jpql, Category.class).setFirstResult(page * size).setMaxResults(
+                size).getResultList();
     }
 
     /**
@@ -73,12 +72,12 @@ public class CategoryDao extends GenericDao<Category> {
     /**
      * Check if a category name already exists (case-insensitive).
      *
-     * @param name The category name to check.
+     * @param name      The category name to check.
      * @param excludeId Category ID to exclude (for update scenarios), can be
-     * null.
+     *                  null.
      * @return true if a duplicate exists.
      */
-    public boolean existsByName(String name, Integer excludeId) {
+    public boolean existsByName(String name, UUID excludeId) {
         String jpql = "SELECT COUNT(c) FROM Category c WHERE LOWER(c.categoryName) = LOWER(:name) AND c.status = true";
         if (excludeId != null) {
             jpql += " AND c.id <> :excludeId";

@@ -39,6 +39,9 @@ target/
 out/
 
 # Personal
-TODO.md
+TODO.*
 
 .smarttomcat/
+
+# Postman
+smart-pc-store-api.postman_collection.json

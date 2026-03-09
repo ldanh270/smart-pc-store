@@ -4,6 +4,11 @@ import utils.EnvHelper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.UUID;
 
 /**
  * JwtConfig class to manage JWT token settings.
@@ -14,7 +19,7 @@ public class JwtConfig {
     public static final String ACCESS_TOKEN_SECRET;
 
     // Token time-to-live settings in milliseconds
-    public static final int ACCESS_TOKEN_TTL = 15 * 60 * 1000; // 15 minutes
+    public static final int ACCESS_TOKEN_TTL = 30 * 60 * 1000; // 15 minutes
 
     // Refresh token time-to-live settings in milliseconds
     public static final int REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -28,20 +33,17 @@ public class JwtConfig {
         ACCESS_TOKEN_SECRET = secret;
     }
 
-    public static Integer getUserIdFromToken(String token) {
+    public static UUID getUserIdFromToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-             .setSigningKey(getSignInKey())
-             .build()
-             .parseClaimsJws(token)
-             .getBody();
-            return claims.get("userId", Integer.class);
-        } catch (JwtException e) {
+            Claims claims = Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token).getBody();
+            String userIdStr = claims.get("userId", String.class);
+            return userIdStr != null ? UUID.fromString(userIdStr) : null;
+        } catch (JwtException | IllegalArgumentException e) {
             throw new RuntimeException("Invalid or expired token");
         }
     }
 
-    public static Integer getUserIdFromAuthorizationHeader(String authHeader) {
+    public static UUID getUserIdFromAuthorizationHeader(String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new RuntimeException("Missing or invalid Authorization header");
         }
@@ -49,7 +51,8 @@ public class JwtConfig {
         return getUserIdFromToken(token);
     }
 
-    private static byte[] getSignInKey() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    private static Key getSignInKey() {
+        byte[] keyBytes = ACCESS_TOKEN_SECRET.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
