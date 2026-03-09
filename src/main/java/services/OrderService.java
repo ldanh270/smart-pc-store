@@ -84,7 +84,11 @@ public class OrderService {
     }
 
     public List<OrderResponseDto> getAllOrders() {
-        return orderDao.findAllSorted().stream().map(this::mapToResponse).collect(Collectors.toList());
+        return getAllOrders(null, null, null);
+    }
+
+    public List<OrderResponseDto> getAllOrders(String q, Integer page, Integer size) {
+        return orderDao.searchAndPaginate(q, page, size).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public OrderViewResponseDto getOrderDetails(String identifier) {

@@ -19,8 +19,37 @@ public class OrderController {
     }
 
     public void handleGetAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        List<OrderResponseDto> orders = orderService.getAllOrders();
-        HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, orders);
+        try {
+            String q = req.getParameter("q");
+            if (q == null || q.isBlank()) {
+                q = req.getParameter("query");
+            }
+            String pageStr = req.getParameter("page");
+            String sizeStr = req.getParameter("size");
+
+            Integer page = (pageStr == null || pageStr.isBlank()) ? null : Integer.valueOf(pageStr);
+            Integer size = (sizeStr == null || sizeStr.isBlank()) ? null : Integer.valueOf(sizeStr);
+
+            if (page == null && size != null) {
+                page = 0;
+            }
+            if (page != null && size == null) {
+                size = 5;
+            }
+            if (page != null && page < 0) {
+                throw new IllegalArgumentException("page must be >= 0");
+            }
+            if (size != null && size <= 0) {
+                throw new IllegalArgumentException("size must be > 0");
+            }
+
+            List<OrderResponseDto> orders = orderService.getAllOrders(q, page, size);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, orders);
+        } catch (NumberFormatException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid numeric query parameter");
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        }
     }
 
     public void handleGetDetail(HttpServletRequest req, HttpServletResponse resp) throws IOException {

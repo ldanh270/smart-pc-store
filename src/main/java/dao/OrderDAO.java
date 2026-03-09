@@ -79,4 +79,37 @@ public class OrderDAO extends GenericDao<Order> {
         }
         return query.getResultList();
     }
+
+    /**
+     * Search and paginate orders.
+     *
+     * @param q    Keyword for orderCode/transactionCode/status/id.
+     * @param page Zero-based page index.
+     * @param size Page size.
+     * @return Matching orders ordered by createdAt desc.
+     */
+    public List<Order> searchAndPaginate(String q, Integer page, Integer size) {
+        StringBuilder jpql = new StringBuilder("SELECT o FROM Order o");
+
+        if (q != null && !q.isBlank()) {
+            jpql.append(" WHERE LOWER(o.orderCode) LIKE :q");
+            jpql.append(" OR LOWER(o.transactionCode) LIKE :q");
+            jpql.append(" OR LOWER(o.status) LIKE :q");
+            jpql.append(" OR CAST(o.id AS string) LIKE :q");
+        }
+
+        jpql.append(" ORDER BY o.createdAt DESC");
+        TypedQuery<Order> query = getEntityManager().createQuery(jpql.toString(), Order.class);
+
+        if (q != null && !q.isBlank()) {
+            query.setParameter("q", "%" + q.toLowerCase() + "%");
+        }
+
+        if (page != null && size != null) {
+            query.setFirstResult(page * size);
+            query.setMaxResults(size);
+        }
+
+        return query.getResultList();
+    }
 }
