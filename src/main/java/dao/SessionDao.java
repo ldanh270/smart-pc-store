@@ -39,4 +39,26 @@ public class SessionDao extends GenericDao<Session> {
                 .setParameter("userId", userId)
                 .executeUpdate();
     }
+
+    /**
+     * Delete all expired sessions.
+     *
+     * @return the number of deleted sessions
+     */
+    public int deleteExpiredSessions() {
+        jakarta.persistence.EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            int deletedCount = em.createQuery("DELETE FROM Session s WHERE s.expiredAt < :now")
+                    .setParameter("now", java.time.OffsetDateTime.now())
+                    .executeUpdate();
+            em.getTransaction().commit();
+            return deletedCount;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        }
+    }
 }
