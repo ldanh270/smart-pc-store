@@ -60,7 +60,14 @@ public class AuthService {
             String passwordHash = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
 
             // Create new user
-            userDao.create(new User(dto.getUsername(), passwordHash, dto.getDisplayName(), dto.getEmail()));
+            User newUser = new User();
+            newUser.setUsername(dto.getUsername());
+            newUser.setPasswordHash(passwordHash);
+            newUser.setDisplayName(dto.getDisplayName());
+            newUser.setEmail(dto.getEmail());
+            newUser.setRole("USER");
+            newUser.setStatus("ACTIVE");
+            userDao.create(newUser);
 
             // Commit transaction
             userDao.getEntityManager().getTransaction().commit();

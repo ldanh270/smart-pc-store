@@ -31,7 +31,7 @@ public class OrderDAO extends GenericDao<Order> {
     /**
      * Find single order by order code
      *
-     * @param orderCode
+     * @param orderCode Order code to search for
      * @return Single order with the given order code
      */
     public Order findSingleByOrderCode(String orderCode) {
@@ -52,7 +52,7 @@ public class OrderDAO extends GenericDao<Order> {
     /**
      * Find single order by transaction code
      *
-     * @param transactionCode
+     * @param transactionCode Transaction code to search for
      * @return Single order with the given transaction code
      */
     public Order findSingleByTransactionCode(String transactionCode) {
@@ -63,6 +63,13 @@ public class OrderDAO extends GenericDao<Order> {
         return list.isEmpty() ? null : list.get(0);
     }
 
+    /**
+     * Find orders by status with optional limit
+     *
+     * @param status Order status to search for
+     * @param limit  Maximum number of results to return (0 for no limit)
+     * @return List of orders with the given status
+     */
     public List<Order> findByStatus(String status, int limit) {
         String jpql = "SELECT o FROM Order o WHERE o.status = :status ORDER BY o.createdAt ASC";
         TypedQuery<Order> query = getEntityManager().createQuery(jpql, Order.class);

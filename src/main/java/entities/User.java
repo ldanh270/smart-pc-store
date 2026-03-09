@@ -42,36 +42,6 @@ public class User {
     @Column(name = "\"createdAt\"")
     private OffsetDateTime createdAt;
 
-
-    public User(String username, String passwordHash, String displayName, String email) {
-        this.username = username;
-        this.passwordHash = passwordHash;
-        this.displayName = displayName;
-        this.email = email;
-    }
-
-    public User(
-            String username,
-            String passwordHash,
-            String displayName,
-            String email,
-            String phone,
-            String address,
-            String status
-    ) {
-        this.username = username;
-        this.passwordHash = passwordHash;
-        this.displayName = displayName;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-        this.status = status;
-    }
-
-    public User() {
-
-    }
-
     public UUID getId() {
         return id;
     }

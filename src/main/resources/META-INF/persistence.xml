@@ -13,10 +13,7 @@
         <class>entities.PurchaseOrderItem</class>
         <class>entities.Product</class>
         <class>entities.Supplier</class>
-        <class>entities.SupplierPriceHistory</class>
         <class>entities.PurchaseOrder</class>
-        <class>entities.GoodsReceiptNote</class>
-        <class>entities.GoodsReceiptNoteItem</class>
         <class>entities.Order</class>
         <class>entities.Payment</class>
         <class>entities.User</class>
@@ -26,8 +23,8 @@
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=require"/>
-            <property name="jakarta.persistence.jdbc.user" value="postgres.lomuwmmxddcxdjfjjbtn"/>
+                      value="jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"/>
+            <property name="jakarta.persistence.jdbc.user" value="postgres.zskhoklmllautcrjuhtm"/>
             <property name="jakarta.persistence.jdbc.password" value="smart-pc-store"/>
 
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>

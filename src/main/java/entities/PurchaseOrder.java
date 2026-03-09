@@ -23,15 +23,6 @@ public class PurchaseOrder {
     @Column(name = "\"orderDate\"")
     private LocalDate orderDate;
 
-    @Column(name = "status", length = Integer.MAX_VALUE)
-    private String status;
-
-    @Column(name = "\"expectedDeliveryDate\"")
-    private LocalDate expectedDeliveryDate;
-
-    @Column(name = "\"poCode\"", length = Integer.MAX_VALUE)
-    private String poCode;
-
     public UUID getId() {
         return id;
     }
@@ -54,30 +45,6 @@ public class PurchaseOrder {
 
     public void setOrderDate(LocalDate orderDate) {
         this.orderDate = orderDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDate getExpectedDeliveryDate() {
-        return expectedDeliveryDate;
-    }
-
-    public void setExpectedDeliveryDate(LocalDate expectedDeliveryDate) {
-        this.expectedDeliveryDate = expectedDeliveryDate;
-    }
-
-    public String getPoCode() {
-        return poCode;
-    }
-
-    public void setPoCode(String poCode) {
-        this.poCode = poCode;
     }
 
 }

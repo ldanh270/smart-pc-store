@@ -37,9 +37,7 @@ public class ProductDao extends GenericDao<Product> {
      */
     public boolean existsByName(String productName) {
         String jpql = "SELECT COUNT(p) FROM Product p WHERE LOWER(p.productName) = LOWER(:productName)";
-        Long count = JPAUtil.getEntityManager().createQuery(jpql, Long.class)
-                .setParameter("productName", productName)
-                .getSingleResult();
+        Long count = JPAUtil.getEntityManager().createQuery(jpql, Long.class).setParameter("productName", productName).getSingleResult();
         return count > 0;
     }
 
@@ -80,8 +78,7 @@ public class ProductDao extends GenericDao<Product> {
      */
     public List<Product> findWithPagination(int page, int size) {
         String jpql = "SELECT p FROM Product p";
-        return JPAUtil.getEntityManager().createQuery(jpql, Product.class).setFirstResult(page * size).setMaxResults(
-                size).getResultList();
+        return JPAUtil.getEntityManager().createQuery(jpql, Product.class).setFirstResult(page * size).setMaxResults(size).getResultList();
     }
 
     /**
@@ -93,10 +90,7 @@ public class ProductDao extends GenericDao<Product> {
      */
     public List<Product> search(String keyword) {
         String jpql = "SELECT p FROM Product p WHERE LOWER(p.productName) LIKE LOWER(:kw)";
-        return JPAUtil.getEntityManager()
-                .createQuery(jpql, Product.class)
-                .setParameter("kw", "%" + keyword + "%")
-                .getResultList();
+        return JPAUtil.getEntityManager().createQuery(jpql, Product.class).setParameter("kw", "%" + keyword + "%").getResultList();
     }
 
     /**
@@ -113,15 +107,7 @@ public class ProductDao extends GenericDao<Product> {
      * @param size       The page size for pagination (optional).
      * @return A filtered and paginated list of products.
      */
-    public List<Product> filterSearch(
-            UUID categoryId,
-            Boolean status,
-            java.math.BigDecimal minPrice,
-            java.math.BigDecimal maxPrice,
-            String keyword,
-            Integer page,
-            Integer size
-    ) {
+    public List<Product> filterSearch(UUID categoryId, Boolean status, java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice, String keyword, Integer page, Integer size) {
         StringBuilder jpql = new StringBuilder("SELECT p FROM Product p WHERE 1=1");
 
         if (categoryId != null) {
@@ -159,7 +145,7 @@ public class ProductDao extends GenericDao<Product> {
         }
 
         if (page != null && size != null) {
-            query.setFirstResult(page * size);
+            query.setFirstResult((page - 1) * size);
             query.setMaxResults(size);
         }
 
