@@ -3,15 +3,12 @@ package servlets;
 import java.io.IOException;
 
 import controllers.PurchaseController;
-import dao.GoodsReceiptNoteDao;
-import dao.GoodsReceiptNoteItemDao;
 import dao.InventoryTransactionDao;
 import dao.JPAUtil;
 import dao.ProductDao;
 import dao.PurchaseOrderDao;
 import dao.PurchaseOrderItemDao;
 import dao.SupplierDao;
-import dao.SupplierPriceHistoryDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -32,9 +29,6 @@ public class PurchaseOrderServlet extends HttpServlet {
                 new PurchaseOrderItemDao(),
                 new SupplierDao(),
                 new ProductDao(),
-                new SupplierPriceHistoryDao(),
-                new GoodsReceiptNoteDao(),
-                new GoodsReceiptNoteItemDao(),
                 new InventoryTransactionDao()
         );
         return new PurchaseController(purchaseService);
@@ -42,6 +36,8 @@ public class PurchaseOrderServlet extends HttpServlet {
 
     /**
      * Route purchase-order GET endpoints.
+     * GET /purchase-orders/ - Get all purchase orders
+     * GET /purchase-orders/{id} - Get purchase order by ID
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -49,7 +45,7 @@ public class PurchaseOrderServlet extends HttpServlet {
         PurchaseController purchaseController = buildController();
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "PO id is required");
+                purchaseController.handleGetAllPo(req, resp);
                 return;
             }
             String[] parts = pathInfo.split("/");
@@ -72,6 +68,7 @@ public class PurchaseOrderServlet extends HttpServlet {
 
     /**
      * Route purchase-order POST endpoints.
+     * POST /purchase-orders/create - Create new purchase order
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -89,15 +86,48 @@ public class PurchaseOrderServlet extends HttpServlet {
                 return;
             }
 
-            String[] parts = pathInfo.split("/");
-            if (parts.length == 3 && !parts[1].isBlank() && "receive".equals(parts[2])) {
-                purchaseController.handleReceiveGoods(req, resp, parts[1]);
-                return;
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+        } catch (IOException e) {
+            System.err.println("ERROR PurchaseOrderServlet - doPost: " + e.getMessage());
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Internal Server Error: " + e.getMessage()
+            );
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+    }
+
+    /**
+     * Route purchase-order PUT endpoints.
+     * PUT - Update purchase order by ID
+     * /purchase-orders/update/{id}
+     * /purchase-orders/{id}
+     */
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String pathInfo = req.getPathInfo();
+        PurchaseController purchaseController = buildController();
+
+        try {
+            if (pathInfo != null) {
+                String[] parts = pathInfo.split("/");
+                // Expected format: /purchase-orders/update/{id}
+                if (parts.length == 3 && "update".equals(parts[1]) && !parts[2].isBlank()) {
+                    purchaseController.handleUpdatePo(req, resp, parts[2]);
+                    return;
+                }
+                // Also support /purchase-orders/{id}
+                if (parts.length == 2 && !parts[1].isBlank()) {
+                    purchaseController.handleUpdatePo(req, resp, parts[1]);
+                    return;
+                }
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (IOException e) {
-            System.err.println("ERROR PurchaseOrderServlet - doPost: " + e.getMessage());
+            System.err.println("ERROR PurchaseOrderServlet - doPut: " + e.getMessage());
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,

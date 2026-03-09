@@ -10,6 +10,7 @@ import utils.HttpUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 public class OrderController {
     private final OrderService orderService;
@@ -19,8 +20,75 @@ public class OrderController {
     }
 
     public void handleGetAll(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        List<OrderResponseDto> orders = orderService.getAllOrders();
-        HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, orders);
+        try {
+            String q = req.getParameter("q");
+            if (q == null || q.isBlank()) {
+                q = req.getParameter("query");
+            }
+            String pageStr = req.getParameter("page");
+            String sizeStr = req.getParameter("size");
+
+            Integer page = (pageStr == null || pageStr.isBlank()) ? null : Integer.valueOf(pageStr);
+            Integer size = (sizeStr == null || sizeStr.isBlank()) ? null : Integer.valueOf(sizeStr);
+
+            if (page == null && size != null) {
+                page = 0;
+            }
+            if (page != null && size == null) {
+                size = 5;
+            }
+            if (page != null && page < 0) {
+                throw new IllegalArgumentException("page must be >= 0");
+            }
+            if (size != null && size <= 0) {
+                throw new IllegalArgumentException("size must be > 0");
+            }
+
+            List<OrderResponseDto> orders = orderService.getAllOrders(q, page, size);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, orders);
+        } catch (NumberFormatException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid numeric query parameter");
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    public void handleGetMyOrders(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            UUID userId = (UUID) req.getAttribute("userId");
+            if (userId == null) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, "User not authenticated");
+                return;
+            }
+
+            String pageStr = req.getParameter("page");
+            String sizeStr = req.getParameter("size");
+
+            Integer page = (pageStr == null || pageStr.isBlank()) ? null : Integer.valueOf(pageStr);
+            Integer size = (sizeStr == null || sizeStr.isBlank()) ? null : Integer.valueOf(sizeStr);
+
+            if (page == null && size != null) {
+                page = 0;
+            }
+            if (page != null && size == null) {
+                size = 5;
+            }
+            if (page != null && page < 0) {
+                throw new IllegalArgumentException("page must be >= 0");
+            }
+            if (size != null && size <= 0) {
+                throw new IllegalArgumentException("size must be > 0");
+            }
+
+            List<OrderResponseDto> orders = orderService.getUserOrders(userId, page, size);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, orders);
+        } catch (NumberFormatException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid numeric query parameter");
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error: " + e.getMessage());
+        }
     }
 
     public void handleGetDetail(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -67,11 +135,32 @@ public class OrderController {
         } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Cannot delete order: " + e.getMessage()
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot delete order: " + e.getMessage());
+        }
+    }
+
+    public void handleCancelOrder(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String idStr = req.getParameter("id");
+        if (idStr == null || idStr.isEmpty()) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "ID or OrderCode is required");
+            return;
+        }
+
+        UUID userId = (UUID) req.getAttribute("userId");
+        if (userId == null) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_UNAUTHORIZED, "User not authenticated");
+            return;
+        }
+
+        try {
+            orderService.cancelOrder(idStr, userId);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Order cancelled successfully");
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        } catch (SecurityException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_FORBIDDEN, e.getMessage());
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot cancel order: " + e.getMessage());
         }
     }
 }

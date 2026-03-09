@@ -1,11 +1,14 @@
 package services;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import dao.OrderDAO;
@@ -21,6 +24,10 @@ import entities.Product;
 import utils.NumberUtil;
 
 public class OrderService {
+
+    private static final String SEPAY_QR_BASE = "https://qr.sepay.vn/img";
+    private static final String SEPAY_QR_ACCOUNT = "VQRQAELYF2308";
+    private static final String SEPAY_QR_BANK = "MBBank";
 
     private final OrderDAO orderDao;
     private final OrderDetailDao orderDetailDao;
@@ -84,7 +91,15 @@ public class OrderService {
     }
 
     public List<OrderResponseDto> getAllOrders() {
-        return orderDao.findAllSorted().stream().map(this::mapToResponse).collect(Collectors.toList());
+        return getAllOrders(null, null, null);
+    }
+
+    public List<OrderResponseDto> getAllOrders(String q, Integer page, Integer size) {
+        return orderDao.searchAndPaginate(q, page, size).stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    public List<OrderResponseDto> getUserOrders(UUID userId, Integer page, Integer size) {
+        return orderDao.findByUserId(userId, page, size).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public OrderViewResponseDto getOrderDetails(String identifier) {
@@ -101,6 +116,10 @@ public class OrderService {
 
         OrderViewResponseDto response = new OrderViewResponseDto();
         response.setOrder(mapToResponse(order));
+
+        if ("PENDING".equals(order.getStatus())) {
+            response.setQrCode(buildQrUrl(order));
+        }
 
         List<OrderDetail> details = orderDetailDao.findByOrderId(order.getId());
         response.setItems(details.stream().map(this::mapToDetailDto).collect(Collectors.toList()));
@@ -139,6 +158,39 @@ public class OrderService {
         }
     }
 
+    public void cancelOrder(String identifier, UUID userId) {
+        Order order;
+        if (utils.NumberUtil.isNumeric(identifier)) {
+            order = orderDao.findById(Integer.valueOf(identifier));
+        } else {
+            order = orderDao.findSingleByOrderCode(identifier);
+        }
+
+        if (order == null) {
+            throw new IllegalArgumentException("Không tìm thấy đơn hàng");
+        }
+        
+        if (order.getUser() == null || !order.getUser().getId().equals(userId)) {
+            throw new SecurityException("Forbidden");
+        }
+
+        if ("PENDING".equals(order.getStatus())) {
+            try {
+                orderDao.getEntityManager().getTransaction().begin();
+                order.setStatus("CANCELLED");
+                orderDao.update(order);
+                orderDao.getEntityManager().getTransaction().commit();
+            } catch (Exception e) {
+                if (orderDao.getEntityManager().getTransaction().isActive()) {
+                    orderDao.getEntityManager().getTransaction().rollback();
+                }
+                throw e;
+            }
+        } else {
+            throw new IllegalArgumentException("Chỉ được hủy đơn hàng ở trạng thái PENDING");
+        }
+    }
+
     private OrderResponseDto mapToResponse(Order order) {
         OrderResponseDto dto = new OrderResponseDto();
         dto.setId(order.getId());
@@ -168,5 +220,17 @@ public class OrderService {
             sb.append(characters.charAt(random.nextInt(characters.length())));
         }
         return sb.toString();
+    }
+    
+    private String buildQrUrl(Order order) {
+        String description = URLEncoder.encode(order.getOrderCode(), StandardCharsets.UTF_8);
+        return String.format(
+                "%s?acc=%s&bank=%s&amount=%.0f&des=%s",
+                SEPAY_QR_BASE,
+                SEPAY_QR_ACCOUNT,
+                SEPAY_QR_BANK,
+                order.getAmount(),
+                description
+        );
     }
 }

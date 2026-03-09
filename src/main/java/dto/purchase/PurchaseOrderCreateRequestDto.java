@@ -10,8 +10,7 @@ import java.util.UUID;
 public class PurchaseOrderCreateRequestDto {
 
     public UUID supplierId;
-    public String expectedDeliveryDate;
-    public String note;
+    public String supplierName;
     public List<Item> items;
 
     /**

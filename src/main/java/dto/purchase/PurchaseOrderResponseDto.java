@@ -10,12 +10,9 @@ import java.util.UUID;
 public class PurchaseOrderResponseDto {
 
     public UUID id;
-    public String poCode;
     public UUID supplierId;
     public String supplierName;
     public String orderDate;
-    public String expectedDeliveryDate;
-    public String status;
     public List<Item> items;
     public BigDecimal totalAmount;
 

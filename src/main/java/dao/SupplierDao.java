@@ -34,4 +34,18 @@ public class SupplierDao extends GenericDao<Supplier> {
         TypedQuery<Supplier> query = JPAUtil.getEntityManager().createQuery(jpql, Supplier.class);
         return query.getResultList();
     }
+
+    /**
+     * Find active suppliers by exact name (case-insensitive).
+     *
+     * @param supplierName Supplier name to match.
+     * @return Matching active suppliers.
+     */
+    public List<Supplier> findActiveByExactNameIgnoreCase(String supplierName) {
+        String jpql = "SELECT s FROM Supplier s WHERE s.status = true AND LOWER(s.supplierName) = :name";
+        return JPAUtil.getEntityManager()
+                .createQuery(jpql, Supplier.class)
+                .setParameter("name", supplierName.toLowerCase())
+                .getResultList();
+    }
 }

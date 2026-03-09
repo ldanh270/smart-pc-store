@@ -182,19 +182,46 @@ public class PurchaseCheckoutService {
 
         JsonArray transactions = fetchTransactions();
         int completedCount = 0;
+        
+        // Let's say orders older than 30 minutes are expired
+        OffsetDateTime expirationTime = OffsetDateTime.now().minusMinutes(30);
+        
         for (Order order : pendingOrders) {
             try {
                 if (isPaidInTransactions(order, transactions)) {
                     completeOrder(order);
                     completedCount++;
+                } else if (order.getCreatedAt() != null && order.getCreatedAt().isBefore(expirationTime)) {
+                    expireOrder(order);
                 }
             } catch (Exception e) {
                 System.err.println(
-                        "WARN: Failed to complete paid order " + order.getTransactionCode() + ": " + e.getMessage()
+                        "WARN: Failed to process pending order " + order.getTransactionCode() + ": " + e.getMessage()
                 );
             }
         }
         return completedCount;
+    }
+
+    private void expireOrder(Order order) {
+        EntityManager entityManager = orderDao.getEntityManager();
+        EntityTransaction tx = entityManager.getTransaction();
+        try {
+            tx.begin();
+            Order managedOrder = entityManager.find(Order.class, order.getId(), LockModeType.PESSIMISTIC_WRITE);
+            if (managedOrder == null || !ORDER_STATUS_PENDING.equalsIgnoreCase(managedOrder.getStatus())) {
+                tx.rollback();
+                return;
+            }
+            managedOrder.setStatus("EXPIRED");
+            orderDao.update(managedOrder);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw e;
+        }
     }
 
     private void completeOrder(Order order) {

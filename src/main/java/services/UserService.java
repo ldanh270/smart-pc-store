@@ -41,7 +41,11 @@ public class UserService {
     }
 
     public List<UserDto> getAll() {
-        return userDao.findAll().stream().map(this::toDto).toList();
+        return getAll(null, null, null);
+    }
+
+    public List<UserDto> getAll(String q, Integer page, Integer size) {
+        return userDao.searchAndPaginate(q, page, size).stream().map(this::toDto).toList();
     }
 
     public UserDto getById(UUID id) {

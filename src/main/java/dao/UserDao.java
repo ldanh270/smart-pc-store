@@ -2,6 +2,7 @@ package dao;
 
 import entities.User;
 import jakarta.persistence.TypedQuery;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -80,6 +81,39 @@ public class UserDao extends GenericDao<User> {
         query.setParameter("email", email);
         query.setParameter("excludeId", excludeId);
         return query.getSingleResult() > 0;
+    }
+
+    /**
+     * Search users by keyword and paginate results.
+     *
+     * @param q    Keyword for username/displayName/email/id.
+     * @param page Zero-based page index.
+     * @param size Page size.
+     * @return Matching users ordered by createdAt desc.
+     */
+    public List<User> searchAndPaginate(String q, Integer page, Integer size) {
+        StringBuilder jpql = new StringBuilder("SELECT u FROM User u");
+
+        if (q != null && !q.isBlank()) {
+            jpql.append(" WHERE LOWER(u.username) LIKE :q");
+            jpql.append(" OR LOWER(u.displayName) LIKE :q");
+            jpql.append(" OR LOWER(u.email) LIKE :q");
+            jpql.append(" OR CAST(u.id AS string) LIKE :q");
+        }
+
+        jpql.append(" ORDER BY u.createdAt DESC");
+        TypedQuery<User> query = getEntityManager().createQuery(jpql.toString(), User.class);
+
+        if (q != null && !q.isBlank()) {
+            query.setParameter("q", "%" + q.toLowerCase() + "%");
+        }
+
+        if (page != null && size != null) {
+            query.setFirstResult(page * size);
+            query.setMaxResults(size);
+        }
+
+        return query.getResultList();
     }
 
 }

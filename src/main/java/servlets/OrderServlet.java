@@ -41,10 +41,10 @@ public class OrderServlet extends HttpServlet {
                     switch (action) {
                         case "view" ->
                             orderController.handleGetDetail(req, resp);
-                        case "all" ->
-                            orderController.handleGetAll(req, resp);
                         case "delete" ->
                             orderController.handleDelete(req, resp);
+                        case "my-orders" ->
+                            orderController.handleGetMyOrders(req, resp);
                         default ->
                             orderController.handleGetAll(req, resp);
                     }
@@ -57,6 +57,8 @@ public class OrderServlet extends HttpServlet {
                     orderController.handleGetDetail(req, resp);
                 case "/delete" ->
                     orderController.handleDelete(req, resp);
+                case "/my-orders" ->
+                    orderController.handleGetMyOrders(req, resp);
                 default ->
                     HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
@@ -70,8 +72,15 @@ public class OrderServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             String pathInfo = req.getPathInfo();
-            if (pathInfo != null && pathInfo.equals("/create")) {
-                orderController.handleCreate(req, resp);
+            if (pathInfo != null) {
+                switch (pathInfo) {
+                    case "/create" ->
+                        orderController.handleCreate(req, resp);
+                    case "/cancel" ->
+                        orderController.handleCancelOrder(req, resp);
+                    default ->
+                        HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                }
             } else {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }

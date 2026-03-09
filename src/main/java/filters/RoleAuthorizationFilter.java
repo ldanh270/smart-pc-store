@@ -84,6 +84,7 @@ public class RoleAuthorizationFilter implements Filter {
     private boolean isUserFeatureEndpoint(String path) {
         return path.startsWith("/cart")
                 || path.startsWith("/orders")
+                || path.startsWith("/history")
                 || path.startsWith("/payments/checkout")
                 || path.startsWith("/purchase")
                 || path.startsWith("/check-transaction")
@@ -101,9 +102,6 @@ public class RoleAuthorizationFilter implements Filter {
             return true;
         }
         if (path.startsWith("/purchase-orders")) {
-            return true;
-        }
-        if (path.startsWith("/supplier-analytics") || path.startsWith("/supplier-quotations")) {
             return true;
         }
         if (isWriteMethod && path.startsWith("/products")) {
