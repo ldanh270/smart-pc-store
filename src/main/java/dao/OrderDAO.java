@@ -112,4 +112,19 @@ public class OrderDAO extends GenericDao<Order> {
 
         return query.getResultList();
     }
+
+    /**
+     * Find orders by user with pagination
+     */
+    public List<Order> findByUserId(java.util.UUID userId, Integer page, Integer size) {
+        String jpql = "SELECT o FROM Order o WHERE o.user.id = :userId ORDER BY o.createdAt DESC";
+        TypedQuery<Order> query = getEntityManager().createQuery(jpql, Order.class);
+        query.setParameter("userId", userId);
+        
+        if (page != null && size != null) {
+            query.setFirstResult(page * size);
+            query.setMaxResults(size);
+        }
+        return query.getResultList();
+    }
 }
