@@ -104,6 +104,9 @@ public class RoleAuthorizationFilter implements Filter {
         if (path.startsWith("/purchase-orders")) {
             return true;
         }
+        if (path.startsWith("/dashboard")) {
+            return true;
+        }
         if (isWriteMethod && path.startsWith("/products")) {
             return true;
         }
