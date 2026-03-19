@@ -12,6 +12,7 @@ public class ProductResponseDto {
 
     public UUID id;
     public String productName;
+    public String slug;
     public String description;
     public String imageUrl;
     public BigDecimal currentPrice;

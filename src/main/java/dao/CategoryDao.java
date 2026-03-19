@@ -89,4 +89,42 @@ public class CategoryDao extends GenericDao<Category> {
         }
         return query.getSingleResult() > 0;
     }
+
+    /**
+     * Find an active category by slug (case-insensitive).
+     *
+     * @param slug The category slug.
+     * @return The matching category, or null if not found.
+     */
+    public Category findBySlug(String slug) {
+        String jpql = "SELECT c FROM Category c WHERE c.status = true AND LOWER(c.slug) = LOWER(:slug)";
+        List<Category> results = JPAUtil.getEntityManager()
+                .createQuery(jpql, Category.class)
+                .setParameter("slug", slug)
+                .setMaxResults(1)
+                .getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
+
+    /**
+     * Check if an active category slug already exists (case-insensitive).
+     *
+     * @param slug      The slug to check.
+     * @param excludeId Category ID to exclude (for update scenarios), can be null.
+     * @return true if a duplicate exists.
+     */
+    public boolean existsBySlug(String slug, UUID excludeId) {
+        String jpql = "SELECT COUNT(c) FROM Category c WHERE c.status = true AND LOWER(c.slug) = LOWER(:slug)";
+        if (excludeId != null) {
+            jpql += " AND c.id <> :excludeId";
+        }
+
+        TypedQuery<Long> query = JPAUtil.getEntityManager().createQuery(jpql, Long.class);
+        query.setParameter("slug", slug);
+        if (excludeId != null) {
+            query.setParameter("excludeId", excludeId);
+        }
+
+        return query.getSingleResult() > 0;
+    }
 }

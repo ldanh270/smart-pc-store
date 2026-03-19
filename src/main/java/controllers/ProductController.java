@@ -91,6 +91,25 @@ public class ProductController {
     }
 
     /**
+     * Handle GET request to retrieve a product by slug.
+     *
+     * @param req  The HTTP request.
+     * @param resp The HTTP response to send product details.
+     * @param slug The product slug string.
+     * @throws IOException if I/O error occurs.
+     */
+    public void handleGetBySlug(HttpServletRequest req, HttpServletResponse resp, String slug) throws IOException {
+        ProductResponseDto product = productService.getBySlugDto(slug);
+
+        if (product == null) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Product not found");
+            return;
+        }
+
+        HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, product);
+    }
+
+    /**
      * Handle GET request to retrieve a product by ID.
      *
      * @param req   The HTTP request.

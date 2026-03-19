@@ -107,6 +107,22 @@ public class ProductDao extends GenericDao<Product> {
      * @param size       The page size for pagination (optional).
      * @return A filtered and paginated list of products.
      */
+    /**
+     * Find a product by its slug (case-insensitive).
+     *
+     * @param slug The product slug.
+     * @return The matching product, or null if not found.
+     */
+    public Product findBySlug(String slug) {
+        String jpql = "SELECT p FROM Product p WHERE LOWER(p.slug) = LOWER(:slug)";
+        List<Product> results = JPAUtil.getEntityManager()
+                .createQuery(jpql, Product.class)
+                .setParameter("slug", slug)
+                .setMaxResults(1)
+                .getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
+
     public List<Product> filterSearch(UUID categoryId, Boolean status, java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice, String keyword, Integer page, Integer size) {
         StringBuilder jpql = new StringBuilder("SELECT p FROM Product p WHERE 1=1");
 
