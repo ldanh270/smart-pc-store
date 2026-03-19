@@ -45,6 +45,9 @@ public class Product {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "slug", length = Integer.MAX_VALUE, unique = true)
+    private String slug;
+
     public UUID getId() {
         return id;
     }
@@ -115,6 +118,14 @@ public class Product {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
 }

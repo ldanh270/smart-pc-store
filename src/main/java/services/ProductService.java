@@ -9,6 +9,7 @@ import dao.ProductDao;
 import dto.product.ProductRequestDto;
 import dto.product.ProductResponseDto;
 import entities.Product;
+import utils.SlugUtil;
 
 /**
  * Service class for handling product management operations. Manages CRUD
@@ -108,6 +109,16 @@ public class ProductService {
         product.setSupplier(supplier);
         product.setCategory(category);
 
+        // Auto-generate slug from product name
+        String baseSlug = SlugUtil.toSlug(dto.productName);
+        String slug = baseSlug;
+        int attempt = 1;
+        while (productDao.findBySlug(slug) != null) {
+            slug = baseSlug + "-" + attempt;
+            attempt++;
+        }
+        product.setSlug(slug);
+
         try {
             JPAUtil.getEntityManager().getTransaction().begin();
             productDao.create(product);
@@ -124,6 +135,7 @@ public class ProductService {
         ProductResponseDto dto = new ProductResponseDto();
         dto.id = p.getId();
         dto.productName = p.getProductName();
+        dto.slug = p.getSlug();
         dto.description = p.getDescription();
         dto.currentPrice = p.getCurrentPrice();
         dto.quantity = p.getQuantity();
@@ -202,6 +214,17 @@ public class ProductService {
      */
     public ProductResponseDto getByIdDto(UUID id) {
         Product p = getById(id);
+        return p == null ? null : toDto(p);
+    }
+
+    /**
+     * Retrieve a product by its slug as a response DTO.
+     *
+     * @param slug The product slug.
+     * @return The ProductResponseDto if found, otherwise null.
+     */
+    public ProductResponseDto getBySlugDto(String slug) {
+        Product p = productDao.findBySlug(slug);
         return p == null ? null : toDto(p);
     }
 

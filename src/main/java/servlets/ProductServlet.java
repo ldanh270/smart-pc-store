@@ -41,8 +41,15 @@ public class ProductServlet extends HttpServlet {
                 return;
             }
 
-            // GET /products/{id} -> product details
             String[] parts = pathInfo.split("/");
+
+            // GET /products/slug/{slug} -> product by slug
+            if (parts.length == 3 && "slug".equals(parts[1]) && !parts[2].isBlank()) {
+                productController.handleGetBySlug(req, resp, parts[2]);
+                return;
+            }
+
+            // GET /products/{id} -> product details by ID
             if (parts.length == 2 && !parts[1].isBlank()) {
                 productController.handleGetById(req, resp, parts[1]);
                 return;
