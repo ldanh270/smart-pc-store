@@ -42,7 +42,7 @@ public class CategoryServlet extends HttpServlet {
                 return;
             }
 
-            // GET /categories/slug/{slug} -> category details by slug
+            // GET /categories/{slug} -> category details by slug
             String[] parts = pathInfo.split("/");
             if (parts.length == 2 && !parts[1].isBlank()) {
                 categoryController.handleGetBySlug(req, resp, parts[1]);
