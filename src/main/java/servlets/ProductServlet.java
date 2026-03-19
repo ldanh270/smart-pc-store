@@ -58,11 +58,7 @@ public class ProductServlet extends HttpServlet {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
             System.err.println("ERROR ProductServlet - doGet: " + e.getMessage());
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage()
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -74,11 +70,7 @@ public class ProductServlet extends HttpServlet {
 
         // Keep create route explicit to avoid conflicts with future POST actions.
         if (pathInfo == null || pathInfo.equals("/")) {
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_NOT_FOUND,
-                    "Endpoint not found. To create a product, POST to /products/create"
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found. To create a product, POST to /products/create");
             return;
         }
 
@@ -91,11 +83,7 @@ public class ProductServlet extends HttpServlet {
             }
         } catch (Exception e) {
             System.err.println("ERROR ProductServlet - doPost: " + e.getMessage());
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage()
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -127,11 +115,7 @@ public class ProductServlet extends HttpServlet {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
             System.err.println("ERROR ProductServlet - doGet: " + e.getMessage());
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage()
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
         }
@@ -157,11 +141,7 @@ public class ProductServlet extends HttpServlet {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
             System.err.println("ERROR ProductServlet - doGet: " + e.getMessage());
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage()
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error: " + e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
         }

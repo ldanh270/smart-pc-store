@@ -32,6 +32,8 @@ public class Category {
     @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "\"parentId\"")
     private Category parent;
+    @Column(name = "slug", length = Integer.MAX_VALUE)
+    private String slug;
 
     public UUID getId() {
         return id;
@@ -79,6 +81,14 @@ public class Category {
 
     public void setParent(Category parent) {
         this.parent = parent;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
 }

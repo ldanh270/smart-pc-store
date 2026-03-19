@@ -13,6 +13,7 @@ public class CategoryResponseDto {
 
     public UUID id;
     public String categoryName;
+    public String slug;
     public String description;
     public String imageUrl;
     public Boolean status;

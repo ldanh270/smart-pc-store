@@ -56,13 +56,31 @@ public class CategoryController {
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, category);
-        } catch (NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_BAD_REQUEST,
                     new ApiResponse<>(false, "Invalid category id", null)
             );
         }
+    }
+
+    /**
+     * Handle GET request to retrieve a single category by slug.
+     */
+    public void handleGetBySlug(HttpServletRequest req, HttpServletResponse resp, String slug) throws IOException {
+        CategoryResponseDto category = categoryService.getBySlugDto(slug);
+
+        if (category == null) {
+            HttpUtil.sendJson(
+                    resp,
+                    HttpServletResponse.SC_NOT_FOUND,
+                    new ApiResponse<>(false, "Category not found", null)
+            );
+            return;
+        }
+
+        HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, category);
     }
 
     /**
@@ -133,8 +151,6 @@ public class CategoryController {
             UUID id = UUID.fromString(idStr);
             categoryService.delete(id);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Category deleted successfully");
-        } catch (NumberFormatException e) {
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid category id");
         } catch (IllegalArgumentException e) {
             int status = "Category not found".equals(e.getMessage()) ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_BAD_REQUEST;
             HttpUtil.sendJson(resp, status, e.getMessage());

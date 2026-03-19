@@ -9,6 +9,7 @@ import dao.JPAUtil;
 import dto.category.CategoryRequestDto;
 import dto.category.CategoryResponseDto;
 import entities.Category;
+import utils.SlugUtil;
 
 /**
  * Service class for handling category management operations. Manages CRUD
@@ -59,6 +60,7 @@ public class CategoryService {
         category.setCategoryName(dto.categoryName);
         category.setDescription(dto.description);
         category.setImageUrl(dto.imageUrl);
+        category.setSlug(generateUniqueSlug(dto.categoryName, null));
 
         try {
             JPAUtil.getEntityManager().getTransaction().begin();
@@ -80,6 +82,7 @@ public class CategoryService {
         CategoryResponseDto dto = new CategoryResponseDto();
         dto.id = category.getId();
         dto.categoryName = category.getCategoryName();
+        dto.slug = category.getSlug();
         dto.description = category.getDescription();
         dto.imageUrl = category.getImageUrl();
         dto.status = category.getStatus();
@@ -123,6 +126,24 @@ public class CategoryService {
     }
 
     /**
+     * Retrieve a category by slug as a response DTO.
+     */
+    public CategoryResponseDto getBySlugDto(String slug) {
+        if (slug == null || slug.isBlank()) {
+            return null;
+        }
+
+        Category c = categoryDao.findBySlug(slug);
+        if (c == null) {
+            return null;
+        }
+
+        CategoryResponseDto dto = toDto(c);
+        dto.products = productService.searchWithFilters(c.getId(), null, null, null, null, null, null);
+        return dto;
+    }
+
+    /**
      * Update an existing category. Only updates allowed fields (name,
      * description, imageUrl). Validates category name and checks for
      * duplicates.
@@ -151,6 +172,7 @@ public class CategoryService {
                 throw new IllegalArgumentException("Category name already exists");
             }
             existing.setCategoryName(dto.categoryName);
+            existing.setSlug(generateUniqueSlug(dto.categoryName, id));
         }
 
         if (dto.description != null) {
@@ -200,5 +222,21 @@ public class CategoryService {
             }
             throw e;
         }
+    }
+
+    private String generateUniqueSlug(String name, UUID excludeId) {
+        String baseSlug = SlugUtil.toSlug(name);
+        if (baseSlug.isBlank()) {
+            throw new IllegalArgumentException("Category name is invalid for slug generation");
+        }
+
+        String candidate = baseSlug;
+        int attempt = 1;
+        while (categoryDao.existsBySlug(candidate, excludeId)) {
+            candidate = baseSlug + "-" + attempt;
+            attempt++;
+        }
+
+        return candidate;
     }
 }
