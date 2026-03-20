@@ -1,5 +1,6 @@
 package dao;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -147,6 +148,58 @@ public class ProductDao extends GenericDao<Product> {
         if (categoryId != null) {
             query.setParameter("categoryId", categoryId);
         }
+        if (status != null) {
+            query.setParameter("status", status);
+        }
+        if (minPrice != null) {
+            query.setParameter("minPrice", minPrice);
+        }
+        if (maxPrice != null) {
+            query.setParameter("maxPrice", maxPrice);
+        }
+        if (keyword != null && !keyword.isBlank()) {
+            query.setParameter("kw", "%" + keyword.toLowerCase() + "%");
+        }
+
+        if (page != null && size != null) {
+            query.setFirstResult((page) * size);
+            query.setMaxResults(size);
+        }
+
+        return query.getResultList();
+    }
+
+    public List<Product> filterSearchByCategoryIds(
+            List<UUID> categoryIds,
+            Boolean status,
+            java.math.BigDecimal minPrice,
+            java.math.BigDecimal maxPrice,
+            String keyword,
+            Integer page,
+            Integer size
+    ) {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        StringBuilder jpql = new StringBuilder("SELECT p FROM Product p WHERE p.category.id IN :categoryIds");
+
+        if (status != null) {
+            jpql.append(" AND p.status = :status");
+        }
+        if (minPrice != null) {
+            jpql.append(" AND p.currentPrice >= :minPrice");
+        }
+        if (maxPrice != null) {
+            jpql.append(" AND p.currentPrice <= :maxPrice");
+        }
+        if (keyword != null && !keyword.isBlank()) {
+            jpql.append(" AND LOWER(p.productName) LIKE :kw");
+        }
+
+        TypedQuery<Product> query = JPAUtil.getEntityManager().createQuery(jpql.toString(), Product.class);
+        query.setParameter("categoryIds", categoryIds);
+
         if (status != null) {
             query.setParameter("status", status);
         }

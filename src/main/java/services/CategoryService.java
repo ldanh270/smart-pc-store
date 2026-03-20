@@ -1,6 +1,11 @@
 package services;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -121,7 +126,8 @@ public class CategoryService {
             return null;
         }
         CategoryResponseDto dto = toDto(c);
-        dto.products = productService.searchWithFilters(id, null, null, null, null, null, null);
+        List<UUID> categoryIds = collectCategoryTreeIds(c.getId());
+        dto.products = productService.searchWithCategoryIds(categoryIds, null, null, null, null, null, null);
         return dto;
     }
 
@@ -139,7 +145,8 @@ public class CategoryService {
         }
 
         CategoryResponseDto dto = toDto(c);
-        dto.products = productService.searchWithFilters(c.getId(), null, null, null, null, null, null);
+        List<UUID> categoryIds = collectCategoryTreeIds(c.getId());
+        dto.products = productService.searchWithCategoryIds(categoryIds, null, null, null, null, null, null);
         return dto;
     }
 
@@ -238,5 +245,27 @@ public class CategoryService {
         }
 
         return candidate;
+    }
+
+    private List<UUID> collectCategoryTreeIds(UUID rootCategoryId) {
+        Set<UUID> collected = new LinkedHashSet<>();
+        Queue<UUID> queue = new ArrayDeque<>();
+        queue.add(rootCategoryId);
+
+        while (!queue.isEmpty()) {
+            UUID currentId = queue.poll();
+            if (!collected.add(currentId)) {
+                continue;
+            }
+
+            List<UUID> children = categoryDao.findActiveChildIds(currentId);
+            for (UUID childId : children) {
+                if (!collected.contains(childId)) {
+                    queue.add(childId);
+                }
+            }
+        }
+
+        return new ArrayList<>(collected);
     }
 }
