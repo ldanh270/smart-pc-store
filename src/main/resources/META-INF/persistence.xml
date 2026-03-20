@@ -23,7 +23,7 @@
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"/>
+                      value="jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?prepareThreshold=0"/>
             <property name="jakarta.persistence.jdbc.user" value="postgres.zskhoklmllautcrjuhtm"/>
             <property name="jakarta.persistence.jdbc.password" value="smart-pc-store"/>
 

@@ -127,4 +127,15 @@ public class CategoryDao extends GenericDao<Category> {
 
         return query.getSingleResult() > 0;
     }
+
+    /**
+     * Retrieve IDs of active direct child categories for a given parent category.
+     */
+    public List<UUID> findActiveChildIds(UUID parentId) {
+        String jpql = "SELECT c.id FROM Category c WHERE c.status = true AND c.parent.id = :parentId";
+        return JPAUtil.getEntityManager()
+                .createQuery(jpql, UUID.class)
+                .setParameter("parentId", parentId)
+                .getResultList();
+    }
 }

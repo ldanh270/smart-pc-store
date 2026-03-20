@@ -153,11 +153,16 @@ public class ProductService {
             dto.stockStatus = "In stock";
         }
 
-        dto.supplierId = p.getSupplier().getId();
-        dto.supplierName = p.getSupplier().getSupplierName();
+        // Supplier/category can be null because DB relations use ON DELETE SET NULL.
+        if (p.getSupplier() != null) {
+            dto.supplierId = p.getSupplier().getId();
+            dto.supplierName = p.getSupplier().getSupplierName();
+        }
 
-        dto.categoryId = p.getCategory().getId();
-        dto.categoryName = p.getCategory().getCategoryName();
+        if (p.getCategory() != null) {
+            dto.categoryId = p.getCategory().getId();
+            dto.categoryName = p.getCategory().getCategoryName();
+        }
 
         return dto;
     }
@@ -360,4 +365,28 @@ public class ProductService {
         }
     }
 
+    /**
+     * Search and filter products by a list of category IDs.
+     *
+     * @param categoryIds The list of category IDs (optional).
+     * @param status      The product status filter (optional).
+     * @param minPrice    The minimum price filter (optional).
+     * @param maxPrice    The maximum price filter (optional).
+     * @param keyword     The product name keyword search (optional).
+     * @param page        The page number for pagination (optional).
+     * @param size        The page size for pagination (optional).
+     * @return A list of filtered ProductResponseDto objects.
+     */
+    public List<ProductResponseDto> searchWithCategoryIds(
+            List<UUID> categoryIds,
+            Boolean status,
+            java.math.BigDecimal minPrice,
+            java.math.BigDecimal maxPrice,
+            String keyword,
+            Integer page,
+            Integer size
+    ) {
+        List<Product> list = productDao.filterSearchByCategoryIds(categoryIds, status, minPrice, maxPrice, keyword, page, size);
+        return toDtoList(list);
+    }
 }
