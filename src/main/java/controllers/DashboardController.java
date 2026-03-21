@@ -1,5 +1,6 @@
 package controllers;
 
+import dto.dashboard.DailyRevenueResponseDto;
 import dto.dashboard.DashboardCategoryStatDto;
 import dto.dashboard.DashboardOverviewDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,6 +49,25 @@ public class DashboardController {
             System.err.println("ERROR DashboardController - handleGetCategoryStats: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Error fetching category stats: " + e.getMessage());
+        }
+    }
+
+    /**
+     * GET /dashboard/revenue-daily
+     * Returns daily revenue series for chart usage.
+     */
+    public void handleGetDailyRevenue(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            String daysStr = req.getParameter("days");
+            Integer days = (daysStr == null || daysStr.isBlank()) ? null : Integer.valueOf(daysStr);
+            DailyRevenueResponseDto result = dashboardService.getDailyRevenue(days);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, result);
+        } catch (NumberFormatException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Days must be a valid integer");
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Error: " + e.getMessage());
         }
     }
 }
