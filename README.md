@@ -10,11 +10,14 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Maven](https://img.shields.io/badge/Maven-3.x-C71A36?style=flat&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](LICENSE)
+[![CI](https://github.com/ldanh270/smart-pc-store/actions/workflows/ci.yml/badge.svg)](https://github.com/ldanh270/smart-pc-store/actions/workflows/ci.yml)
+[![Security](https://github.com/ldanh270/smart-pc-store/actions/workflows/security.yml/badge.svg)](https://github.com/ldanh270/smart-pc-store/actions/workflows/security.yml)
+[![Docker Release](https://github.com/ldanh270/smart-pc-store/actions/workflows/docker-release.yml/badge.svg)](https://github.com/ldanh270/smart-pc-store/actions/workflows/docker-release.yml)
+ [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](LICENSE)
 
 **A comprehensive RESTful API backend for PC component e-commerce platform built with Jakarta EE, Hibernate ORM, and PostgreSQL**
 
-[Features](#features) • [Quick Start](#quick-start) • [Documentation](#documentation) • [Architecture](#architecture) • [Contributing](#contributing)
+[Features](#features) • [Quick Start](#quick-start) • [Documentation](#documentation) • [CI/CD](#cicd) • [Architecture](#architecture) • [Contributing](#contributing)
 
 </div>
 
@@ -172,7 +175,22 @@ Comprehensive documentation is available in the `docs/` directory:
 - **[Architecture Guide](docs/ARCHITECTURE.md)** - System architecture, design patterns, and best practices
 - **[Database Schema](docs/DATABASE.md)** - Database design, relationships, and migrations
 - **[Security Guide](docs/SECURITY.md)** - Security measures, authentication, and best practices
+- **[CI/CD Guide](docs/CI_CD.md)** - GitHub Actions pipelines, secrets, and deployment setup
 - **[Contributing Guide](docs/CONTRIBUTING.md)** - Guidelines for contributing to the project
+
+---
+
+## CI/CD
+
+The project includes a complete GitHub Actions pipeline:
+
+- **CI** (`.github/workflows/ci.yml`) - Maven build and test on push/PR
+- **Security** (`.github/workflows/security.yml`) - Dependency Review and CodeQL
+- **Qodana Code Quality** (`.github/workflows/qodana_code_quality.yml`) - JetBrains static analysis with annotations
+- **Docker Release** (`.github/workflows/docker-release.yml`) - Build, scan, and publish Docker image to GHCR
+- **Deploy** (`.github/workflows/deploy.yml`) - Manual deployment to `staging`/`production` using GitHub Environments
+
+For setup details (required secrets, environments, deployment flow), see **[CI/CD Guide](docs/CI_CD.md)**.
 
 ---
 
