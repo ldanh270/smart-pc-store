@@ -2,11 +2,11 @@ package dao;
 
 import entities.PurchaseOrder;
 import jakarta.persistence.TypedQuery;
-
 import java.util.List;
+import java.util.UUID;
 
 /**
- * Data Access Object (DAO) for PurchaseOrder entity.
+ * PurchaseOrderDao - 仕入注文のデータアクセスオブジェクト
  */
 public class PurchaseOrderDao extends GenericDao<PurchaseOrder> {
 
@@ -15,32 +15,15 @@ public class PurchaseOrderDao extends GenericDao<PurchaseOrder> {
     }
 
     /**
-     * Search and paginate purchase orders.
+     * 元の注文に関連付けられた調整注文を取得する
      *
-     * @param query The search keyword (matches supplier name or PO ID).
-     * @param page  The zero-based page number.
-     * @param size  The number of records per page.
-     * @return A list of matching PurchaseOrder entities.
+     * @param parentId 元の注文ID
+     * @return 調整注文のリスト
      */
-    public List<PurchaseOrder> searchAndPaginate(String query, Integer page, Integer size) {
-        StringBuilder jpql = new StringBuilder("SELECT p FROM PurchaseOrder p");
-        
-        if (query != null && !query.isBlank()) {
-            jpql.append(" JOIN p.supplier s WHERE LOWER(s.supplierName) LIKE LOWER(:query) OR CAST(p.id AS string) LIKE LOWER(:query)");
-        }
-        jpql.append(" ORDER BY p.orderDate DESC");
-        
-        TypedQuery<PurchaseOrder> tQuery = getEntityManager().createQuery(jpql.toString(), PurchaseOrder.class);
-        
-        if (query != null && !query.isBlank()) {
-            tQuery.setParameter("query", "%" + query + "%");
-        }
-        
-        if (page != null && size != null) {
-            tQuery.setFirstResult((page - 1) * size);
-            tQuery.setMaxResults(size);
-        }
-        
-        return tQuery.getResultList();
+    public List<PurchaseOrder> findAdjustmentsByParentId(UUID parentId) {
+        String jpql = "SELECT po FROM PurchaseOrder po WHERE po.parentOrder.id = :parentId";
+        TypedQuery<PurchaseOrder> query = getEntityManager().createQuery(jpql, PurchaseOrder.class);
+        query.setParameter("parentId", parentId);
+        return query.getResultList();
     }
 }
