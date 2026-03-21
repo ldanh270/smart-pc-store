@@ -1,9 +1,11 @@
 package dao;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.time.OffsetDateTime;
 
 /**
@@ -68,5 +70,22 @@ public class DashboardDao {
         q.setParameter("from", from);
         q.setParameter("to", to);
         return q.getSingleResult();
+    }
+
+    /**
+     * Count active products grouped by category name.
+     * Returns rows in shape: [categoryName (String|null), productCount (Long)].
+     */
+    public List<Object[]> getProductCountByCategory() {
+        String jpql = "SELECT c.categoryName, COUNT(p) " +
+                "FROM Product p LEFT JOIN p.category c " +
+                "WHERE p.status = true " +
+                "GROUP BY c.categoryName " +
+                "ORDER BY COUNT(p) DESC";
+
+        Query q = getEntityManager().createQuery(jpql);
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = q.getResultList();
+        return results;
     }
 }
