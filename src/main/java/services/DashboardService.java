@@ -1,6 +1,7 @@
 package services;
 
 import dao.DashboardDao;
+import dto.dashboard.DashboardCategoryStatDto;
 import dto.dashboard.DashboardOverviewDto;
 
 import java.math.BigDecimal;
@@ -8,12 +9,20 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service that computes dashboard overview statistics.
  * Compares current month vs previous month to calculate change percentages.
  */
 public class DashboardService {
+
+    private static final String OTHER_CATEGORY_NAME = "Khác";
+    private static final int TOP_CATEGORY_LIMIT = 4;
 
     private final DashboardDao dashboardDao;
 
@@ -68,6 +77,45 @@ public class DashboardService {
     }
 
     /**
+     * Build category distribution data for chart: [{name, value}].
+     * Returns top categories and groups the rest into "Khac".
+     */
+    public List<DashboardCategoryStatDto> getCategoryStats() {
+        List<Object[]> rows = dashboardDao.getProductCountByCategory();
+
+        Map<String, Long> mergedByName = new LinkedHashMap<>();
+        for (Object[] row : rows) {
+            String rawName = row[0] != null ? row[0].toString() : null;
+            String name = normalizeCategoryName(rawName);
+            Long count = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+            mergedByName.merge(name, count, Long::sum);
+        }
+
+        long otherCount = mergedByName.getOrDefault(OTHER_CATEGORY_NAME, 0L);
+        mergedByName.remove(OTHER_CATEGORY_NAME);
+
+        List<Map.Entry<String, Long>> sortedCategories = new ArrayList<>(mergedByName.entrySet());
+        sortedCategories.sort(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder()));
+
+        List<DashboardCategoryStatDto> result = new ArrayList<>();
+        int limit = Math.min(TOP_CATEGORY_LIMIT, sortedCategories.size());
+        for (int i = 0; i < limit; i++) {
+            Map.Entry<String, Long> entry = sortedCategories.get(i);
+            result.add(new DashboardCategoryStatDto(entry.getKey(), entry.getValue()));
+        }
+
+        for (int i = TOP_CATEGORY_LIMIT; i < sortedCategories.size(); i++) {
+            otherCount += sortedCategories.get(i).getValue();
+        }
+
+        if (otherCount > 0) {
+            result.add(new DashboardCategoryStatDto(OTHER_CATEGORY_NAME, otherCount));
+        }
+
+        return result;
+    }
+
+    /**
      * Calculate percentage change: ((current - previous) / previous) * 100
      * Returns 0.0 if previous is 0 to avoid division by zero.
      */
@@ -77,5 +125,13 @@ public class DashboardService {
         }
         double change = ((current - previous) / previous) * 100.0;
         return BigDecimal.valueOf(change).setScale(1, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    private String normalizeCategoryName(String rawName) {
+        if (rawName == null) {
+            return OTHER_CATEGORY_NAME;
+        }
+        String trimmed = rawName.trim();
+        return trimmed.isEmpty() ? OTHER_CATEGORY_NAME : trimmed;
     }
 }

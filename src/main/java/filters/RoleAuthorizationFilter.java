@@ -95,6 +95,10 @@ public class RoleAuthorizationFilter implements Filter {
         boolean isWriteMethod = "POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method) || "DELETE".equalsIgnoreCase(
                 method);
 
+        if ("PUT".equalsIgnoreCase(method) && path.matches("^/orders/[^/]+/status$")) {
+            return true;
+        }
+
         if (path.startsWith("/users")) {
             return true;
         }

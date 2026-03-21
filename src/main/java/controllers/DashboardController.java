@@ -1,5 +1,6 @@
 package controllers;
 
+import dto.dashboard.DashboardCategoryStatDto;
 import dto.dashboard.DashboardOverviewDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -7,6 +8,7 @@ import services.DashboardService;
 import utils.HttpUtil;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Controller for dashboard-related endpoints.
@@ -31,6 +33,21 @@ public class DashboardController {
             System.err.println("ERROR DashboardController - handleGetOverview: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Error fetching dashboard data: " + e.getMessage());
+        }
+    }
+
+    /**
+     * GET /dashboard/category-stats
+     * Returns product distribution by category for chart usage.
+     */
+    public void handleGetCategoryStats(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            List<DashboardCategoryStatDto> stats = dashboardService.getCategoryStats();
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, stats);
+        } catch (Exception e) {
+            System.err.println("ERROR DashboardController - handleGetCategoryStats: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Error fetching category stats: " + e.getMessage());
         }
     }
 }
