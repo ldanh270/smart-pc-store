@@ -3,7 +3,8 @@ package services;
 import dao.OrderDAO;
 import dto.payment.PaymentResponseDto;
 import entities.Order;
-import utils.NumberUtil;
+
+import java.util.UUID;
 
 public class PaymentService {
 
@@ -15,9 +16,9 @@ public class PaymentService {
 
     public PaymentResponseDto getQrInfo(String identifier) {
         Order order;
-        if (NumberUtil.isNumeric(identifier)) {
-            order = orderDao.findById(Integer.valueOf(identifier));
-        } else {
+        try {
+            order = orderDao.findById(UUID.fromString(identifier));
+        } catch (IllegalArgumentException ignored) {
             order = orderDao.findSingleByOrderCode(identifier);
         }
 

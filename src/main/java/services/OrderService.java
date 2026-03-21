@@ -3,11 +3,13 @@ package services;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -21,13 +23,13 @@ import dto.order.OrderViewResponseDto;
 import entities.Order;
 import entities.OrderDetail;
 import entities.Product;
-import utils.NumberUtil;
 
 public class OrderService {
 
     private static final String SEPAY_QR_BASE = "https://qr.sepay.vn/img";
     private static final String SEPAY_QR_ACCOUNT = "VQRQAELYF2308";
     private static final String SEPAY_QR_BANK = "MBBank";
+    private static final Set<String> ALLOWED_ORDER_STATUSES = new HashSet<>(Arrays.asList("PENDING", "PAID", "EXPIRED", "CANCELLED"));
 
     private final OrderDAO orderDao;
     private final OrderDetailDao orderDetailDao;
@@ -90,10 +92,6 @@ public class OrderService {
         return mapToResponse(order);
     }
 
-    public List<OrderResponseDto> getAllOrders() {
-        return getAllOrders(null, null, null);
-    }
-
     public List<OrderResponseDto> getAllOrders(String q, Integer page, Integer size) {
         return orderDao.searchAndPaginate(q, page, size).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
@@ -103,12 +101,7 @@ public class OrderService {
     }
 
     public OrderViewResponseDto getOrderDetails(String identifier) {
-        Order order;
-        if (NumberUtil.isNumeric(identifier)) {
-            order = orderDao.findById(Integer.valueOf(identifier));
-        } else {
-            order = orderDao.findSingleByOrderCode(identifier);
-        }
+        Order order = resolveOrderByIdentifier(identifier);
 
         if (order == null) {
             return null;
@@ -128,12 +121,7 @@ public class OrderService {
     }
 
     public void deleteOrder(String identifier) {
-        Order order;
-        if (utils.NumberUtil.isNumeric(identifier)) {
-            order = orderDao.findById(Integer.valueOf(identifier));
-        } else {
-            order = orderDao.findSingleByOrderCode(identifier);
-        }
+        Order order = resolveOrderByIdentifier(identifier);
 
         if (order != null && "PENDING".equals(order.getStatus())) {
             try {
@@ -159,17 +147,12 @@ public class OrderService {
     }
 
     public void cancelOrder(String identifier, UUID userId) {
-        Order order;
-        if (utils.NumberUtil.isNumeric(identifier)) {
-            order = orderDao.findById(Integer.valueOf(identifier));
-        } else {
-            order = orderDao.findSingleByOrderCode(identifier);
-        }
+        Order order = resolveOrderByIdentifier(identifier);
 
         if (order == null) {
             throw new IllegalArgumentException("Không tìm thấy đơn hàng");
         }
-        
+
         if (order.getUser() == null || !order.getUser().getId().equals(userId)) {
             throw new SecurityException("Forbidden");
         }
@@ -188,6 +171,39 @@ public class OrderService {
             }
         } else {
             throw new IllegalArgumentException("Chỉ được hủy đơn hàng ở trạng thái PENDING");
+        }
+    }
+
+    public void updateOrderStatus(String identifier, String newStatus) {
+        if (newStatus == null || newStatus.isBlank()) {
+            throw new IllegalArgumentException("Status is required");
+        }
+
+        String targetStatus = newStatus.trim().toUpperCase();
+        if (!ALLOWED_ORDER_STATUSES.contains(targetStatus)) {
+            throw new IllegalArgumentException("Invalid status. Allowed statuses: PENDING, PAID, EXPIRED, CANCELLED");
+        }
+
+        Order order = resolveOrderByIdentifier(identifier);
+        if (order == null) {
+            throw new IllegalArgumentException("Order not found");
+        }
+
+        String currentStatus = order.getStatus() == null ? "" : order.getStatus().trim().toUpperCase();
+        if (currentStatus.equals(targetStatus)) {
+            return;
+        }
+
+        try {
+            orderDao.getEntityManager().getTransaction().begin();
+            order.setStatus(targetStatus);
+            orderDao.update(order);
+            orderDao.getEntityManager().getTransaction().commit();
+        } catch (Exception e) {
+            if (orderDao.getEntityManager().getTransaction().isActive()) {
+                orderDao.getEntityManager().getTransaction().rollback();
+            }
+            throw e;
         }
     }
 
@@ -221,16 +237,21 @@ public class OrderService {
         }
         return sb.toString();
     }
-    
+
+    private Order resolveOrderByIdentifier(String identifier) {
+        if (identifier == null || identifier.isBlank()) {
+            return null;
+        }
+
+        try {
+            return orderDao.findById(UUID.fromString(identifier));
+        } catch (IllegalArgumentException ignored) {
+            return orderDao.findSingleByOrderCode(identifier);
+        }
+    }
+
     private String buildQrUrl(Order order) {
         String description = URLEncoder.encode(order.getOrderCode(), StandardCharsets.UTF_8);
-        return String.format(
-                "%s?acc=%s&bank=%s&amount=%.0f&des=%s",
-                SEPAY_QR_BASE,
-                SEPAY_QR_ACCOUNT,
-                SEPAY_QR_BANK,
-                order.getAmount(),
-                description
-        );
+        return String.format("%s?acc=%s&bank=%s&amount=%.0f&des=%s", SEPAY_QR_BASE, SEPAY_QR_ACCOUNT, SEPAY_QR_BANK, order.getAmount(), description);
     }
 }

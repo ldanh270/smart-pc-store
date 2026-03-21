@@ -39,28 +39,20 @@ public class OrderServlet extends HttpServlet {
                     orderController.handleGetAll(req, resp);
                 } else {
                     switch (action) {
-                        case "view" ->
-                            orderController.handleGetDetail(req, resp);
-                        case "delete" ->
-                            orderController.handleDelete(req, resp);
-                        case "my-orders" ->
-                            orderController.handleGetMyOrders(req, resp);
-                        default ->
-                            orderController.handleGetAll(req, resp);
+                        case "view" -> orderController.handleGetDetail(req, resp);
+                        case "delete" -> orderController.handleDelete(req, resp);
+                        case "my-orders" -> orderController.handleGetMyOrders(req, resp);
+                        default -> orderController.handleGetAll(req, resp);
                     }
                 }
                 return;
             }
 
             switch (pathInfo) {
-                case "/detail" ->
-                    orderController.handleGetDetail(req, resp);
-                case "/delete" ->
-                    orderController.handleDelete(req, resp);
-                case "/my-orders" ->
-                    orderController.handleGetMyOrders(req, resp);
-                default ->
-                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                case "/detail" -> orderController.handleGetDetail(req, resp);
+                case "/delete" -> orderController.handleDelete(req, resp);
+                case "/my-orders" -> orderController.handleGetMyOrders(req, resp);
+                default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (IOException e) {
             System.err.println("ERROR OrderServlet - doGet: " + e.getMessage());
@@ -74,18 +66,37 @@ public class OrderServlet extends HttpServlet {
             String pathInfo = req.getPathInfo();
             if (pathInfo != null) {
                 switch (pathInfo) {
-                    case "/create" ->
-                        orderController.handleCreate(req, resp);
-                    case "/cancel" ->
-                        orderController.handleCancelOrder(req, resp);
-                    default ->
-                        HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                    case "/create" -> orderController.handleCreate(req, resp);
+                    case "/cancel" -> orderController.handleCancelOrder(req, resp);
+                    default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
                 }
             } else {
                 HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (IOException e) {
             System.err.println("ERROR OrderServlet - doPost: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            String pathInfo = req.getPathInfo();
+            if (pathInfo == null || pathInfo.equals("/")) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                return;
+            }
+
+            String[] parts = pathInfo.split("/");
+            if (parts.length == 2 && !parts[1].isBlank()) {
+                orderController.handleUpdateStatus(req, resp, parts[1]);
+                return;
+            }
+
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+        } catch (IOException e) {
+            System.err.println("ERROR OrderServlet - doPut: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
         }
     }

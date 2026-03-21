@@ -3,6 +3,7 @@ package controllers;
 import dto.order.CreateOrderRequestDto;
 import dto.order.OrderResponseDto;
 import dto.order.OrderViewResponseDto;
+import dto.order.UpdateOrderStatusRequestDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.OrderService;
@@ -161,6 +162,30 @@ public class OrderController {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_FORBIDDEN, e.getMessage());
         } catch (Exception e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot cancel order: " + e.getMessage());
+        }
+    }
+
+    public void handleUpdateStatus(HttpServletRequest req, HttpServletResponse resp, String id) throws IOException {
+        if (id == null || id.isBlank()) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Order id is required");
+            return;
+        }
+
+        try {
+            UpdateOrderStatusRequestDto dto = HttpUtil.jsonToClass(req.getReader(), UpdateOrderStatusRequestDto.class);
+            if (dto == null || dto.getStatus() == null || dto.getStatus().isBlank()) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Status is required");
+                return;
+            }
+
+            orderService.updateOrderStatus(id, dto.getStatus());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Order status updated successfully");
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        } catch (IllegalStateException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_CONFLICT, e.getMessage());
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot update order status: " + e.getMessage());
         }
     }
 }
