@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.time.OffsetDateTime;
 
+import dto.dashboard.DashboardTopProductDto;
+
 /**
  * DAO for dashboard aggregate queries.
  */
@@ -87,5 +89,26 @@ public class DashboardDao {
         @SuppressWarnings("unchecked")
         List<Object[]> results = q.getResultList();
         return results;
+    }
+
+    // ── Top Products ─────────────────────────────────────────────────────
+
+    /**
+     * Get top selling products based on total quantity sold in paid orders.
+     */
+    public List<DashboardTopProductDto> getTopSellingProducts(int limit) {
+        String jpql = "SELECT new dto.dashboard.DashboardTopProductDto(" +
+                "p.id, p.productName, p.slug, p.imageUrl, p.currentPrice, SUM(od.quantity)) " +
+                "FROM OrderDetail od " +
+                "JOIN od.order o " +
+                "JOIN od.product p " +
+                "WHERE o.status = 'PAID' " +
+                "GROUP BY p.id, p.productName, p.slug, p.imageUrl, p.currentPrice " +
+                "ORDER BY SUM(od.quantity) DESC";
+
+        TypedQuery<DashboardTopProductDto> q = getEntityManager()
+                .createQuery(jpql, DashboardTopProductDto.class);
+        q.setMaxResults(limit);
+        return q.getResultList();
     }
 }

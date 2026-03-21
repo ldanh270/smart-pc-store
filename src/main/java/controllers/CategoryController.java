@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.CategoryService;
 import utils.HttpUtil;
-import utils.validate.AuthValidate;
 import utils.validate.CategoryValidate;
 
 /**
@@ -128,7 +127,7 @@ public class CategoryController {
             UUID id = UUID.fromString(idStr);
             CategoryRequestDto dto = HttpUtil.jsonToClass(req.getReader(), CategoryRequestDto.class);
 
-            var updated = categoryService.update(id, dto);
+            categoryService.update(id, dto);
             HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, "Category updated successfully");
 
         } catch (IllegalArgumentException e) {

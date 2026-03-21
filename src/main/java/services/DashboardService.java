@@ -3,6 +3,7 @@ package services;
 import dao.DashboardDao;
 import dto.dashboard.DashboardCategoryStatDto;
 import dto.dashboard.DashboardOverviewDto;
+import dto.dashboard.DashboardTopProductDto;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -113,6 +114,15 @@ public class DashboardService {
         }
 
         return result;
+    }
+
+    /**
+     * Get top selling products.
+     * @param limit maximum number of products to return
+     * @return List of DashboardTopProductDto
+     */
+    public List<DashboardTopProductDto> getTopProducts(int limit) {
+        return dashboardDao.getTopSellingProducts(limit);
     }
 
     /**
