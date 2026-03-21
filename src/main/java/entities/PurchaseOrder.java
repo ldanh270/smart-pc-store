@@ -30,7 +30,7 @@ public class PurchaseOrder {
     private String type = "NORMAL";
 
     /**
-     * 元の注文への参照 (調整注文の場合のみ使用)
+     * 元の注文への参照 (調整注文の場合のみ sử dụng)
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "\"parentOrderId\"")

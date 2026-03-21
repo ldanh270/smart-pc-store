@@ -139,7 +139,7 @@ public class PurchaseService {
             po.setSupplier(supplier);
             purchaseOrderDao.update(po);
 
-            List<PurchaseOrderItem> oldItems = purchaseOrderItemDao.findByPoId(po.getId());
+            List<PurchaseOrderItem> oldItems = purchaseOrderItemDao.findByPurchaseOrderId(po.getId());
             Map<UUID, Integer> productQtyDiff = new HashMap<>();
 
             // Revert old items
@@ -226,7 +226,7 @@ public class PurchaseService {
         if (po == null) {
             return null;
         }
-        List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPoId(poId);
+        List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPurchaseOrderId(poId);
         return toPoDto(po, items);
     }
 
@@ -239,7 +239,7 @@ public class PurchaseService {
         List<PurchaseOrder> pos = purchaseOrderDao.searchAndPaginate(query, page, size);
         List<PurchaseOrderResponseDto> dtos = new ArrayList<>();
         for (PurchaseOrder po : pos) {
-            List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPoId(po.getId());
+            List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPurchaseOrderId(po.getId());
             PurchaseOrderResponseDto dto = toPoDto(po, items);
             dto.items = null;
             dtos.add(dto);
