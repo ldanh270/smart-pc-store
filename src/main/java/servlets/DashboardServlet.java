@@ -1,9 +1,8 @@
 package servlets;
 
-import java.io.IOException;
-
 import controllers.DashboardController;
 import dao.DashboardDao;
+import dao.OrderDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.DashboardService;
 import utils.HttpUtil;
 
+import java.io.IOException;
+
 @WebServlet(name = "DashboardServlet", urlPatterns = {"/dashboard/*"})
 public class DashboardServlet extends HttpServlet {
 
@@ -19,8 +20,7 @@ public class DashboardServlet extends HttpServlet {
 
     @Override
     public void init() {
-        DashboardDao dashboardDao = new DashboardDao();
-        DashboardService dashboardService = new DashboardService(dashboardDao);
+        DashboardService dashboardService = new DashboardService(new DashboardDao(), new OrderDAO());
         this.dashboardController = new DashboardController(dashboardService);
     }
 
@@ -35,12 +35,10 @@ public class DashboardServlet extends HttpServlet {
             }
 
             switch (pathInfo) {
-                case "/overview" ->
-                    dashboardController.handleGetOverview(req, resp);
-                case "/category-stats" ->
-                    dashboardController.handleGetCategoryStats(req, resp);
-                default ->
-                    HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+                case "/overview" -> dashboardController.handleGetOverview(req, resp);
+                case "/category-stats" -> dashboardController.handleGetCategoryStats(req, resp);
+                case "/revenue-daily" -> dashboardController.handleGetDailyRevenue(req, resp);
+                default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (IOException e) {
             System.err.println("ERROR DashboardServlet - doGet: " + e.getMessage());
