@@ -44,14 +44,15 @@ public class PurchaseController {
             Integer page = (pageStr == null || pageStr.isBlank()) ? null : Integer.valueOf(pageStr);
             Integer size = (sizeStr == null || sizeStr.isBlank()) ? null : Integer.valueOf(sizeStr);
 
-            if (page == null && size != null) {
+            // Default pagination when query params are omitted.
+            if (page == null) {
                 page = 1;
             }
-            if (page != null && size == null) {
-                size = 5;
+            if (size == null) {
+                size = 10;
             }
-            if (page != null && page < 0) {
-                throw new IllegalArgumentException("page must be >= 0");
+            if (page < 1) {
+                throw new IllegalArgumentException("page must be >= 1");
             }
             if (size != null && size <= 0) {
                 throw new IllegalArgumentException("size must be > 0");
@@ -64,6 +65,7 @@ public class PurchaseController {
         } catch (IllegalArgumentException e) {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
+            System.err.println("ERROR PurchaseController - handleGetAllPo: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }

@@ -1,5 +1,6 @@
 package dao;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import entities.Order;
@@ -125,6 +126,19 @@ public class OrderDAO extends GenericDao<Order> {
             query.setFirstResult(page * size);
             query.setMaxResults(size);
         }
+        return query.getResultList();
+    }
+
+    /**
+     * Find PAID orders created from the specified timestamp.
+     *
+     * @param fromInclusive Lower bound inclusive.
+     * @return Matching paid orders.
+     */
+    public List<Order> findPaidOrdersFrom(OffsetDateTime fromInclusive) {
+        String jpql = "SELECT o FROM Order o WHERE UPPER(o.status) = 'PAID' AND o.createdAt >= :fromInclusive";
+        TypedQuery<Order> query = getEntityManager().createQuery(jpql, Order.class);
+        query.setParameter("fromInclusive", fromInclusive);
         return query.getResultList();
     }
 }

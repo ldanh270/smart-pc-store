@@ -340,8 +340,8 @@ public class PurchaseService {
     private PurchaseOrderResponseDto toPoDto(PurchaseOrder po, List<PurchaseOrderItem> poItems) {
         PurchaseOrderResponseDto dto = new PurchaseOrderResponseDto();
         dto.id = po.getId();
-        dto.supplierId = po.getSupplier().getId();
-        dto.supplierName = po.getSupplier().getSupplierName();
+        dto.supplierId = po.getSupplier() == null ? null : po.getSupplier().getId();
+        dto.supplierName = po.getSupplier() == null ? null : po.getSupplier().getSupplierName();
         dto.orderDate = po.getOrderDate() == null ? null : po.getOrderDate().toString();
 
         BigDecimal total = BigDecimal.ZERO;
@@ -349,11 +349,13 @@ public class PurchaseService {
         for (PurchaseOrderItem poItem : poItems) {
             PurchaseOrderResponseDto.Item item = new PurchaseOrderResponseDto.Item();
             item.id = poItem.getId();
-            item.productId = poItem.getProduct().getId();
-            item.productName = poItem.getProduct().getProductName();
+            item.productId = poItem.getProduct() == null ? null : poItem.getProduct().getId();
+            item.productName = poItem.getProduct() == null ? null : poItem.getProduct().getProductName();
             item.quantity = poItem.getQuantity();
             item.unitPrice = poItem.getUnitPrice();
-            item.lineTotal = poItem.getUnitPrice().multiply(BigDecimal.valueOf(poItem.getQuantity()));
+            BigDecimal unitPrice = poItem.getUnitPrice() == null ? BigDecimal.ZERO : poItem.getUnitPrice();
+            int quantity = poItem.getQuantity() == null ? 0 : poItem.getQuantity();
+            item.lineTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
             total = total.add(item.lineTotal);
             items.add(item);
         }

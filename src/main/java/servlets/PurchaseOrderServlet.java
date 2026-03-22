@@ -51,6 +51,7 @@ public class PurchaseOrderServlet extends HttpServlet {
             }
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
+            System.err.println("ERROR PurchaseOrderServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
@@ -79,6 +80,7 @@ public class PurchaseOrderServlet extends HttpServlet {
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
+            System.err.println("ERROR PurchaseOrderServlet - doPost: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();

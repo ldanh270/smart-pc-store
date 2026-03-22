@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.OrderService;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 @WebServlet(name = "HistoryServlet", urlPatterns = {"/history"})
 public class HistoryServlet extends HttpServlet {

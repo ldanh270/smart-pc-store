@@ -12,6 +12,7 @@ Thank you for your interest in contributing to Smart PC Store! This document pro
 - [Coding Standards](#coding-standards)
 - [Commit Guidelines](#commit-guidelines)
 - [Pull Request Process](#pull-request-process)
+- [CI/CD Checks](#8-pass-cicd-checks)
 - [Testing Guidelines](#testing-guidelines)
 - [Documentation](#documentation)
 
@@ -177,6 +178,15 @@ git push origin feature/your-feature-name
 3. Select your branch
 4. Fill in the PR template
 5. Submit for review
+
+### 8. Pass CI/CD Checks
+
+All pull requests must pass required GitHub Actions workflows before merge:
+
+- `CI` workflow (`.github/workflows/ci.yml`)
+- `Security` workflow (`.github/workflows/security.yml`)
+
+For release and deployment details, see [CI/CD Guide](CI_CD.md).
 
 ---
 
