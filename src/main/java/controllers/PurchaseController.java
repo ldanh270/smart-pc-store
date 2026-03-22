@@ -119,4 +119,49 @@ public class PurchaseController {
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new ApiResponse<>(false, "Internal server error", null));
         }
     }
+    /**
+     * Handle POST request for creating an adjustment order.
+     */
+    public void handleCreateAdjustmentPo(HttpServletRequest req, HttpServletResponse resp, String parentIdStr) throws IOException {
+        try {
+            UUID parentId = UUID.fromString(parentIdStr);
+            PurchaseOrderCreateRequestDto dto = HttpUtil.jsonToClass(req.getReader(), PurchaseOrderCreateRequestDto.class);
+            PurchaseOrderResponseDto created = purchaseService.createAdjustmentOrder(parentId, dto);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_CREATED, new ApiResponse<>(true, "Adjustment PO created", created));
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, new ApiResponse<>(false, e.getMessage(), null));
+        } catch (IllegalStateException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_CONFLICT, new ApiResponse<>(false, e.getMessage(), null));
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new ApiResponse<>(false, "Internal server error", null));
+        }
+    }
+
+    /**
+     * Handle GET request for retrieving adjusted quantity of an item.
+     */
+    public void handleGetAdjustedQuantity(HttpServletRequest req, HttpServletResponse resp, String productIdStr) throws IOException {
+        try {
+            UUID productId = UUID.fromString(productIdStr);
+            String poIdStr = req.getParameter("poId");
+            if (poIdStr == null) {
+                HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "poId is required");
+                return;
+            }
+            UUID poId = UUID.fromString(poIdStr);
+            int adjustedQuantity = purchaseService.getAdjustedQuantity(poId, productId);
+            
+            // Re-using a simple map for response
+            java.util.Map<String, Object> result = new java.util.HashMap<>();
+            result.put("productId", productId);
+            result.put("poId", poId);
+            result.put("adjustedQuantity", adjustedQuantity);
+            
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, result);
+        } catch (IllegalArgumentException e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+        }
+    }
 }
