@@ -59,7 +59,7 @@ public class PurchaseOrderServlet extends HttpServlet {
             HttpUtil.sendJson(
                     resp,
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage()
+                    "Internal Server Error: " + e
             );
         } finally {
             JPAUtil.closeEntityManager();
