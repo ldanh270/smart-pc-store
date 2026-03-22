@@ -59,6 +59,8 @@ public class PurchaseService {
         PurchaseOrder po = new PurchaseOrder();
         po.setSupplier(supplier);
         po.setOrderDate(LocalDate.now());
+        po.setExpectedDeliveryDate(dto.expectedDeliveryDate);
+        po.setNote(dto.note);
 
         List<PurchaseOrderItem> poItems = new ArrayList<>();
 
@@ -137,6 +139,8 @@ public class PurchaseService {
             }
 
             po.setSupplier(supplier);
+            po.setExpectedDeliveryDate(dto.expectedDeliveryDate);
+            po.setNote(dto.note);
             purchaseOrderDao.update(po);
 
             List<PurchaseOrderItem> oldItems = purchaseOrderItemDao.findByPurchaseOrderId(po.getId());
@@ -258,7 +262,24 @@ public class PurchaseService {
         if (parentId == null) {
             throw new IllegalArgumentException("Parent PO id is required");
         }
-        validateCreatePo(dto);
+        
+        if (dto == null) {
+            throw new IllegalArgumentException("Request body is required");
+        }
+        if (dto.items == null || dto.items.isEmpty()) {
+            throw new IllegalArgumentException("At least one item is required");
+        }
+        for (PurchaseOrderCreateRequestDto.Item item : dto.items) {
+            if (item == null) {
+                throw new IllegalArgumentException("Item is required");
+            }
+            if (item.productId == null) {
+                throw new IllegalArgumentException("productId is required");
+            }
+            if (item.quantity == null || item.quantity == 0) {
+                throw new IllegalArgumentException("Quantity must be non-zero");
+            }
+        }
 
         try {
             JPAUtil.getEntityManager().getTransaction().begin();
@@ -284,7 +305,9 @@ public class PurchaseService {
 
                 int currentQty = product.getQuantity() == null ? 0 : product.getQuantity();
                 if (currentQty + itemDto.quantity < 0) {
-                    throw new IllegalStateException("在庫が不足しているため、調整できません。製品: " + product.getProductName());
+                    // Cannot adjust due to insufficient stock
+                    throw new IllegalStateException("Insufficient stock to perform adjustment. Product: " + product.getProductName() + 
+                        " (在庫が不足しているため、調整できません。製品: " + product.getProductName() + ")");
                 }
 
                 PurchaseOrderItem item = new PurchaseOrderItem();
@@ -343,6 +366,9 @@ public class PurchaseService {
         dto.supplierId = po.getSupplier() == null ? null : po.getSupplier().getId();
         dto.supplierName = po.getSupplier() == null ? null : po.getSupplier().getSupplierName();
         dto.orderDate = po.getOrderDate() == null ? null : po.getOrderDate().toString();
+        dto.expectedDeliveryDate = po.getExpectedDeliveryDate() == null ? null : po.getExpectedDeliveryDate().toString();
+        dto.note = po.getNote();
+        dto.type = po.getType();
 
         BigDecimal total = BigDecimal.ZERO;
         List<PurchaseOrderResponseDto.Item> items = new ArrayList<>();

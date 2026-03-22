@@ -18,9 +18,10 @@ import utils.HttpUtil;
 import java.io.IOException;
 
 /**
+ * PurchaseOrderServlet - Servlet for handling HTTP requests for purchase orders and inventory receipt
  * PurchaseOrderServlet - 仕入注文および入庫のHTTPリクエストを処理するサーブレット
  */
-@WebServlet(name = "PurchaseOrderServlet", urlPatterns = {"/api/purchase-orders/*"})
+@WebServlet(name = "PurchaseOrderServlet", urlPatterns = {"/purchase-orders/*"})
 public class PurchaseOrderServlet extends HttpServlet {
 
     private PurchaseController buildController() {
@@ -34,21 +35,34 @@ public class PurchaseOrderServlet extends HttpServlet {
     }
 
     /**
-     * GET /api/purchase-orders/items/{itemId}?poId={poId}
-     * アイテムの調整後数量を取得する
+     * GET /purchase-orders
+     * GET /purchase-orders/{id}
+     * GET /purchase-orders/items/{itemId}?poId={poId}
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
         PurchaseController controller = buildController();
         try {
-            if (pathInfo != null && pathInfo.startsWith("/items/")) {
+            if (pathInfo == null || pathInfo.equals("/")) {
+                controller.handleGetAllPo(req, resp);
+                return;
+            }
+
+            if (pathInfo.startsWith("/items/")) {
                 String[] parts = pathInfo.split("/");
                 if (parts.length >= 3) {
                     controller.handleGetAdjustedQuantity(req, resp, parts[2]);
                     return;
                 }
             }
+
+            String[] parts = pathInfo.split("/");
+            if (parts.length == 2 && !parts[1].isBlank()) {
+                controller.handleGetPoById(resp, parts[1]);
+                return;
+            }
+
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (Exception e) {
             System.err.println("ERROR PurchaseOrderServlet - doGet: " + e.getMessage());
@@ -59,23 +73,36 @@ public class PurchaseOrderServlet extends HttpServlet {
     }
 
     /**
-     * POST /api/purchase-orders (通常注文의 作成)
-     * POST /api/purchase-orders/{id}/adjust (調整注文의 作成)
+     * POST /purchase-orders/create
+     * POST /purchase-orders/update
+     * POST /purchase-orders/{id}/adjust
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
         PurchaseController controller = buildController();
         try {
-            if (pathInfo == null || pathInfo.equals("/")) {
+            if ("/create".equals(pathInfo)) {
                 controller.handleCreatePo(req, resp);
                 return;
             }
 
-            String[] parts = pathInfo.split("/");
-            if (parts.length == 3 && "adjust".equals(parts[2])) {
-                controller.handleCreateAdjustmentPo(req, resp, parts[1]);
+            if ("/update".equals(pathInfo)) {
+                String idStr = req.getParameter("id");
+                if (idStr != null) {
+                    controller.handleUpdatePo(req, resp, idStr);
+                } else {
+                    HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing id parameter for update");
+                }
                 return;
+            }
+
+            if (pathInfo != null) {
+                String[] parts = pathInfo.split("/");
+                if (parts.length == 3 && "adjust".equals(parts[2])) {
+                    controller.handleCreateAdjustmentPo(req, resp, parts[1]);
+                    return;
+                }
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");

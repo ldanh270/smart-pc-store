@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import controllers.CategoryController;
 import dao.CategoryDao;
@@ -42,10 +43,18 @@ public class CategoryServlet extends HttpServlet {
                 return;
             }
 
-            // GET /categories/{slug} -> category details by slug
+            // GET /categories/{id} or /categories/{slug}
             String[] parts = pathInfo.split("/");
             if (parts.length == 2 && !parts[1].isBlank()) {
-                categoryController.handleGetBySlug(req, resp, parts[1]);
+                String identifier = parts[1];
+                try {
+                    // Try to parse as UUID first
+                    UUID.fromString(identifier);
+                    categoryController.handleGetById(req, resp, identifier);
+                } catch (IllegalArgumentException e) {
+                    // Not a UUID, handle as slug
+                    categoryController.handleGetBySlug(req, resp, identifier);
+                }
                 return;
             }
 

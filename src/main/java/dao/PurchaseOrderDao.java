@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * PurchaseOrderDao - Data Access Object for purchase orders
  * PurchaseOrderDao - 仕入注文のデータアクセスオブジェクト
  */
 public class PurchaseOrderDao extends GenericDao<PurchaseOrder> {
@@ -15,10 +16,11 @@ public class PurchaseOrderDao extends GenericDao<PurchaseOrder> {
     }
 
     /**
+     * Get adjustment orders associated with the original order
      * 元の注文に関連付けられた調整注文を取得する
      *
-     * @param parentId 元 của đơn hàng gốc
-     * @return 調整注文のリスト
+     * @param parentId ID of the original order
+     * @return List of adjustment orders
      */
     public List<PurchaseOrder> findAdjustmentsByParentId(UUID parentId) {
         String jpql = "SELECT po FROM PurchaseOrder po WHERE po.parentOrder.id = :parentId";

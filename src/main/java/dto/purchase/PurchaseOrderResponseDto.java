@@ -13,6 +13,9 @@ public class PurchaseOrderResponseDto {
     public UUID supplierId;
     public String supplierName;
     public String orderDate;
+    public String expectedDeliveryDate;
+    public String note;
+    public String type;
     public List<Item> items;
     public BigDecimal totalAmount;
 
