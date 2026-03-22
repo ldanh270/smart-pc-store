@@ -39,6 +39,8 @@ public class DashboardServlet extends HttpServlet {
                     dashboardController.handleGetOverview(req, resp);
                 case "/category-stats" ->
                     dashboardController.handleGetCategoryStats(req, resp);
+                case "/top-products" ->
+                    dashboardController.handleGetTopProducts(req, resp);
                 default ->
                     HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }

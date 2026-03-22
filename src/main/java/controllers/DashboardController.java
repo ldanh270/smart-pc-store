@@ -2,6 +2,7 @@ package controllers;
 
 import dto.dashboard.DashboardCategoryStatDto;
 import dto.dashboard.DashboardOverviewDto;
+import dto.dashboard.DashboardTopProductDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import services.DashboardService;
@@ -48,6 +49,21 @@ public class DashboardController {
             System.err.println("ERROR DashboardController - handleGetCategoryStats: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Error fetching category stats: " + e.getMessage());
+        }
+    }
+
+    /**
+     * GET /dashboard/top-products
+     * Returns top 5 best-selling products.
+     */
+    public void handleGetTopProducts(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            List<DashboardTopProductDto> topProducts = dashboardService.getTopProducts(5);
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_OK, topProducts);
+        } catch (Exception e) {
+            System.err.println("ERROR DashboardController - handleGetTopProducts: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Error fetching top products: " + e.getMessage());
         }
     }
 }

@@ -2,7 +2,6 @@ package services;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.UUID;
 
 import dao.CartDao;
 import dao.CartItemDao;
