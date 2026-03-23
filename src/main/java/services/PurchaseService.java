@@ -59,6 +59,8 @@ public class PurchaseService {
         PurchaseOrder po = new PurchaseOrder();
         po.setSupplier(supplier);
         po.setOrderDate(LocalDate.now());
+        po.setExpectedDeliveryDate(dto.expectedDeliveryDate);
+        po.setNote(dto.note);
 
         List<PurchaseOrderItem> poItems = new ArrayList<>();
 
@@ -137,9 +139,11 @@ public class PurchaseService {
             }
 
             po.setSupplier(supplier);
+            po.setExpectedDeliveryDate(dto.expectedDeliveryDate);
+            po.setNote(dto.note);
             purchaseOrderDao.update(po);
 
-            List<PurchaseOrderItem> oldItems = purchaseOrderItemDao.findByPoId(po.getId());
+            List<PurchaseOrderItem> oldItems = purchaseOrderItemDao.findByPurchaseOrderId(po.getId());
             Map<UUID, Integer> productQtyDiff = new HashMap<>();
 
             // Revert old items
@@ -226,7 +230,7 @@ public class PurchaseService {
         if (po == null) {
             return null;
         }
-        List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPoId(poId);
+        List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPurchaseOrderId(poId);
         return toPoDto(po, items);
     }
 
@@ -239,12 +243,121 @@ public class PurchaseService {
         List<PurchaseOrder> pos = purchaseOrderDao.searchAndPaginate(query, page, size);
         List<PurchaseOrderResponseDto> dtos = new ArrayList<>();
         for (PurchaseOrder po : pos) {
-            List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPoId(po.getId());
+            List<PurchaseOrderItem> items = purchaseOrderItemDao.findByPurchaseOrderId(po.getId());
             PurchaseOrderResponseDto dto = toPoDto(po, items);
             dto.items = null;
             dtos.add(dto);
         }
         return dtos;
+    }
+
+    /**
+     * Create an adjustment order (supports negative quantity).
+     *
+     * @param parentId Parent PO ID.
+     * @param dto      Adjustment order request.
+     * @return Created adjustment order response.
+     */
+    public PurchaseOrderResponseDto createAdjustmentOrder(UUID parentId, PurchaseOrderCreateRequestDto dto) {
+        if (parentId == null) {
+            throw new IllegalArgumentException("Parent PO id is required");
+        }
+        
+        if (dto == null) {
+            throw new IllegalArgumentException("Request body is required");
+        }
+        if (dto.items == null || dto.items.isEmpty()) {
+            throw new IllegalArgumentException("At least one item is required");
+        }
+        for (PurchaseOrderCreateRequestDto.Item item : dto.items) {
+            if (item == null) {
+                throw new IllegalArgumentException("Item is required");
+            }
+            if (item.productId == null) {
+                throw new IllegalArgumentException("productId is required");
+            }
+            if (item.quantity == null || item.quantity == 0) {
+                throw new IllegalArgumentException("Quantity must be non-zero");
+            }
+        }
+
+        try {
+            JPAUtil.getEntityManager().getTransaction().begin();
+
+            PurchaseOrder parent = purchaseOrderDao.findById(parentId);
+            if (parent == null) {
+                throw new IllegalArgumentException("Parent purchase order not found");
+            }
+
+            PurchaseOrder adjustment = new PurchaseOrder();
+            adjustment.setSupplier(parent.getSupplier());
+            adjustment.setOrderDate(LocalDate.now());
+            adjustment.setType("ADJUSTMENT");
+            adjustment.setParentOrder(parent);
+            purchaseOrderDao.create(adjustment);
+
+            List<PurchaseOrderItem> poiItems = new ArrayList<>();
+            for (PurchaseOrderCreateRequestDto.Item itemDto : dto.items) {
+                Product product = productDao.findById(itemDto.productId);
+                if (product == null) {
+                    throw new IllegalArgumentException("Product not found: " + itemDto.productId);
+                }
+
+                int currentQty = product.getQuantity() == null ? 0 : product.getQuantity();
+                if (currentQty + itemDto.quantity < 0) {
+                    // Cannot adjust due to insufficient stock
+                    throw new IllegalStateException("Insufficient stock to perform adjustment. Product: " + product.getProductName() + 
+                        " (在庫が不足しているため、調整できません。製品: " + product.getProductName() + ")");
+                }
+
+                PurchaseOrderItem item = new PurchaseOrderItem();
+                item.setPo(adjustment);
+                item.setProduct(product);
+                item.setQuantity(itemDto.quantity);
+                item.setUnitPrice(itemDto.unitPrice);
+                purchaseOrderItemDao.create(item);
+                poiItems.add(item);
+
+                // Update stock
+                product.setQuantity(currentQty + itemDto.quantity);
+                if (itemDto.unitPrice != null) {
+                    product.setCurrentPrice(itemDto.unitPrice);
+                }
+                productDao.update(product);
+
+                // Record transaction
+                InventoryTransaction transaction = new InventoryTransaction();
+                transaction.setProduct(product);
+                transaction.setQuantityChange(itemDto.quantity);
+                transaction.setTransactionType("PO_ADJUSTMENT");
+                transaction.setTransactionDate(java.time.OffsetDateTime.now());
+                inventoryTransactionDao.create(transaction);
+            }
+
+            JPAUtil.getEntityManager().getTransaction().commit();
+            return toPoDto(adjustment, poiItems);
+        } catch (Exception e) {
+            if (JPAUtil.getEntityManager().getTransaction().isActive()) {
+                JPAUtil.getEntityManager().getTransaction().rollback();
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Get adjusted quantity of a product in a PO family.
+     *
+     * @param poId      PO ID.
+     * @param productId Product ID.
+     * @return Total adjusted quantity.
+     */
+    public int getAdjustedQuantity(UUID poId, UUID productId) {
+        List<PurchaseOrderItem> familyItems = purchaseOrderItemDao.findByProductAndOrderFamily(productId, poId);
+        int total = 0;
+        for (PurchaseOrderItem item : familyItems) {
+            total += (item.getQuantity() != null ? item.getQuantity() : 0);
+        }
+        return total;
     }
 
     private PurchaseOrderResponseDto toPoDto(PurchaseOrder po, List<PurchaseOrderItem> poItems) {
@@ -253,6 +366,9 @@ public class PurchaseService {
         dto.supplierId = po.getSupplier() == null ? null : po.getSupplier().getId();
         dto.supplierName = po.getSupplier() == null ? null : po.getSupplier().getSupplierName();
         dto.orderDate = po.getOrderDate() == null ? null : po.getOrderDate().toString();
+        dto.expectedDeliveryDate = po.getExpectedDeliveryDate() == null ? null : po.getExpectedDeliveryDate().toString();
+        dto.note = po.getNote();
+        dto.type = po.getType();
 
         BigDecimal total = BigDecimal.ZERO;
         List<PurchaseOrderResponseDto.Item> items = new ArrayList<>();

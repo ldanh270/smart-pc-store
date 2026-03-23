@@ -48,43 +48,20 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
 
-            switch (pathInfo) {
-                case "/detail" -> orderController.handleGetDetail(req, resp);
-                case "/delete" -> orderController.handleDelete(req, resp);
-                case "/my-orders" -> orderController.handleGetMyOrders(req, resp);
-                default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+            if ("/detail".equals(pathInfo)) {
+                orderController.handleGetDetail(req, resp);
+                return;
             }
-        } catch (IOException e) {
-            System.err.println("ERROR OrderServlet - doGet: " + e.getMessage());
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
-        }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
-            String pathInfo = req.getPathInfo();
-            if (pathInfo != null) {
-                switch (pathInfo) {
-                    case "/create" -> orderController.handleCreate(req, resp);
-                    case "/cancel" -> orderController.handleCancelOrder(req, resp);
-                    default -> HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-                }
-            } else {
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+            if ("/delete".equals(pathInfo)) {
+                orderController.handleDelete(req, resp);
+                return;
             }
-        } catch (IOException e) {
-            System.err.println("ERROR OrderServlet - doPost: " + e.getMessage());
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
-        }
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        try {
-            String pathInfo = req.getPathInfo();
-            if (pathInfo == null || pathInfo.equals("/")) {
-                HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
+            if ("/my-orders".equals(pathInfo)) {
+                orderController.handleGetMyOrders(req, resp);
+                return;
+            }
+            if ("/create".equals(pathInfo)) {
+                orderController.handleCreate(req, resp);
                 return;
             }
 
@@ -96,8 +73,18 @@ public class OrderServlet extends HttpServlet {
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
         } catch (IOException e) {
-            System.err.println("ERROR OrderServlet - doPut: " + e.getMessage());
+            System.err.println("ERROR OrderServlet - doGet: " + e.getMessage());
             HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request: " + e.getMessage());
         }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
     }
 }

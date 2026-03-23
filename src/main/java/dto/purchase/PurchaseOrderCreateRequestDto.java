@@ -1,6 +1,7 @@
 package dto.purchase;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,6 +12,8 @@ public class PurchaseOrderCreateRequestDto {
 
     public UUID supplierId;
     public String supplierName;
+    public LocalDate expectedDeliveryDate;
+    public String note;
     public List<Item> items;
 
     /**

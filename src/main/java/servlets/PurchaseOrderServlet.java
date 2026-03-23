@@ -1,7 +1,5 @@
 package servlets;
 
-import java.io.IOException;
-
 import controllers.PurchaseController;
 import dao.InventoryTransactionDao;
 import dao.JPAUtil;
@@ -17,122 +15,100 @@ import jakarta.servlet.http.HttpServletResponse;
 import services.PurchaseService;
 import utils.HttpUtil;
 
+import java.io.IOException;
+
 /**
- * PurchaseOrderServlet handles purchase-order and goods-receipt HTTP requests.
+ * PurchaseOrderServlet - Servlet for handling HTTP requests for purchase orders and inventory receipt
+ * PurchaseOrderServlet - 仕入注文および入庫のHTTPリクエストを処理するサーブレット
  */
 @WebServlet(name = "PurchaseOrderServlet", urlPatterns = {"/purchase-orders/*"})
 public class PurchaseOrderServlet extends HttpServlet {
 
     private PurchaseController buildController() {
-        PurchaseService purchaseService = new PurchaseService(
-                new PurchaseOrderDao(),
-                new PurchaseOrderItemDao(),
-                new SupplierDao(),
-                new ProductDao(),
-                new InventoryTransactionDao()
-        );
+        PurchaseOrderDao poDao = new PurchaseOrderDao();
+        PurchaseOrderItemDao poiDao = new PurchaseOrderItemDao();
+        SupplierDao supplierDao = new SupplierDao();
+        ProductDao productDao = new ProductDao();
+        InventoryTransactionDao itDao = new InventoryTransactionDao();
+        PurchaseService purchaseService = new PurchaseService(poDao, poiDao, supplierDao, productDao, itDao);
         return new PurchaseController(purchaseService);
     }
 
     /**
-     * Route purchase-order GET endpoints.
-     * GET /purchase-orders/ - Get all purchase orders
-     * GET /purchase-orders/{id} - Get purchase order by ID
+     * GET /purchase-orders
+     * GET /purchase-orders/{id}
+     * GET /purchase-orders/items/{itemId}?poId={poId}
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        PurchaseController purchaseController = buildController();
+        PurchaseController controller = buildController();
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
-                purchaseController.handleGetAllPo(req, resp);
+                controller.handleGetAllPo(req, resp);
                 return;
             }
+
+            if (pathInfo.startsWith("/items/")) {
+                String[] parts = pathInfo.split("/");
+                if (parts.length >= 3) {
+                    controller.handleGetAdjustedQuantity(req, resp, parts[2]);
+                    return;
+                }
+            }
+
             String[] parts = pathInfo.split("/");
             if (parts.length == 2 && !parts[1].isBlank()) {
-                purchaseController.handleGetPoById(resp, parts[1]);
+                controller.handleGetPoById(resp, parts[1]);
                 return;
             }
+
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.err.println("ERROR PurchaseOrderServlet - doGet: " + e.getMessage());
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e
-            );
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
         }
     }
 
     /**
-     * Route purchase-order POST endpoints.
-     * POST /purchase-orders/create - Create new purchase order
+     * POST /purchase-orders/create
+     * POST /purchase-orders/update
+     * POST /purchase-orders/{id}/adjust
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-        PurchaseController purchaseController = buildController();
-        if (pathInfo == null || pathInfo.equals("/")) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            JPAUtil.closeEntityManager();
-            return;
-        }
-
+        PurchaseController controller = buildController();
         try {
             if ("/create".equals(pathInfo)) {
-                purchaseController.handleCreatePo(req, resp);
+                controller.handleCreatePo(req, resp);
                 return;
             }
 
-            HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (IOException e) {
-            System.err.println("ERROR PurchaseOrderServlet - doPost: " + e.getMessage());
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage()
-            );
-        } finally {
-            JPAUtil.closeEntityManager();
-        }
-    }
+            if ("/update".equals(pathInfo)) {
+                String idStr = req.getParameter("id");
+                if (idStr != null) {
+                    controller.handleUpdatePo(req, resp, idStr);
+                } else {
+                    HttpUtil.sendJson(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing id parameter for update");
+                }
+                return;
+            }
 
-    /**
-     * Route purchase-order PUT endpoints.
-     * PUT - Update purchase order by ID
-     * /purchase-orders/update/{id}
-     * /purchase-orders/{id}
-     */
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String pathInfo = req.getPathInfo();
-        PurchaseController purchaseController = buildController();
-
-        try {
             if (pathInfo != null) {
                 String[] parts = pathInfo.split("/");
-                // Expected format: /purchase-orders/update/{id}
-                if (parts.length == 3 && "update".equals(parts[1]) && !parts[2].isBlank()) {
-                    purchaseController.handleUpdatePo(req, resp, parts[2]);
-                    return;
-                }
-                // Also support /purchase-orders/{id}
-                if (parts.length == 2 && !parts[1].isBlank()) {
-                    purchaseController.handleUpdatePo(req, resp, parts[1]);
+                if (parts.length == 3 && "adjust".equals(parts[2])) {
+                    controller.handleCreateAdjustmentPo(req, resp, parts[1]);
                     return;
                 }
             }
 
             HttpUtil.sendJson(resp, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
-        } catch (IOException e) {
-            System.err.println("ERROR PurchaseOrderServlet - doPut: " + e.getMessage());
-            HttpUtil.sendJson(
-                    resp,
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Internal Server Error: " + e.getMessage()
-            );
+        } catch (Exception e) {
+            System.err.println("ERROR PurchaseOrderServlet - doPost: " + e.getMessage());
+            HttpUtil.sendJson(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         } finally {
             JPAUtil.closeEntityManager();
         }
